@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  userId    String   @unique // Our custom user ID like 2026NIDA0100
+  name      String
+  email     String   @unique
+  mobile    String
+  address   String
+  photo     String?
+  createdAt DateTime @default(now())
+
+  // Fields from the registration form
+  registrationType String // e.g., 'delegate', 'workshop'
+  memberType       String // e.g., 'rc-member'
+  subCategory      String // e.g., 'new-membership'
+}
+
+model Counter {
+  id    String @id @default("user_counter")
+  value Int    @default(99) // Start from 99 so the first user is 100
+}
