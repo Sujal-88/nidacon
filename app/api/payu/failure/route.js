@@ -72,12 +72,16 @@ export default async function handler(req, res) {
 
 // Hash verification function (same as success handler)
 function verifyPayUHash(payuResponse) {
-  const SALT = process.env.PAYU_MERCHANT_SALT.trim();
-
+  const SALT = process.env.PAYU_SALT;
+  
   const hashString = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', // 10 empties for udf10 → udf6
+    '',
+    '',
+    '',
+    '',
+    '',
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
@@ -90,17 +94,12 @@ function verifyPayUHash(payuResponse) {
     payuResponse.txnid || '',
     payuResponse.key || ''
   ].join('|');
-
+  
   const calculatedHash = crypto
     .createHash('sha512')
     .update(hashString)
     .digest('hex');
-
-  console.log('--- Hash Verification ---');
-  console.log('String to Hash:', hashString);
-  console.log('Calculated Hash:', calculatedHash);
-  console.log('PayU Hash:', payuResponse.hash);
-
+  
   return calculatedHash === payuResponse.hash;
 }
 
