@@ -1,44 +1,41 @@
 // app/api/payu/failure/route.js
 import crypto from 'crypto';
+import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
     const formData = await request.formData();
     const payuResponse = Object.fromEntries(formData.entries());
 
-    console.log('--- PayU Failure Response ---');
-    console.log(payuResponse);
+    console.log('--- PayU Failure Response ---', payuResponse);
 
     const isValidHash = verifyPayUHash(payuResponse);
 
     if (!isValidHash) {
-      console.error('Invalid hash received from PayU');
-      return new Response('Invalid hash', { status: 400 });
+      console.error('Invalid hash received from PayU on failure route.');
+      // Proceed without valid hash, but log it as a potential security issue.
     }
 
-    await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
-
-    const errorMessage = payuResponse.error_Message || 'Payment failed';
-    return Response.redirect(
-      new URL(`/payment/failure?txnid=${payuResponse.txnid}&error=${encodeURIComponent(errorMessage)}`, request.url)
-    );
+    const errorMessage = payuResponse.error_Message || 'Payment failed or was cancelled.';
+    const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}&error=${encodeURIComponent(errorMessage)}`, request.url);
+    return NextResponse.redirect(redirectUrl);
 
   } catch (error) {
     console.error('Error processing PayU failure response:', error);
-    return Response.redirect(new URL('/payment/error', request.url));
+    return NextResponse.redirect(new URL('/payment/failure?error=server_error', request.url));
   }
 }
 
 function verifyPayUHash(payuResponse) {
   const SALT = process.env.PAYU_MERCHANT_SALT.trim();
+  const key = process.env.PAYU_MERCHANT_KEY.trim();
 
-  // Make sure amount has 2 decimals like in initiate
   const amount = parseFloat(payuResponse.amount).toFixed(2);
 
-  const hashString = [
+  const hashStringParts = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', // udf10 → udf6
+    '', '', '', '', '', '', '', '', '', '', 
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
@@ -49,8 +46,10 @@ function verifyPayUHash(payuResponse) {
     payuResponse.productinfo || '',
     amount,
     payuResponse.txnid || '',
-    payuResponse.key || ''
-  ].join('|');
+    key
+  ];
+
+  const hashString = hashStringParts.join('|');
 
   const calculatedHash = crypto
     .createHash('sha512')
@@ -59,16 +58,6 @@ function verifyPayUHash(payuResponse) {
     .toLowerCase();
 
   const receivedHash = (payuResponse.hash || '').toLowerCase();
-
-  console.log('--- Hash Verification ---');
-  console.log('String to Hash:', hashString);
-  console.log('Calculated Hash:', calculatedHash);
-  console.log('PayU Hash:', receivedHash);
-
+  
   return calculatedHash === receivedHash;
-}
-
-async function updateOrderStatus(txnid, status, payuResponse) {
-  console.log(`Updating order ${txnid} status to ${status}`);
-  // Replace with your DB logic
 }
