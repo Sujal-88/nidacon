@@ -5,7 +5,7 @@ import crypto from 'crypto';
 
 export async function POST(req) {
     try {
-        const { name, email, mobile, address, registrationType, memberType, subCategory, amount, productinfo, txnid } = await req.json();
+        const { name, email, mobile, address, registrationType, memberType, subCategory, amount, txnid } = await req.json();
 
         const key = process.env.PAYU_MERCHANT_KEY.trim();
         const salt = process.env.PAYU_MERCHANT_SALT.trim();
@@ -25,6 +25,7 @@ export async function POST(req) {
         const udf3 = memberType || '';
         const udf4 = subCategory || '';
         const udf5 = '';
+        const productinfo = 'NIDACON2026_REGISTRATION';
 
         // The hash string must be in this exact order
         // Formula: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||SALT
