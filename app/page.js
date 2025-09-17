@@ -17,28 +17,28 @@ const speakers = [
     name: 'Dr. Anjali Sharma',
     qualification: 'MDS, Oral & Maxillofacial Surgeon',
     description: 'Pioneering techniques in minimally invasive facial surgery.',
-    image: 'https://images.unsplash.com/photo-1537368910025-7b3b3a7b1b5e?auto=format&fit=crop&q=80&w=200&h=200&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDJ8fHByb2Zlc3Npb25hbCUyMGhlYWRzaG90fGVufDB8fHx8fA%3D%3D', // Example image URL
+    image: '/', // Example image URL
   },
   {
     id: 2,
     name: 'Dr. Rajesh Singh',
     qualification: 'BDS, Public Health Dentistry',
     description: 'Advocating for accessible dental care in rural communities.',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200&h=200&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDd8fHByb2Zlc3Npb25hbCUyMGhlYWRzaG90fGVufDB8fHx8fA%3D%3D',
+    image: '/',
   },
   {
     id: 3,
     name: 'Dr. Priya Mehta',
     qualification: 'PhD, Dental Researcher',
     description: 'Innovating new materials for restorative dental procedures.',
-    image: 'xx',
+    image: '/',
   },
   {
     id: 4,
     name: 'Dr. XYZ',
     qualification: 'MDS, Periodontist',
     description: 'Expert in gum disease treatment and dental implantology.',
-    image: 'https://images.unsplash.com/photo-1507003211169-e69adba4c293?auto=format&fit=crop&q=80&w=200&h=200&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDh8fHByb2Zlc3Npb25hbCUyMGhlYWRzaG90fGVufDB8fHx8fA%3D%3D',
+    image: '/',
   },
 ];
 

@@ -10,5 +10,6 @@ export async function POST(req) {
     console.error('Payment Failed or Cancelled:', data);
 
     // Redirect the user to a user-friendly failure page
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failure`);
+    const failureUrl = new URL('/payment/failure', process.env.NEXT_PUBLIC_BASE_URL);
+    return NextResponse.redirect(failureUrl);
 }

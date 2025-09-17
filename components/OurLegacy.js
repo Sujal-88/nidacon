@@ -100,7 +100,7 @@ const OurLegacy = () => {
             className="relative h-80 md:h-96 order-first md:order-last"
           >
             <Image
-              src="https://images.unsplash.com/photo-1579154341101-095c52221064?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/"
               alt="Historical IDA Event"
               className="absolute w-full h-full object-cover rounded-lg shadow-2xl"
               width={500}
@@ -108,14 +108,14 @@ const OurLegacy = () => {
             />
             {/* FIX 3: Overlapping images are now responsive */}
             <Image
-              src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/"
               alt="IDA Members Networking"
               className="absolute w-32 h-24 md:w-48 md:h-32 object-cover rounded-lg shadow-lg border-4 border-gray-800 -bottom-4 -left-4 md:-bottom-8 md:-left-8"
               width={192}
               height={128}
             />
             <Image
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/"
               alt="Dental Conference Seminar"
               className="absolute w-28 h-28 md:w-40 md:h-40 object-cover rounded-full shadow-lg border-4 border-gray-800 -top-4 -right-4 md:-top-10 md:-right-10"
               width={160}
