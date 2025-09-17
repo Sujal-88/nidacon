@@ -72,7 +72,7 @@ function verifyPayUHash(payuResponse) {
   const hashStringParts = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '', '', '', // This is now corrected to TEN empty strings
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',

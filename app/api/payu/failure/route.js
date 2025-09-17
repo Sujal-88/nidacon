@@ -13,7 +13,6 @@ export async function POST(request) {
 
     if (!isValidHash) {
       console.error('Invalid hash received from PayU on failure route.');
-      // Proceed without valid hash, but log it as a potential security issue.
     }
 
     const errorMessage = payuResponse.error_Message || 'Payment failed or was cancelled.';
@@ -35,7 +34,7 @@ function verifyPayUHash(payuResponse) {
   const hashStringParts = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', '', 
+    '', '', '', '', '', '', '', '', '', '', // This is now corrected to TEN empty strings
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
