@@ -1,90 +1,53 @@
 import crypto from 'crypto';
+import { NextResponse } from 'next/server';
 
-// For App Router (Next.js 13+)
 export async function POST(request) {
   try {
     const formData = await request.formData();
-    
-    // Convert FormData to object
-    const payuResponse = {};
-    for (const [key, value] of formData.entries()) {
-      payuResponse[key] = value;
-    }
-    
-    console.log('PayU Response:', payuResponse);
-    
-    // Verify the hash for security
+    const payuResponse = Object.fromEntries(formData.entries());
+
+    // --- Start of Debugging ---
+    console.log('--- PayU Success Response Received ---');
+    console.log(payuResponse);
+    // --- End of Debugging ---
+
     const isValidHash = verifyPayUHash(payuResponse);
-    
+
     if (!isValidHash) {
-      console.error('Invalid hash received from PayU');
+      console.error('HASH VERIFICATION FAILED!');
+      // Respond with a clear error instead of redirecting immediately
+      // This will display "Invalid hash" on the /api/payu/success page, confirming the issue.
       return new Response('Invalid hash', { status: 400 });
     }
-    
-    // Process the payment based on status
+
     if (payuResponse.status === 'success') {
-      // Payment successful - update your database
-      await updateOrderStatus(payuResponse.txnid, 'completed', payuResponse);
-      
-      // Redirect to success page
-      return Response.redirect(new URL(`/payment/success?txnid=${payuResponse.txnid}`, request.url));
+      // Your existing logic for successful payment
+      // await updateOrderStatus(payuResponse.txnid, 'completed', payuResponse);
+      console.log(`Payment successful for txnid: ${payuResponse.txnid}. Redirecting...`);
+      const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}`, request.url);
+      return NextResponse.redirect(redirectUrl);
     } else {
-      // Payment failed
-      await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
-      
-      // Redirect to failure page
-      return Response.redirect(new URL(`/payment/failure?txnid=${payuResponse.txnid}`, request.url));
+      // Your existing logic for failed payment
+      // await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
+      console.log(`Payment failed for txnid: ${payuResponse.txnid}. Redirecting...`);
+      const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}`, request.url);
+      return NextResponse.redirect(redirectUrl);
     }
-    
+
   } catch (error) {
-    console.error('Error processing PayU response:', error);
-    return Response.redirect(new URL('/payment/error', request.url));
+    console.error('--- FATAL ERROR in /api/payu/success ---:', error);
+    const redirectUrl = new URL('/payment/error', request.url);
+    return NextResponse.redirect(redirectUrl);
   }
 }
 
-// For Pages Router (if you're using pages directory)
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-  
-  try {
-    const payuResponse = req.body;
-    console.log('PayU Response:', payuResponse);
-    
-    // Verify the hash for security
-    const isValidHash = verifyPayUHash(payuResponse);
-    
-    if (!isValidHash) {
-      console.error('Invalid hash received from PayU');
-      return res.status(400).json({ message: 'Invalid hash' });
-    }
-    
-    // Process the payment based on status
-    if (payuResponse.status === 'success') {
-      // Payment successful
-      await updateOrderStatus(payuResponse.txnid, 'completed', payuResponse);
-      return res.redirect(`/payment/success?txnid=${payuResponse.txnid}`);
-    } else {
-      // Payment failed
-      await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
-      return res.redirect(`/payment/failure?txnid=${payuResponse.txnid}`);
-    }
-    
-  } catch (error) {
-    console.error('Error processing PayU response:', error);
-    return res.redirect('/payment/error');
-  }
-}
-
-// Hash verification function
 function verifyPayUHash(payuResponse) {
-  const SALT = process.env.PAYU_MERCHANT_SALT.trim(); // Make sure this is the correct SALT
-  
+  const SALT = process.env.PAYU_MERCHANT_SALT.trim();
+
   const hashString = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', // Six empty placeholders
+    '', '', '', '', '', '', // 7 empty placeholders
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
@@ -97,33 +60,25 @@ function verifyPayUHash(payuResponse) {
     payuResponse.txnid || '',
     payuResponse.key || ''
   ].join('|');
-  
+
   const calculatedHash = crypto
     .createHash('sha512')
     .update(hashString)
     .digest('hex');
-  
+
+  // --- Start of Debugging ---
+  console.log('--- Hash Verification Details ---');
+  console.log('String to Hash:', hashString);
+  console.log('Calculated Hash:', calculatedHash);
+  console.log('PayU Hash:', payuResponse.hash);
+  console.log('Do Hashes Match?', calculatedHash === payuResponse.hash);
+  // --- End of Debugging ---
+
   return calculatedHash === payuResponse.hash;
 }
 
-// Update order status in your database
+// Dummy function for now, replace with your actual database logic
 async function updateOrderStatus(txnid, status, payuResponse) {
-  try {
-    // Replace with your database logic
-    console.log(`Updating order ${txnid} status to ${status}`);
-    
-    // Example database update (adjust according to your setup)
-    // await db.orders.update({
-    //   where: { transactionId: txnid },
-    //   data: { 
-    //     status: status,
-    //     paymentId: payuResponse.mihpayid,
-    //     paymentMode: payuResponse.mode,
-    //     paymentResponse: JSON.stringify(payuResponse)
-    //   }
-    // });
-    
-  } catch (error) {
-    console.error('Error updating order status:', error);
-  }
+  console.log(`(Mock) Updating order ${txnid} status to ${status}`);
+  // Your database logic would go here
 }
