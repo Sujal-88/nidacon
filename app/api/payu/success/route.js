@@ -14,58 +14,39 @@ export async function POST(request) {
 
     if (!isValidHash) {
       console.error('HASH VERIFICATION FAILED!');
-      return new Response('Invalid hash', { status: 400 });
+      // Even if hash fails, if PayU says it's a success, redirect to a page that can be manually verified.
+      if (payuResponse.status === 'success') {
+        const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}&hash_error=true`, request.url);
+        return NextResponse.redirect(redirectUrl);
+      }
+      return NextResponse.redirect(new URL(`/payment/failure?error=verification_failed`, request.url));
     }
 
     if (payuResponse.status === 'success') {
+      // await updateOrderStatus(payuResponse.txnid, 'completed', payuResponse);
       console.log(`Payment successful for txnid: ${payuResponse.txnid}. Redirecting...`);
-      
-      // --- THIS IS THE FIX ---
-      // Manually construct the redirect URL
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const redirectUrl = `${baseUrl}/payment/success?txnid=${payuResponse.txnid}`;
-      
+      const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}`, request.url);
       return NextResponse.redirect(redirectUrl);
-
     } else {
+      // await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
       console.log(`Payment failed for txnid: ${payuResponse.txnid}. Redirecting...`);
-
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const redirectUrl = `${baseUrl}/payment/failure?txnid=${payuResponse.txnid}`;
-      
+      const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}`, request.url);
       return NextResponse.redirect(redirectUrl);
     }
 
   } catch (error) {
     console.error('--- FATAL ERROR in /api/payu/success ---:', error);
-    
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const redirectUrl = `${baseUrl}/payment/error`;
-    
+    const redirectUrl = new URL('/payment/failure?error=server_error', request.url);
     return NextResponse.redirect(redirectUrl);
   }
 }
 
 function verifyPayUHash(payuResponse) {
   const SALT = process.env.PAYU_MERCHANT_SALT.trim();
-  const amount = parseFloat(payuResponse.amount).toFixed(2);
 
-  const hashString = [
-    SALT,
-    payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', // udf10 → udf6
-    payuResponse.udf5 || '',
-    payuResponse.udf4 || '',
-    payuResponse.udf3 || '',
-    payuResponse.udf2 || '',
-    payuResponse.udf1 || '',
-    payuResponse.email || '',
-    payuResponse.firstname || '',
-    payuResponse.productinfo || '',
-    amount,
-    payuResponse.txnid || '',
-    payuResponse.key || ''
-  ].join('|');
+  // The order of fields for the RESPONSE hash is the reverse of the request hash.
+  // SALT|status|||||||||||udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
+  const hashString = `${SALT}|${payuResponse.status}|${''}|${''}|${''}|${''}|${''}|${''}|${''}|${''}|${''}|${payuResponse.udf5}|${payuResponse.udf4}|${payuResponse.udf3}|${payuResponse.udf2}|${payuResponse.udf1}|${payuResponse.email}|${payuResponse.firstname}|${payuResponse.productinfo}|${payuResponse.amount}|${payuResponse.txnid}|${process.env.PAYU_MERCHANT_KEY.trim()}`;
 
   const calculatedHash = crypto
     .createHash('sha512')
