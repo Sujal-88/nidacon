@@ -9,6 +9,7 @@ import Schedule from '@/components/Schedule';
 import OurLegacy from '@/components/OurLegacy';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const speakers = [
   {
@@ -156,10 +157,12 @@ function HomePageContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {speakers.map((speaker) => (
               <div key={speaker.id} className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
-                <img
+                <Image
                   className="w-full h-56 object-cover object-center"
                   src={speaker.image}
                   alt={speaker.name}
+                  width={500}
+                  height={224}
                 />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2 text-gray-800">{speaker.name}</h3>

@@ -37,7 +37,7 @@ function RegistrationDetails() {
               Confirm Your Details
             </h1>
             <p className="mt-6 text-lg text-gray-600">
-              You've selected: <span className="font-bold text-purple-700">{displayType} Registration</span>.
+              You&apos;ve selected: <span className="font-bold text-purple-700">{displayType} Registration</span>.
               Now, please specify your membership status.
             </p>
           </div>

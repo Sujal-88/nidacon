@@ -5,6 +5,7 @@
 import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 function UserInfoForm() {
   const router = useRouter();
@@ -175,7 +176,7 @@ function UserInfoForm() {
                 <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional)</span></label>
                 <div className="mt-2 flex items-center gap-x-3">
                   {photoPreview ? (
-                    <img src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" />
+                    <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
                   ) : (
                     <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
                       <ImageIcon className="h-8 w-8 text-gray-400" />
