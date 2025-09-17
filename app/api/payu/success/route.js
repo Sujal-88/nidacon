@@ -39,10 +39,13 @@ export async function POST(request) {
 function verifyPayUHash(payuResponse) {
   const SALT = process.env.PAYU_MERCHANT_SALT.trim();
 
+  // Make sure amount has 2 decimals like in initiate
+  const amount = parseFloat(payuResponse.amount).toFixed(2);
+
   const hashString = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', // 10 empties for udf10 → udf6
+    '', '', '', '', '', '', '', '', '', // udf10 → udf6
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
@@ -51,21 +54,27 @@ function verifyPayUHash(payuResponse) {
     payuResponse.email || '',
     payuResponse.firstname || '',
     payuResponse.productinfo || '',
-    payuResponse.amount || '',
+    amount,
     payuResponse.txnid || '',
     payuResponse.key || ''
   ].join('|');
 
-  const calculatedHash = crypto.createHash('sha512').update(hashString).digest('hex');
+  const calculatedHash = crypto
+    .createHash('sha512')
+    .update(hashString)
+    .digest('hex')
+    .toLowerCase();
+
+  const receivedHash = (payuResponse.hash || '').toLowerCase();
 
   console.log('--- Hash Verification ---');
   console.log('String to Hash:', hashString);
   console.log('Calculated Hash:', calculatedHash);
-  console.log('PayU Hash:', payuResponse.hash);
-  console.log('Match?', calculatedHash === payuResponse.hash);
+  console.log('PayU Hash:', receivedHash);
 
-  return calculatedHash === payuResponse.hash;
+  return calculatedHash === receivedHash;
 }
+
 
 // Stub for DB
 async function updateOrderStatus(txnid, status, payuResponse) {
