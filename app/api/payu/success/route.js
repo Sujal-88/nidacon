@@ -12,31 +12,24 @@ export async function POST(req) {
     try {
         const formData = await req.formData();
         const data = Object.fromEntries(formData);
-
         const salt = process.env.PAYU_MERCHANT_SALT.trim();
-        const receivedHash = data.hash;
+        const key = process.env.PAYU_MERCHANT_KEY.trim();
 
-        // --- THIS IS THE NEW, MORE ROBUST VERIFICATION LOGIC ---
-        // It dynamically builds the hash string from the PayU response.
-        
-        // This is the reverse hash formula required by PayU for verification.
-        const hashString = `${salt}|${data.status}||||||||||${data.udf5 || ''}|${data.udf4 || ''}|${data.udf3 || ''}|${data.udf2 || ''}|${data.udf1 || ''}|${data.email}|${data.firstname}|${data.productinfo}|${data.amount}|${data.txnid}|${process.env.PAYU_MERCHANT_KEY.trim()}`;
-        
+        // --- Verification Logic (No changes needed here) ---
+        const hashString = `${salt}|${data.status}||||||||||${data.udf5 || ''}|${data.udf4 || ''}|${data.udf3 || ''}|${data.udf2 || ''}|${data.udf1 || ''}|${data.email}|${data.firstname}|${data.productinfo}|${data.amount}|${data.txnid}|${key}`;
         const calculatedHash = crypto.createHash('sha512').update(hashString).digest('hex');
-        
-        if (calculatedHash !== receivedHash) {
-            console.error("--- HASH MISMATCH ON SUCCESS ---");
-            console.log("String Used for Verification:", hashString);
-            console.log("Calculated Hash:", calculatedHash);
-            console.log("Received Hash:  ", receivedHash);
-            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failure?error=hash_mismatch`);
+
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const successUrl = new URL(`/payment/success?txnid=${data.txnid}`, baseUrl);
+        const failureUrl = new URL('/payment/failure', baseUrl);
+
+        if (calculatedHash !== data.hash || data.status !== 'success') {
+            failureUrl.searchParams.set('error', 'verification_failed');
+            return NextResponse.redirect(failureUrl);
         }
 
-        if (data.status !== 'success') {
-            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failure?error=payment_failed`);
-        }
-
-        // --- Your database and email logic (no changes needed here) ---
+        // --- THIS IS THE FIX ---
+        // 1. Create the new user in the database
         const userId = await generateUserId();
         const newUser = await prisma.user.create({
             data: {
@@ -51,12 +44,16 @@ export async function POST(req) {
             },
         });
 
+        // 2. Pass the NEWLY CREATED user object to the email function
         await sendRegistrationEmail(newUser, data);
 
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?txnid=${data.txnid}`);
+        // 3. Redirect to the final success page
+        return NextResponse.redirect(successUrl);
 
     } catch (error) {
         console.error("--- FATAL ERROR in /api/payu/success ---:", error);
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/payment/failure?error=server_error`);
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const errorUrl = new URL('/payment/failure?error=server_error', baseUrl);
+        return NextResponse.redirect(errorUrl);
     }
 }
