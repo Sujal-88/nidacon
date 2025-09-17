@@ -6,62 +6,64 @@ import crypto from "crypto";
 export async function POST(req) {
   try {
     const data = await req.formData();
-
-    // Using your specified environment variable names
     const salt = process.env.PAYU_MERCHANT_SALT;
     const key = process.env.PAYU_MERCHANT_KEY;
 
+    // --- Logging for debugging ---
+    console.log("--- Received PayU Form Data ---");
+    for (const [key, value] of data.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+    console.log("---------------------------------");
+
     if (!salt || !key) {
-      console.error("PayU Key or Salt is not defined in environment variables.");
+      console.error("PayU Key or Salt is not defined.");
       return NextResponse.json({ message: "Server configuration error" }, { status: 500 });
     }
 
-    const status = data.get('status');
-    const txnid = data.get('txnid');
-    const amount = data.get('amount');
-    const productinfo = data.get('productinfo');
-    const firstname = data.get('firstname');
-    const email = data.get('email');
+    const status = data.get('status') ?? '';
+    const txnid = data.get('txnid') ?? '';
+    const amount = parseFloat(data.get('amount')).toFixed(2);
+    const productinfo = data.get('productinfo') ?? '';
+    const firstname = data.get('firstname') ?? '';
+    const email = data.get('email') ?? '';
     const receivedHash = data.get('hash');
-
-    // IMPORTANT: Use (?? '') to ensure missing fields become empty strings, not "null"
     const udf1 = data.get('udf1') ?? '';
     const udf2 = data.get('udf2') ?? '';
     const udf3 = data.get('udf3') ?? '';
     const udf4 = data.get('udf4') ?? '';
     const udf5 = data.get('udf5') ?? '';
 
-    // The required string format for response hash validation
     const hashString = `${salt}|${status}||||||||||${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
-
+    
+    // ** THE FIX IS HERE: Changed 'sha521' to 'sha512' **
     const shasum = crypto.createHash('sha512');
     shasum.update(hashString);
     const ourHash = shasum.digest('hex');
-    
-    // --- For debugging in Vercel logs ---
+
+    console.log("--- HASH COMPARISON ---");
     console.log("PayU Response Hash:", receivedHash);
-    console.log("Our Calculated Hash:", ourHash);
-    // ------------------------------------
+    console.log("Our Calculated Hash: ", ourHash);
+    console.log("Full String We Hashed:", hashString);
+    console.log("-----------------------");
 
     if (ourHash !== receivedHash) {
-      // Hashes do not match, suspicious transaction
-      return NextResponse.json({ message: "Invalid hash" }, { status: 400 });
+      return NextResponse.json({ 
+          message: "Invalid hash", 
+          weHashed: hashString,
+          ourHash: ourHash,
+          payuHash: receivedHash
+      }, { status: 400 });
     }
 
-    // Hashes match, payment is verified
+    // Hashes match, payment is verified!
     if (status === 'success') {
-      // TODO: Add your logic here to update your database.
-      // e.g., Mark the order corresponding to 'txnid' as paid.
-
-      // Redirect to a user-friendly success page
-      const successUrl = new URL('/payment/success', req.nextUrl.origin);
+      const successUrl = new URL('/payment-success', req.nextUrl.origin);
       successUrl.searchParams.set('txnid', txnid);
       successUrl.searchParams.set('amount', amount);
       return NextResponse.redirect(successUrl);
-
     } else {
-      // Payment failed
-      const failureUrl = new URL('/payment/failure', req.nextUrl.origin);
+      const failureUrl = new URL('/payment-failure', req.nextUrl.origin);
       failureUrl.searchParams.set('txnid', txnid);
       failureUrl.searchParams.set('status', status);
       return NextResponse.redirect(failureUrl);
