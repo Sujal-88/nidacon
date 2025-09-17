@@ -18,28 +18,36 @@ export async function POST(request) {
     }
 
     if (payuResponse.status === 'success') {
-      // await updateOrderStatus(payuResponse.txnid, 'completed', payuResponse);
       console.log(`Payment successful for txnid: ${payuResponse.txnid}. Redirecting...`);
-      const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}`, request.url);
+      
+      // --- THIS IS THE FIX ---
+      // Manually construct the redirect URL
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const redirectUrl = `${baseUrl}/payment/success?txnid=${payuResponse.txnid}`;
+      
       return NextResponse.redirect(redirectUrl);
+
     } else {
-      // await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
       console.log(`Payment failed for txnid: ${payuResponse.txnid}. Redirecting...`);
-      const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}`, request.url);
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const redirectUrl = `${baseUrl}/payment/failure?txnid=${payuResponse.txnid}`;
+      
       return NextResponse.redirect(redirectUrl);
     }
 
   } catch (error) {
     console.error('--- FATAL ERROR in /api/payu/success ---:', error);
-    const redirectUrl = new URL('/payment/error', request.url);
+    
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const redirectUrl = `${baseUrl}/payment/error`;
+    
     return NextResponse.redirect(redirectUrl);
   }
 }
 
 function verifyPayUHash(payuResponse) {
   const SALT = process.env.PAYU_MERCHANT_SALT.trim();
-
-  // Make sure amount has 2 decimals like in initiate
   const amount = parseFloat(payuResponse.amount).toFixed(2);
 
   const hashString = [
@@ -73,10 +81,4 @@ function verifyPayUHash(payuResponse) {
   console.log('PayU Hash:', receivedHash);
 
   return calculatedHash === receivedHash;
-}
-
-
-// Stub for DB
-async function updateOrderStatus(txnid, status, payuResponse) {
-  console.log(`(Mock) Updating order ${txnid} status to ${status}`);
 }
