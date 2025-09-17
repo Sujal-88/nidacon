@@ -14,7 +14,6 @@ export async function POST(request) {
 
     if (!isValidHash) {
       console.error('HASH VERIFICATION FAILED!');
-      // Even if hash fails, if PayU says it's a success, redirect to a page that can be manually verified.
       if (payuResponse.status === 'success') {
         const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}&hash_error=true`, request.url);
         return NextResponse.redirect(redirectUrl);
@@ -34,7 +33,8 @@ export async function POST(request) {
       return NextResponse.redirect(redirectUrl);
     }
 
-  } catch (error) {
+  } catch (error)
+ {
     console.error('--- FATAL ERROR in /api/payu/success ---:', error);
     const redirectUrl = new URL('/payment/failure?error=server_error', request.url);
     return NextResponse.redirect(redirectUrl);
@@ -43,10 +43,27 @@ export async function POST(request) {
 
 function verifyPayUHash(payuResponse) {
   const SALT = process.env.PAYU_MERCHANT_SALT.trim();
+  const key = process.env.PAYU_MERCHANT_KEY.trim();
 
-  // The order of fields for the RESPONSE hash is the reverse of the request hash.
-  // SALT|status|||||||||||udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
-  const hashString = `${SALT}|${payuResponse.status}|${''}|${''}|${''}|${''}|${''}|${''}|${''}|${''}|${''}|${payuResponse.udf5}|${payuResponse.udf4}|${payuResponse.udf3}|${payuResponse.udf2}|${payuResponse.udf1}|${payuResponse.email}|${payuResponse.firstname}|${payuResponse.productinfo}|${payuResponse.amount}|${payuResponse.txnid}|${process.env.PAYU_MERCHANT_KEY.trim()}`;
+  // Ensure the amount has exactly two decimal places, matching the format in the initiate route.
+  const amount = parseFloat(payuResponse.amount).toFixed(2);
+
+  const hashString = [
+    SALT,
+    payuResponse.status || '',
+    '', '', '', '', '', '', '', '', '', // udf10 → udf6
+    payuResponse.udf5 || '',
+    payuResponse.udf4 || '',
+    payuResponse.udf3 || '',
+    payuResponse.udf2 || '',
+    payuResponse.udf1 || '',
+    payuResponse.email || '',
+    payuResponse.firstname || '',
+    payuResponse.productinfo || '',
+    amount,
+    payuResponse.txnid || '',
+    key
+  ].join('|');
 
   const calculatedHash = crypto
     .createHash('sha512')
