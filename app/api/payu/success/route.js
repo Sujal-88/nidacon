@@ -1,76 +1,73 @@
-// src/app/api/payu/success/route.js
+// app/api/payu/success/route.js
+import crypto from 'crypto';
+import { NextResponse } from 'next/server';
 
-import { NextResponse } from "next/server";
-import crypto from "crypto";
-
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const data = await req.formData();
-    const salt = process.env.PAYU_MERCHANT_SALT;
-    const key = process.env.PAYU_MERCHANT_KEY;
+    const formData = await request.formData();
+    const payuResponse = Object.fromEntries(formData.entries());
 
-    // --- Logging for debugging ---
-    console.log("--- Received PayU Form Data ---");
-    for (const [key, value] of data.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-    console.log("---------------------------------");
+    console.log('--- PayU Success Response ---');
+    console.log(payuResponse);
 
-    if (!salt || !key) {
-      console.error("PayU Key or Salt is not defined.");
-      return NextResponse.json({ message: "Server configuration error" }, { status: 500 });
+    const isValidHash = verifyPayUHash(payuResponse);
+
+    if (!isValidHash) {
+      console.error('HASH VERIFICATION FAILED!');
+      return new Response('Invalid hash', { status: 400 });
     }
 
-    const status = data.get('status') ?? '';
-    const txnid = data.get('txnid') ?? '';
-    const amount = parseFloat(data.get('amount')).toFixed(2);
-    const productinfo = data.get('productinfo') ?? '';
-    const firstname = data.get('firstname') ?? '';
-    const email = data.get('email') ?? '';
-    const receivedHash = data.get('hash');
-    const udf1 = data.get('udf1') ?? '';
-    const udf2 = data.get('udf2') ?? '';
-    const udf3 = data.get('udf3') ?? '';
-    const udf4 = data.get('udf4') ?? '';
-    const udf5 = data.get('udf5') ?? '';
-
-    const hashString = `${salt}|${status}||||||||||${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
-    
-    // ** THE FIX IS HERE: Changed 'sha521' to 'sha512' **
-    const shasum = crypto.createHash('sha512');
-    shasum.update(hashString);
-    const ourHash = shasum.digest('hex');
-
-    console.log("--- HASH COMPARISON ---");
-    console.log("PayU Response Hash:", receivedHash);
-    console.log("Our Calculated Hash: ", ourHash);
-    console.log("Full String We Hashed:", hashString);
-    console.log("-----------------------");
-
-    if (ourHash !== receivedHash) {
-      return NextResponse.json({ 
-          message: "Invalid hash", 
-          weHashed: hashString,
-          ourHash: ourHash,
-          payuHash: receivedHash
-      }, { status: 400 });
-    }
-
-    // Hashes match, payment is verified!
-    if (status === 'success') {
-      const successUrl = new URL('/payment-success', req.nextUrl.origin);
-      successUrl.searchParams.set('txnid', txnid);
-      successUrl.searchParams.set('amount', amount);
-      return NextResponse.redirect(successUrl);
+    if (payuResponse.status === 'success') {
+      // await updateOrderStatus(payuResponse.txnid, 'completed', payuResponse);
+      console.log(`Payment successful for txnid: ${payuResponse.txnid}. Redirecting...`);
+      const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}`, request.url);
+      return NextResponse.redirect(redirectUrl);
     } else {
-      const failureUrl = new URL('/payment-failure', req.nextUrl.origin);
-      failureUrl.searchParams.set('txnid', txnid);
-      failureUrl.searchParams.set('status', status);
-      return NextResponse.redirect(failureUrl);
+      // await updateOrderStatus(payuResponse.txnid, 'failed', payuResponse);
+      console.log(`Payment failed for txnid: ${payuResponse.txnid}. Redirecting...`);
+      const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}`, request.url);
+      return NextResponse.redirect(redirectUrl);
     }
 
   } catch (error) {
-    console.error("Error processing PayU response:", error);
-    return NextResponse.json({ message: "An internal server error occurred" }, { status: 500 });
+    console.error('--- FATAL ERROR in /api/payu/success ---:', error);
+    const redirectUrl = new URL('/payment/error', request.url);
+    return NextResponse.redirect(redirectUrl);
   }
+}
+
+function verifyPayUHash(payuResponse) {
+  const SALT = process.env.PAYU_MERCHANT_SALT.trim();
+
+  const hashString = [
+    SALT,
+    payuResponse.status || '',
+    '', '', '', '', '', '', '', '', '', // 10 empties for udf10 → udf6
+    payuResponse.udf5 || '',
+    payuResponse.udf4 || '',
+    payuResponse.udf3 || '',
+    payuResponse.udf2 || '',
+    payuResponse.udf1 || '',
+    payuResponse.email || '',
+    payuResponse.firstname || '',
+    payuResponse.productinfo || '',
+    payuResponse.amount || '',
+    payuResponse.txnid || '',
+    payuResponse.key || ''
+  ].join('|');
+
+  const calculatedHash = crypto.createHash('sha512').update(hashString).digest('hex');
+
+  console.log('--- Hash Verification ---');
+  console.log('String to Hash:', hashString);
+  console.log('Calculated Hash:', calculatedHash);
+  console.log('PayU Hash:', payuResponse.hash);
+  console.log('Match?', calculatedHash === payuResponse.hash);
+
+  return calculatedHash === payuResponse.hash;
+}
+
+// Stub for DB
+async function updateOrderStatus(txnid, status, payuResponse) {
+  console.log(`(Mock) Updating order ${txnid} status to ${status}`);
 }
