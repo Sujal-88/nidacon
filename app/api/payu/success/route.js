@@ -79,18 +79,12 @@ export default async function handler(req, res) {
 
 // Hash verification function
 function verifyPayUHash(payuResponse) {
-  const SALT = process.env.PAYU_SALT; // Your PayU SALT
+  const SALT = process.env.PAYU_MERCHANT_SALT.trim(); // Make sure this is the correct SALT
   
-  // Construct hash string for response verification
-  // Response hash formula: sha512(SALT|status||||||udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key)
   const hashString = [
     SALT,
     payuResponse.status || '',
-    '',
-    '',
-    '',
-    '',
-    '',
+    '', '', '', '', '', // Six empty placeholders
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',

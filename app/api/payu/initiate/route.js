@@ -20,8 +20,6 @@ export async function POST(req) {
         // --- THIS IS THE FIX ---
         // Sanitize the address to remove any newline characters from the textarea
         const sanitizedAddress = (address || '').replace(/(\r\n|\n|\r)/gm, " ").trim();
-
-        // Use the sanitized address for the UDF field
         const udf1 = sanitizedAddress;
         const udf2 = registrationType || '';
         const udf3 = memberType || '';

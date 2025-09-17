@@ -72,16 +72,12 @@ export default async function handler(req, res) {
 
 // Hash verification function (same as success handler)
 function verifyPayUHash(payuResponse) {
-  const SALT = process.env.PAYU_SALT;
+  const SALT = process.env.PAYU_MERCHANT_SALT.trim(); // Make sure this is the correct SALT
   
   const hashString = [
     SALT,
     payuResponse.status || '',
-    '',
-    '',
-    '',
-    '',
-    '',
+    '', '', '', '', '', // Six empty placeholders
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
