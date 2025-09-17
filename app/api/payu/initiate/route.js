@@ -14,7 +14,7 @@ export async function POST(req) {
       return NextResponse.json({ message: "Server configuration error." }, { status: 500 });
     }
 
-    const amountString = parseFloat(amount).toFixed(1);
+    const amountString = parseFloat(amount).toFixed(2);
 
     const sanitizedAddress = (address || '').replace(/(\r\n|\n|\r)/gm, " ").trim();
     const udf1 = sanitizedAddress;
