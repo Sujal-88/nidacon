@@ -9,27 +9,47 @@ import { sendRegistrationEmail } from '@/lib/email';
 const prisma = new PrismaClient();
 
 export async function POST(req) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const failureUrl = new URL('/payment/failure', baseUrl);
+
     try {
         const formData = await req.formData();
         const data = Object.fromEntries(formData);
+        
         const salt = process.env.PAYU_MERCHANT_SALT.trim();
         const key = process.env.PAYU_MERCHANT_KEY.trim();
+        const receivedHash = data.hash;
 
-        // --- Verification Logic (No changes needed here) ---
-        const hashString = `${salt}|${data.status}||||||||||${data.udf5 || ''}|${data.udf4 || ''}|${data.udf3 || ''}|${data.udf2 || ''}|${data.udf1 || ''}|${data.email}|${data.firstname}|${data.productinfo}|${data.amount}|${data.txnid}|${key}`;
+        // --- THIS IS THE DEFINITIVE FIX ---
+        // Dynamically create the hash string based on the received data,
+        // which is more reliable than a hardcoded string.
+
+        // The reverse hash formula is: salt|status|...reversed_other_params...|key
+        const reverse_params = [
+            'udf10', 'udf9', 'udf8', 'udf7', 'udf6', 'udf5', 'udf4', 'udf3', 'udf2', 'udf1',
+            'email', 'firstname', 'productinfo', 'amount', 'txnid'
+        ];
+
+        let hashString = `${salt}|${data.status}`;
+
+        for (const param of reverse_params) {
+            hashString += `|${data[param] || ''}`;
+        }
+        
+        hashString += `|${key}`;
+        
         const calculatedHash = crypto.createHash('sha512').update(hashString).digest('hex');
 
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-        const successUrl = new URL(`/payment/success?txnid=${data.txnid}`, baseUrl);
-        const failureUrl = new URL('/payment/failure', baseUrl);
-
-        if (calculatedHash !== data.hash || data.status !== 'success') {
+        if (calculatedHash !== receivedHash || data.status !== 'success') {
+            console.error("--- HASH MISMATCH OR PAYMENT FAILED ---");
+            console.log("String Used for Verification:", hashString);
+            console.log("Calculated Hash:", calculatedHash);
+            console.log("Received Hash:  ", receivedHash);
             failureUrl.searchParams.set('error', 'verification_failed');
             return NextResponse.redirect(failureUrl);
         }
 
-        // --- THIS IS THE FIX ---
-        // 1. Create the new user in the database
+        // --- Database and Email Logic ---
         const userId = await generateUserId();
         const newUser = await prisma.user.create({
             data: {
@@ -44,16 +64,15 @@ export async function POST(req) {
             },
         });
 
-        // 2. Pass the NEWLY CREATED user object to the email function
         await sendRegistrationEmail(newUser, data);
 
-        // 3. Redirect to the final success page
+        // --- Redirect to Final Success Page ---
+        const successUrl = new URL(`/payment/success?txnid=${data.txnid}`, baseUrl);
         return NextResponse.redirect(successUrl);
 
     } catch (error) {
-        console.error("--- FATAL ERROR in /api/payu/success ---:", error);
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-        const errorUrl = new URL('/payment/failure?error=server_error', baseUrl);
-        return NextResponse.redirect(errorUrl);
+        console.error("--- UNHANDLED FATAL ERROR in /api/payu/success ---:", error);
+        failureUrl.searchParams.set('error', 'server_error');
+        return NextResponse.redirect(failureUrl);
     }
 }
