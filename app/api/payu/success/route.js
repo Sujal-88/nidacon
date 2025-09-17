@@ -54,14 +54,14 @@ export async function POST(req) {
       // e.g., Mark the order corresponding to 'txnid' as paid.
 
       // Redirect to a user-friendly success page
-      const successUrl = new URL('/payment-success', req.nextUrl.origin);
+      const successUrl = new URL('/payment/success', req.nextUrl.origin);
       successUrl.searchParams.set('txnid', txnid);
       successUrl.searchParams.set('amount', amount);
       return NextResponse.redirect(successUrl);
 
     } else {
       // Payment failed
-      const failureUrl = new URL('/payment-failure', req.nextUrl.origin);
+      const failureUrl = new URL('/payment/failure', req.nextUrl.origin);
       failureUrl.searchParams.set('txnid', txnid);
       failureUrl.searchParams.set('status', status);
       return NextResponse.redirect(failureUrl);
