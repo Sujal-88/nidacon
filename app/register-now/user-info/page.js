@@ -6,6 +6,7 @@ import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { initiatePayment } from '@/app/actions';
 
 function UserInfoForm() {
   const router = useRouter();
