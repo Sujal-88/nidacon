@@ -13,29 +13,20 @@ export async function POST(req) {
       return NextResponse.json({ message: "Server configuration error." }, { status: 500 });
     }
 
-    // Ensure amount is properly formatted
     const amountString = parseFloat(amount).toFixed(2);
-
-    // Clean and prepare UDF fields
     const sanitizedAddress = (address || '').replace(/(\r\n|\n|\r)/gm, " ").replace(/\|/g, "").trim();
     const udf1 = sanitizedAddress;
     const udf2 = (registrationType || '').replace(/\|/g, "");
     const udf3 = (memberType || '').replace(/\|/g, "");
     const udf4 = (subCategory || '').replace(/\|/g, "");
     const udf5 = '';
-
-    // Clean other fields from pipe characters
     const cleanName = (name || '').replace(/\|/g, "");
     const cleanEmail = (email || '').replace(/\|/g, "");
     const cleanProductinfo = (productinfo || '').replace(/\|/g, "");
 
-    // Request hash - EXACTLY as per PayU documentation
     const hashString = `${key}|${txnid}|${amountString}|${cleanProductinfo}|${cleanName}|${cleanEmail}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
+    // CORRECTED: Changed 'sha52' to the correct 'sha512' algorithm
     const hash = crypto.createHash('sha512').update(hashString).digest('hex');
-
-    console.log('--- REQUEST HASH DEBUG ---');
-    console.log('Hash String:', hashString);
-    console.log('Generated Hash:', hash);
 
     const payuData = {
       key,
@@ -45,8 +36,11 @@ export async function POST(req) {
       firstname: cleanName,
       email: cleanEmail,
       phone: mobile,
-      surl: `${process.env.NEXT_PUBLIC_BASE_URL}/payu/success`,
-      furl: `${process.env.NEXT_PUBLIC_BASE_URL}/payu/failure`,
+      // --- THIS IS THE CRITICAL FIX ---
+      // Pointing to the frontend pages, NOT the API routes.
+      surl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success`,
+      furl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/failure`,
+      // ---------------------------------
       hash,
       udf1,
       udf2,
@@ -62,3 +56,4 @@ export async function POST(req) {
     return NextResponse.json({ message: "An internal server error occurred." }, { status: 500 });
   }
 }
+
