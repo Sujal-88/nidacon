@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import PaymentStatus from './PaymentStatus';
+import PaymentStatus from '@components/PaymentStatus';
 
 // This is now a clean Server Component.
 // Its only job is to provide the structure and the Suspense boundary.
