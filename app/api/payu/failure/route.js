@@ -1,4 +1,3 @@
-// app/api/payu/failure/route.js
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 
@@ -9,13 +8,15 @@ export async function POST(request) {
 
     console.log('--- PayU Failure Response ---', payuResponse);
 
+    // Verify hash even for failures
     const isValidHash = verifyPayUHash(payuResponse);
 
     if (!isValidHash) {
       console.error('Invalid hash received from PayU on failure route.');
+      // Still proceed with failure handling even if hash fails
     }
 
-    const errorMessage = payuResponse.error_Message || 'Payment failed or was cancelled.';
+    const errorMessage = payuResponse.error_Message || payuResponse.field9 || 'Payment failed or was cancelled.';
     const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}&error=${encodeURIComponent(errorMessage)}`, request.url);
     return NextResponse.redirect(redirectUrl);
 
@@ -26,15 +27,20 @@ export async function POST(request) {
 }
 
 function verifyPayUHash(payuResponse) {
-  const SALT = process.env.PAYU_MERCHANT_SALT.trim();
-  const key = process.env.PAYU_MERCHANT_KEY.trim();
+  const SALT = process.env.PAYU_MERCHANT_SALT?.trim();
+  const key = process.env.PAYU_MERCHANT_KEY?.trim();
 
-  const amount = parseFloat(payuResponse.amount).toFixed(2);
+  if (!SALT || !key) {
+    console.error('Missing PayU credentials');
+    return false;
+  }
+
+  const amount = parseFloat(payuResponse.amount || 0).toFixed(2);
 
   const hashStringParts = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', '', // This is now corrected to TEN empty strings
+    '', '', '', '', '', '', '', '', '', '', // 10 empty strings
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
@@ -57,6 +63,11 @@ function verifyPayUHash(payuResponse) {
     .toLowerCase();
 
   const receivedHash = (payuResponse.hash || '').toLowerCase();
+  
+  console.log('--- FAILURE HASH DEBUG ---');
+  console.log('Hash String:', hashString);
+  console.log('Calculated Hash:', calculatedHash);
+  console.log('Received Hash:', receivedHash);
   
   return calculatedHash === receivedHash;
 }

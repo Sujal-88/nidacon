@@ -1,4 +1,3 @@
-// app/api/payu/success/route.js
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -64,15 +63,22 @@ export async function POST(request) {
 }
 
 function verifyPayUHash(payuResponse) {
-  const SALT = process.env.PAYU_MERCHANT_SALT.trim();
-  const key = process.env.PAYU_MERCHANT_KEY.trim();
+  const SALT = process.env.PAYU_MERCHANT_SALT?.trim();
+  const key = process.env.PAYU_MERCHANT_KEY?.trim();
 
-  const amount = parseFloat(payuResponse.amount).toFixed(2);
+  if (!SALT || !key) {
+    console.error('Missing PayU credentials');
+    return false;
+  }
 
+  // Ensure amount formatting matches exactly
+  const amount = parseFloat(payuResponse.amount || 0).toFixed(2);
+
+  // Response hash format - REVERSE order with SALT first
   const hashStringParts = [
     SALT,
     payuResponse.status || '',
-    '', '', '', '', '', '', '', '', '', '', // This is now corrected to TEN empty strings
+    '', '', '', '', '', '', '', '', '', '', // 10 empty strings for additional fields
     payuResponse.udf5 || '',
     payuResponse.udf4 || '',
     payuResponse.udf3 || '',
@@ -96,9 +102,12 @@ function verifyPayUHash(payuResponse) {
 
   const receivedHash = (payuResponse.hash || '').toLowerCase();
 
-  console.log('--- Hash Verification String ---:', hashString);
-  console.log('--- Calculated Hash ---:', calculatedHash);
-  console.log('--- Received PayU Hash ---:', receivedHash);
+  console.log('--- RESPONSE HASH DEBUG ---');
+  console.log('Hash String Parts:', hashStringParts);
+  console.log('Hash String:', hashString);
+  console.log('Calculated Hash:', calculatedHash);
+  console.log('Received Hash:', receivedHash);
+  console.log('Hash Match:', calculatedHash === receivedHash);
 
   return calculatedHash === receivedHash;
 }
