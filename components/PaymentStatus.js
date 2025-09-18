@@ -3,67 +3,42 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function PaymentStatus() {
-  const [status, setStatus] = useState('Processing your payment details...');
-  const [error, setError] = useState('');
-  const router = useRouter();
-  
-  // This hook can now be used safely because this is a Client Component.
-  const searchParams = useSearchParams();
+export default function PaymentResultPage({ searchParams }) {
+  const { status, txnid, error, message } = searchParams;
 
-  useEffect(() => {
-    // Convert searchParams to a plain object
-    const payuResponse = Object.fromEntries(searchParams.entries());
+  const isSuccess = status === 'success';
+  const isFailure = status === 'failure';
+  const isError = status === 'error';
 
-    // Check if we have any parameters to process
-    if (Object.keys(payuResponse).length > 0) {
-      setStatus('Verifying your payment with the server...');
-      verifyPayment(payuResponse);
-    } else {
-      // This can happen if the user navigates to the page directly
-      setStatus('No payment data found.');
-      setError('Please do not refresh this page. If you believe this is an error, contact support.');
-    }
-  }, [searchParams]); // Effect runs when searchParams are available
-
-  const verifyPayment = async (payuData) => {
-    try {
-      const response = await fetch('/api/payu/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payuData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.verified) {
-        setStatus('Payment successful and verified! ✅');
-        setError('');
-        // Redirect to a final confirmation or dashboard page after a delay
-        setTimeout(() => {
-          // You can pass the transaction ID to the final page if needed
-          router.push(`/registration-complete?txnid=${payuData.txnid}`);
-        }, 3000);
-      } else {
-        setStatus('Payment verification failed. ❌');
-        setError(result.message || 'An unknown error occurred during verification.');
-      }
-    } catch (err) {
-      console.error("Verification API call failed:", err);
-      setStatus('Payment verification failed. ❌');
-      setError('Could not connect to the server for verification. Please check your internet connection and contact support.');
-    }
-  };
-  
   return (
-    <div className="text-center p-8">
-      <h1 className="text-2xl font-bold mb-4">{status}</h1>
-      {error && <p className="text-red-500 mt-2">Error: {error}</p>}
-      {!error && status.includes('...') && (
-        <div className="mt-4">
-          <p>Please wait, do not close or refresh this page.</p>
-        </div>
-      )}
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-lg p-8 bg-white rounded-lg shadow-xl text-center">
+        {isSuccess && (
+          <>
+            <h1 className="text-3xl font-bold text-green-600 mb-4">Payment Successful! ✅</h1>
+            <p className="text-gray-700">Thank you for your registration. A confirmation email has been sent to you.</p>
+            <p className="text-gray-500 mt-2 text-sm">Transaction ID: {txnid}</p>
+          </>
+        )}
+
+        {isFailure && (
+          <>
+            <h1 className="text-3xl font-bold text-red-600 mb-4">Payment Failed ❌</h1>
+            <p className="text-gray-700">Unfortunately, your payment could not be processed.</p>
+            <p className="text-gray-600 mt-2">Reason: {error || 'Unknown reason'}</p>
+            <p className="text-gray-500 mt-2 text-sm">Transaction ID: {txnid}</p>
+          </>
+        )}
+
+        {isError && (
+          <>
+            <h1 className="text-3xl font-bold text-yellow-600 mb-4">An Error Occurred ⚠️</h1>
+            <p className="text-gray-700">There was a technical issue processing your payment confirmation.</p>
+            <p className="text-gray-600 mt-2">Details: {message === 'hash_failed' ? 'Transaction verification failed.' : 'Server error.'}</p>
+            <p className="text-gray-700 mt-4">Please contact support with your transaction details.</p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
