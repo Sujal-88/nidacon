@@ -60,50 +60,49 @@ function UserInfoForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // --- DYNAMIC PRICING LOGIC ---
+      // --- Dynamic pricing logic (remains the same) ---
       const registrationType = searchParams.get('type');
       const memberType = searchParams.get('memberType');
       const subCategory = searchParams.get('subCategory');
-      let amount = 2000; // Default registration charge
+      let amount = 2000;
 
       if (registrationType === 'workshop') {
-        amount += 3500; // Example price for workshop
+        amount += 3500;
       } else if (registrationType === 'presenter') {
-        amount += 2500; // Example price for presenter
+        amount += 2500;
       }
-      // Add more pricing logic based on 'memberType' or 'subCategory' if needed
 
       const txnid = `NIDA${Date.now()}`;
+      const productinfo = `NIDACON 2026 - ${registrationType}`;
 
-      // --- THIS IS THE ONLY CHANGE YOU NEED TO MAKE ---
-      // Update the fetch URL to point to your new API route
-      const res = await fetch('/api/payu/initiate', { // <--- UPDATED URL
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData, // contains name, email, mobile, address
-          amount,
-          productinfo: `NIDACON 2026 - ${registrationType}`,
-          txnid,
-          registrationType,
-          memberType,
-          subCategory,
-        }),
-      });
+      // --- REPLACEMENT LOGIC STARTS HERE ---
 
-      const payuData = await res.json();
+      // 2. Create a FormData object from the form element
+      const formElement = e.currentTarget;
+      const formDataObj = new FormData(formElement);
 
-      if (!res.ok) {
-        alert("Failed to initiate payment. Please try again.");
+      // 3. Append your dynamic/calculated values to the FormData object
+      formDataObj.append('amount', amount);
+      formDataObj.append('txnid', txnid);
+      formDataObj.append('productinfo', productinfo);
+      formDataObj.append('registrationType', registrationType);
+      formDataObj.append('memberType', memberType);
+      formDataObj.append('subCategory', subCategory);
+
+      // 4. Call the Server Action directly with the FormData
+      const payuData = await initiatePayment(formDataObj);
+
+      // --- REPLACEMENT LOGIC ENDS HERE ---
+
+      if (payuData.error) {
+        alert(`Error: ${payuData.error}`);
         return;
       }
 
-      // Create a form and submit it to redirect to PayU
+      // This part remains the same: create and submit a dynamic form to PayU
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = 'https://test.payu.in/_payment';
+      form.action = 'https://test.payu.in/_payment'; // Use https://secure.payu.in for production
 
       for (const key in payuData) {
         const input = document.createElement('input');
