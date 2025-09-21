@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function UpcomingEvents() {
     const [currentSlide, setCurrentSlide] = useState(0);

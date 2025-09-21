@@ -1,6 +1,7 @@
 // components/EventCard.js
 import React from 'react';
 import { Calendar, Clock, MapPin, Users, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 // Helper function to determine the color of the status badge
 const getStatusColor = (status) => {

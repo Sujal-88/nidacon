@@ -143,7 +143,7 @@ const MembershipPage = () => {
                     {selectedPlan && (
                         <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-4xl mx-auto">
                             <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center">
-                                You've selected: <span className="text-blue-600">{selectedPlan.name}</span>
+                                You&apos;ve selected: <span className="text-blue-600">{selectedPlan.name}</span>
                             </h2>
 
                             {selectedPlan.name === 'Renewal' && (
