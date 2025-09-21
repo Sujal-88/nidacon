@@ -1,9 +1,10 @@
+// app/payment/success/page.js
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function PaymentSuccess() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const [verificationStatus, setVerificationStatus] = useState('verifying');
   const [transactionDetails, setTransactionDetails] = useState(null);
@@ -125,4 +126,12 @@ export default function PaymentSuccess() {
       </div>
     </div>
   );
+}
+
+export default function PaymentSuccess() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentSuccessContent />
+    </Suspense>
+  )
 }

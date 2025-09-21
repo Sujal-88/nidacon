@@ -1,13 +1,14 @@
+// app/payment/failure/page.js
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, Suspense } from 'next/navigation';
 
-export default function PaymentFailure() {
+function PaymentFailureContent() {
   const searchParams = useSearchParams();
   
   const txnid = searchParams.get('txnid');
   const error = searchParams.get('error_Message');
-  const status = searchParams.get('status');
+  const status = search-params.get('status');
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-red-50">
@@ -57,5 +58,13 @@ export default function PaymentFailure() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentFailure() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentFailureContent />
+    </Suspense>
   );
 }
