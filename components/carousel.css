@@ -1,0 +1,39 @@
+/* components/carousel.css */
+.embla {
+  overflow: hidden;
+  position: relative;
+}
+
+.embla__container {
+  display: flex;
+}
+
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  position: relative;
+}
+
+/* Vertical carousel specific styles */
+.embla--vertical {
+  height: 100%;
+}
+
+.embla--vertical .embla__container {
+  flex-direction: column;
+  height: 400%; /* Adjust based on number of slides */
+}
+
+.embla--vertical .embla__slide {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+/* Horizontal carousel (default) */
+.embla:not(.embla--vertical) .embla__container {
+  flex-direction: row;
+}
+
+.embla:not(.embla--vertical) .embla__slide {
+  flex: 0 0 100%;
+}

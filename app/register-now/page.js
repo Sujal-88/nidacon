@@ -47,7 +47,7 @@ const registrationOptions = [
       'Includes delegate registration',
     ],
     buttonText: 'Register as Presenter',
-    href: '/register-now/details?type=presenter',
+    href: '/register-now/details?type=paper-poster',
   },
 ];
 
