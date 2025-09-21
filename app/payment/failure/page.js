@@ -1,7 +1,8 @@
 // app/payment/failure/page.js
 'use client';
 
-import { useSearchParams, Suspense } from 'next/navigation';
+import { Suspense } from 'react'; // Corrected import
+import { useSearchParams } from 'next/navigation';
 
 function PaymentFailureContent() {
   const searchParams = useSearchParams();

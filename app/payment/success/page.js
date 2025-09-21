@@ -1,7 +1,7 @@
 // app/payment/success/page.js
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react'; // Ensure Suspense is here
 import { useSearchParams } from 'next/navigation';
 
 function PaymentSuccessContent() {
