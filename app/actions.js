@@ -4,6 +4,8 @@
 import crypto from 'crypto';
 
 export async function initiatePayment(formData) {
+  // ... (all your existing code to get formData, merchantKey, salt, etc.)
+
   const name = formData.get('name');
   const email = formData.get('email');
   const mobile = formData.get('mobile');
@@ -45,8 +47,10 @@ export async function initiatePayment(formData) {
     firstname: cleanName,
     email: cleanEmail,
     phone: mobile,
-    surl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success`,
-    furl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/failure`,
+    // --- UPDATE THESE TWO LINES ---
+    surl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/success`, // Changed
+    furl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/failure`, // Changed
+    // -----------------------------
     udf1,
     udf2,
     udf3,
