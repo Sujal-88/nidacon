@@ -8,7 +8,7 @@ function PaymentFailureContent() {
   
   const txnid = searchParams.get('txnid');
   const error = searchParams.get('error_Message');
-  const status = search-params.get('status');
+  const status = searchParams.get('status');
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-red-50">
