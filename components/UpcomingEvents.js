@@ -146,7 +146,7 @@ export default function UpcomingEvents() {
                                                 className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-slate-200/60 hover:border-slate-300/80"
                                             >
                                                 <div className="relative h-48 overflow-hidden">
-                                                    <img
+                                                    <Image
                                                         src={event.imageSrc}
                                                         alt={event.title}
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

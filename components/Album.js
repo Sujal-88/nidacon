@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
+import Image from 'next/image';
 
 const ALBUM_DATA = [
   { id: 1, title: 'Chromatic Echoes', artist: 'Aurora Veil', cover: '/gallery/2023Pic1-0.jpg' },
@@ -30,7 +31,7 @@ const Arrow = ({ direction, onClick, enabled }) => (
 // This is the individual card component
 const AlbumCard = ({ album }) => (
     <div className="group relative overflow-hidden rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:shadow-purple-500/30 hover:-translate-y-2">
-        <img
+        <Image
             src={album.cover}
             alt={`Album cover for ${album.title}`}
             width={600}
