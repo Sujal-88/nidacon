@@ -6,17 +6,32 @@ import { sendRegistrationEmail } from '@/lib/email';
 
 export async function POST(request) {
   try {
+    console.log("SUCCESS ROUTE: Request received.");
     const formData = await request.formData();
     const payuResponse = Object.fromEntries(formData);
+    console.log("SUCCESS ROUTE: Form data parsed.");
 
-    if (!verifyHash(payuResponse, process.env.PAYU_MERCHANT_SALT)) {
-      const url = new URL('/payment/failure', request.url);
-      url.searchParams.set('error', 'Invalid Hash');
-      return NextResponse.redirect(url, { status: 303 });
+    const merchantSalt = process.env.PAYU_MERCHANT_SALT;
+    if (!merchantSalt) {
+      console.error("FATAL: PayU salt is missing.");
+      throw new Error('PayU salt is not configured');
     }
-    
+
+    console.log("SUCCESS ROUTE: Verifying hash...");
+    if (!verifyHash(payuResponse, merchantSalt)) {
+      console.error("Hash verification failed.");
+      const failureUrl = new URL('/payment/failure', request.url);
+      failureUrl.searchParams.set('error', 'Invalid Hash');
+      return NextResponse.redirect(failureUrl, { status: 303 });
+    }
+    console.log("SUCCESS ROUTE: Hash verified successfully.");
+
     if (payuResponse.status === 'success') {
+      console.log("SUCCESS ROUTE: Status is success. Connecting to DB and creating user...");
+      
       const userId = await generateUserId();
+      console.log("SUCCESS ROUTE: User ID generated:", userId);
+
       const newUser = await prisma.user.create({
         data: {
           userId: userId,
@@ -29,21 +44,25 @@ export async function POST(request) {
           subCategory: payuResponse.udf4,
         }
       });
+      console.log("SUCCESS ROUTE: User created in DB:", newUser.email);
 
       await sendRegistrationEmail(newUser, payuResponse);
-      
-      const url = new URL('/payment/success', request.url);
-      url.searchParams.set('txnid', payuResponse.txnid);
-      return NextResponse.redirect(url, { status: 303 });
+      console.log("SUCCESS ROUTE: Email process initiated.");
+
+      const successUrl = new URL('/payment/success', request.url);
+      successUrl.searchParams.set('txnid', payuResponse.txnid);
+      console.log("SUCCESS ROUTE: Redirecting to success page.");
+      return NextResponse.redirect(successUrl, { status: 303 });
     } else {
-      const url = new URL('/payment/failure', request.url);
-      url.searchParams.set('error', payuResponse.error_Message || 'Payment Failed');
-      return NextResponse.redirect(url, { status: 303 });
+      const failureUrl = new URL('/payment/failure', request.url);
+      failureUrl.searchParams.set('error', `Payment status: ${payuResponse.status}`);
+      return NextResponse.redirect(failureUrl, { status: 303 });
     }
   } catch (error) {
-    console.error('Payment Success Route Error:', error);
-    const url = new URL('/payment/failure', request.url);
-    url.searchParams.set('error', 'Internal Server Error');
-    return NextResponse.redirect(url, { status: 303 });
+    console.error("--- FATAL ERROR IN SUCCESS API ROUTE ---");
+    console.error(error); // This will log the exact database or other error
+    const errorUrl = new URL('/payment/failure', request.url);
+    errorUrl.searchParams.set('error', 'Internal Server Error');
+    return NextResponse.redirect(errorUrl, { status: 303 });
   }
 }
