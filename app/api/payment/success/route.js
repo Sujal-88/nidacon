@@ -13,14 +13,14 @@ export async function POST(request) {
     const merchantSalt = process.env.PAYU_MERCHANT_SALT;
 
     if (!merchantSalt) {
-      return NextResponse.json({ error: 'PayU configuration missing' }, { status: 500 });
+      throw new Error('PayU configuration missing');
     }
 
     const isValidHash = verifyHash(payuResponse, merchantSalt);
 
     if (!isValidHash) {
-      // Redirect to a failure page with an error message
-      const redirectUrl = new URL('/payment/failure?error=Invalid+hash', request.url);
+      const redirectUrl = new URL('/payment/failure', request.url);
+      redirectUrl.searchParams.set('error', 'Invalid hash');
       return NextResponse.redirect(redirectUrl);
     }
 
@@ -45,19 +45,20 @@ export async function POST(request) {
         status: payuResponse.status,
       });
 
-      // Redirect to the success page with a transaction ID for lookup
-      const redirectUrl = new URL(`/payment/success?txnid=${payuResponse.txnid}`, request.url);
+      const redirectUrl = new URL('/payment/success', request.url);
+      redirectUrl.searchParams.set('txnid', payuResponse.txnid);
       return NextResponse.redirect(redirectUrl);
     } else {
-      // Redirect to the failure page
-      const redirectUrl = new URL(`/payment/failure?txnid=${payuResponse.txnid}&error=${encodeURIComponent(payuResponse.error_Message || 'Payment Failed')}`, request.url);
+      const redirectUrl = new URL('/payment/failure', request.url);
+      redirectUrl.searchParams.set('txnid', payuResponse.txnid);
+      redirectUrl.searchParams.set('error', payuResponse.error_Message || 'Payment Failed');
       return NextResponse.redirect(redirectUrl);
     }
 
   } catch (error) {
     console.error('Payment success error:', error);
-    // Redirect to a generic error page
-    const redirectUrl = new URL('/payment/failure?error=Internal+Server+Error', request.url);
+    const redirectUrl = new URL('/payment/failure', request.url);
+    redirectUrl.searchParams.set('error', 'Internal Server Error');
     return NextResponse.redirect(redirectUrl);
   }
 }
