@@ -9,19 +9,12 @@ export async function POST(request) {
     const formData = await request.formData();
     const payuResponse = Object.fromEntries(formData);
 
-    const merchantSalt = process.env.PAYU_MERCHANT_SALT;
-
-    if (!merchantSalt) {
-      throw new Error('PayU salt is not configured');
+    if (!verifyHash(payuResponse, process.env.PAYU_MERCHANT_SALT)) {
+      const url = new URL('/payment/failure', request.url);
+      url.searchParams.set('error', 'Invalid Hash');
+      return NextResponse.redirect(url, { status: 303 });
     }
-
-    // Even on success, we must verify the hash to prevent tampering.
-    if (!verifyHash(payuResponse, merchantSalt)) {
-      const failureUrl = new URL('/payment/failure', request.url);
-      failureUrl.searchParams.set('error', 'Hash Mismatch');
-      return NextResponse.redirect(failureUrl);
-    }
-
+    
     if (payuResponse.status === 'success') {
       const userId = await generateUserId();
       const newUser = await prisma.user.create({
@@ -37,28 +30,20 @@ export async function POST(request) {
         }
       });
 
-      await sendRegistrationEmail(newUser, {
-        txnid: payuResponse.txnid,
-        amount: payuResponse.amount,
-        status: payuResponse.status,
-      });
-
-      // Construct the final user-facing success URL and redirect.
-      const successUrl = new URL('/payment/success', request.url);
-      successUrl.searchParams.set('txnid', payuResponse.txnid);
-      return NextResponse.redirect(successUrl);
+      await sendRegistrationEmail(newUser, payuResponse);
+      
+      const url = new URL('/payment/success', request.url);
+      url.searchParams.set('txnid', payuResponse.txnid);
+      return NextResponse.redirect(url, { status: 303 });
     } else {
-      // Handle cases where PayU might post a non-success status to the success URL.
-      const failureUrl = new URL('/payment/failure', request.url);
-      failureUrl.searchParams.set('txnid', payuResponse.txnid);
-      failureUrl.searchParams.set('error', payuResponse.error_Message || 'Payment Failed');
-      return NextResponse.redirect(failureUrl);
+      const url = new URL('/payment/failure', request.url);
+      url.searchParams.set('error', payuResponse.error_Message || 'Payment Failed');
+      return NextResponse.redirect(url, { status: 303 });
     }
-
   } catch (error) {
     console.error('Payment Success Route Error:', error);
-    const errorUrl = new URL('/payment/failure', request.url);
-    errorUrl.searchParams.set('error', 'An internal server error occurred.');
-    return NextResponse.redirect(errorUrl);
+    const url = new URL('/payment/failure', request.url);
+    url.searchParams.set('error', 'Internal Server Error');
+    return NextResponse.redirect(url, { status: 303 });
   }
 }
