@@ -17,10 +17,11 @@ export async function initiatePayment(formData) {
 
   const merchantKey = process.env.PAYU_MERCHANT_KEY;
   const salt = process.env.PAYU_MERCHANT_SALT;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  if (!merchantKey || !salt) {
-    console.error("PayU credentials are not set in .env.local");
-    return { error: "Payment gateway is not configured." };
+  if (!merchantKey || !salt || !baseUrl) {
+    console.error("PayU credentials or base URL are not set in environment variables.");
+    return { error: "Payment gateway is not configured correctly." };
   }
 
   const amountString = parseFloat(amount).toFixed(2);
@@ -36,8 +37,9 @@ export async function initiatePayment(formData) {
 
   const hashString = `${merchantKey}|${txnid}|${amountString}|${cleanProductinfo}|${cleanName}|${cleanEmail}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
   
+  // Keep this log for debugging!
   console.log("Request Hash String:", hashString);
-
+  
   const hash = crypto.createHash('sha512').update(hashString).digest('hex');
 
   const paymentData = {
@@ -48,8 +50,11 @@ export async function initiatePayment(formData) {
     firstname: cleanName,
     email: cleanEmail,
     phone: mobile,
-    surl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/success`,
-    furl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/failure`,
+    // --- THIS IS THE CRITICAL FIX ---
+    // Ensure surl and furl point to your API routes, not your pages.
+    surl: `${baseUrl}/api/payment/success`,
+    furl: `${baseUrl}/api/payment/failure`,
+    // --- END OF CRITICAL FIX ---
     udf1,
     udf2,
     udf3,
