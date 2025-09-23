@@ -17,11 +17,13 @@ export async function initiatePayment(formData) {
 
   const merchantKey = process.env.PAYU_MERCHANT_KEY;
   const salt = process.env.PAYU_MERCHANT_SALT;
+  
+  // *** CRITICAL: Ensure you have this environment variable set in Vercel ***
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   if (!merchantKey || !salt || !baseUrl) {
-    console.error("PayU credentials or base URL are not set in environment variables.");
-    return { error: "Payment gateway is not configured correctly." };
+    console.error("FATAL ERROR: PayU credentials or NEXT_PUBLIC_BASE_URL are not set in environment variables.");
+    return { error: "Payment gateway is not configured correctly. Please contact support." };
   }
 
   const amountString = parseFloat(amount).toFixed(2);
@@ -35,9 +37,17 @@ export async function initiatePayment(formData) {
   const udf4 = (subCategory || '').replace(/\|/g, "");
   const udf5 = ''; 
 
+  // *** DEFINE THE CORRECT API ROUTES ***
+  const successUrl = `${baseUrl}/api/payment/success`;
+  const failureUrl = `${baseUrl}/api/payment/failure`;
+
   const hashString = `${merchantKey}|${txnid}|${amountString}|${cleanProductinfo}|${cleanName}|${cleanEmail}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
   
-  // Keep this log for debugging!
+  // *** ADDED LOGGING FOR DEBUGGING ***
+  console.log("--- INITIATING PAYMENT ---");
+  console.log("Base URL:", baseUrl);
+  console.log("Success URL (surl):", successUrl);
+  console.log("Failure URL (furl):", failureUrl);
   console.log("Request Hash String:", hashString);
   
   const hash = crypto.createHash('sha512').update(hashString).digest('hex');
@@ -50,11 +60,8 @@ export async function initiatePayment(formData) {
     firstname: cleanName,
     email: cleanEmail,
     phone: mobile,
-    // --- THIS IS THE CRITICAL FIX ---
-    // Ensure surl and furl point to your API routes, not your pages.
-    surl: `${baseUrl}/api/payment/success`,
-    furl: `${baseUrl}/api/payment/failure`,
-    // --- END OF CRITICAL FIX ---
+    surl: successUrl,
+    furl: failureUrl,
     udf1,
     udf2,
     udf3,
