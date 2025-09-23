@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -12,24 +11,26 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  name          String
-  email         String   @unique
-  mobile        String?
-  address       String?
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  name             String
+  email            String    @unique
+  mobile           String?
+  address          String?
   registrationType String?
-  memberType    String?
-  subCategory   String?
-  transactionId String?  @unique
-  payuId        String?
+  memberType       String?
+  subCategory      String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Payment Details
+  transactionId String?   @unique // Your internal transaction ID
+  payuId        String?   @unique // PayU's transaction ID
   paymentAmount Float?
   paymentStatus String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 }
 
 model Counter {
   id    String @id @default("user_counter")
-  value Int    @default(99) // Start from 99 so the first user is 100
+  value Int    @default(99)
 }
