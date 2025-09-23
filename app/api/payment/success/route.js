@@ -1,4 +1,3 @@
-// app/api/payment/success/route.js
 import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
 import { prisma } from '@/lib/prisma';
@@ -13,15 +12,14 @@ export async function POST(request) {
     const merchantSalt = process.env.PAYU_MERCHANT_SALT;
 
     if (!merchantSalt) {
-      throw new Error('PayU configuration missing');
+      throw new Error('PayU salt is not configured');
     }
 
-    const isValidHash = verifyHash(payuResponse, merchantSalt);
-
-    if (!isValidHash) {
-      const redirectUrl = new URL('/payment/failure', request.url);
-      redirectUrl.searchParams.set('error', 'Invalid hash');
-      return NextResponse.redirect(redirectUrl);
+    // Even on success, we must verify the hash to prevent tampering.
+    if (!verifyHash(payuResponse, merchantSalt)) {
+      const failureUrl = new URL('/payment/failure', request.url);
+      failureUrl.searchParams.set('error', 'Hash Mismatch');
+      return NextResponse.redirect(failureUrl);
     }
 
     if (payuResponse.status === 'success') {
@@ -45,20 +43,22 @@ export async function POST(request) {
         status: payuResponse.status,
       });
 
-      const redirectUrl = new URL('/payment/success', request.url);
-      redirectUrl.searchParams.set('txnid', payuResponse.txnid);
-      return NextResponse.redirect(redirectUrl);
+      // Construct the final user-facing success URL and redirect.
+      const successUrl = new URL('/payment/success', request.url);
+      successUrl.searchParams.set('txnid', payuResponse.txnid);
+      return NextResponse.redirect(successUrl);
     } else {
-      const redirectUrl = new URL('/payment/failure', request.url);
-      redirectUrl.searchParams.set('txnid', payuResponse.txnid);
-      redirectUrl.searchParams.set('error', payuResponse.error_Message || 'Payment Failed');
-      return NextResponse.redirect(redirectUrl);
+      // Handle cases where PayU might post a non-success status to the success URL.
+      const failureUrl = new URL('/payment/failure', request.url);
+      failureUrl.searchParams.set('txnid', payuResponse.txnid);
+      failureUrl.searchParams.set('error', payuResponse.error_Message || 'Payment Failed');
+      return NextResponse.redirect(failureUrl);
     }
 
   } catch (error) {
-    console.error('Payment success error:', error);
-    const redirectUrl = new URL('/payment/failure', request.url);
-    redirectUrl.searchParams.set('error', 'Internal Server Error');
-    return NextResponse.redirect(redirectUrl);
+    console.error('Payment Success Route Error:', error);
+    const errorUrl = new URL('/payment/failure', request.url);
+    errorUrl.searchParams.set('error', 'An internal server error occurred.');
+    return NextResponse.redirect(errorUrl);
   }
 }
