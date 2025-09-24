@@ -16,7 +16,7 @@ export default function UpcomingEvents() {
             description: 'Explore innovative techniques in sustainable design and eco-friendly materials with leading architects and industry experts.',
             category: 'Workshop',
             attendees: '120+',
-            imageSrc: '/',
+            imageSrc: 'https://images.unsplash.com/photo-1542626991-a2f572a1e89',
             status: 'Early Bird',
             price: '₹2,500'
         },
@@ -28,7 +28,7 @@ export default function UpcomingEvents() {
             description: 'Deep dive into BIM, AI and digital tools revolutionizing project management in the construction industry.',
             category: 'Conference',
             attendees: '200+',
-            imageSrc: '/',
+            imageSrc: 'https://images.unsplash.com/photo-1542626991-a2f572a1e89',
             status: 'Filling Fast',
             price: '₹3,500'
         },
@@ -117,7 +117,7 @@ export default function UpcomingEvents() {
             <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-12 lg:mb-16">
-                    <div className="inline-flex items-center px-6 py-4 rounded-full text-sm font-medium bg-slate-100 text-slate-700 mb-6">
+                    <div className="inline-flex items-center px-10 py-6 rounded-full text-2xl font-medium bg-slate-100 text-slate-700 mb-6">
                         <Calendar className="w-4 h-4 mr-2" />
                         Upcoming Events
                     </div>
@@ -148,6 +148,8 @@ export default function UpcomingEvents() {
                                             >
                                                 <div className="relative h-48 overflow-hidden">
                                                     <Image
+                                                        width={500}
+                                                        height={224}
                                                         src={event.imageSrc}
                                                         alt={event.title}
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -238,14 +240,14 @@ export default function UpcomingEvents() {
                                 key={index}
                                 onClick={() => goToSlide(index)}
                                 className={`transition-all duration-300 ${currentSlide === index
-                                        ? 'w-8 h-3 bg-slate-900 rounded-full'
-                                        : 'w-3 h-3 bg-slate-300 hover:bg-slate-400 rounded-full'
+                                    ? 'w-8 h-3 bg-slate-900 rounded-full'
+                                    : 'w-3 h-3 bg-slate-300 hover:bg-slate-400 rounded-full'
                                     }`}
                             />
                         ))}
                     </div>
                 )}
-                
+
                 {/* View All Button */}
                 <div className="text-center mt-12">
                     <Link href="/events" passHref>

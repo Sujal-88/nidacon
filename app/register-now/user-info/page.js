@@ -61,8 +61,17 @@ function UserInfoForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // --- Dynamic pricing logic (remains the same) ---
       const registrationType = searchParams.get('type');
+
+      // If the registration is for a paper/poster, redirect to a success page without payment.
+      if (registrationType === 'paper-poster') {
+        // Here you would typically save the user's data to your database.
+        // For this example, we'll just redirect.
+        router.push('/register-now/submission-success');
+        return;
+      }
+
+      // --- Dynamic pricing logic (for other registration types) ---
       const memberType = searchParams.get('memberType');
       const subCategory = searchParams.get('subCategory');
       let amount = 2000;
@@ -197,7 +206,7 @@ function UserInfoForm() {
                 type="submit"
                 className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >
-                Proceed to Payment <ArrowRight className="inline w-5 h-5 ml-2" />
+                {searchParams.get('type') === 'paper-poster' ? 'Submit' : 'Proceed to Payment'} <ArrowRight className="inline w-5 h-5 ml-2" />
               </button>
             </div>
           </form>

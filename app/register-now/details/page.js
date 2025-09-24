@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // --- Data for All Flows ---
@@ -26,7 +26,7 @@ const presentationCategories = [
 
 
 // ##################################################################
-// ##               NEW PAPER/POSTER REGISTRATION COMPONENT        ##
+// ##               PAPER/POSTER REGISTRATION COMPONENT             ##
 // ##################################################################
 function FileInput({ label, file, setFile, id }) {
     return (
@@ -50,6 +50,7 @@ function FileInput({ label, file, setFile, id }) {
 }
 
 function PaperPosterRegistrationForm() {
+    const router = useRouter();
     const [hasRegistered, setHasRegistered] = useState(true);
     const [registrationId, setRegistrationId] = useState('');
     const [selection, setSelection] = useState({ paper: false, poster: false });
@@ -60,8 +61,22 @@ function PaperPosterRegistrationForm() {
 
     const [posterCategory, setPosterCategory] = useState('');
     const [posterFile, setPosterFile] = useState(null);
+    const [redirectMessage, setRedirectMessage] = useState('');
 
-    // Validation for enabling the submit button
+    const handleNoRegistration = () => {
+        setHasRegistered(false);
+        setRedirectMessage('Conference registration is mandatory. Redirecting you to the registration page...');
+        setTimeout(() => {
+            router.push('/register-now');
+        }, 3000);
+    };
+
+    // **CORRECTED LOGIC**: Handle submission by navigating to the user info page.
+    const handleSubmit = () => {
+        // Here you would typically save the submission files, but for now we navigate.
+        router.push('/register-now/user-info?type=paper-poster');
+    };
+
     const isPaperDataComplete = selection.paper ? paperCategory && abstractFile && paperFile : true;
     const isPosterDataComplete = selection.poster ? posterCategory && posterFile : true;
     const isRegIdPresent = hasRegistered ? registrationId.trim() !== '' : true;
@@ -79,15 +94,16 @@ function PaperPosterRegistrationForm() {
                     </div>
 
                     <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
-                        {/* Custom Toggle Switch for Registration Question */}
                         <div>
                            <label className="block text-base font-medium text-gray-800">1. Have you already registered for NIDACON 2026?</label>
                             <div className="mt-4 max-w-sm mx-auto relative flex w-full p-1 bg-gray-200 rounded-full">
                                 <span className="absolute top-0 bottom-0 w-1/2 h-full transition-transform duration-300 ease-in-out bg-white rounded-full shadow-md" style={{ transform: hasRegistered ? 'translateX(0%)' : 'translateX(100%)' }}></span>
                                 <button onClick={() => setHasRegistered(true)} className={`relative z-10 w-1/2 py-2.5 font-semibold text-center rounded-full transition-colors duration-300 ${hasRegistered ? 'text-purple-700' : 'text-gray-500'}`}>Yes</button>
-                                <button onClick={() => setHasRegistered(false)} className={`relative z-10 w-1/2 py-2.5 font-semibold text-center rounded-full transition-colors duration-300 ${!hasRegistered ? 'text-purple-700' : 'text-gray-500'}`}>No, submission only</button>
+                                <button onClick={handleNoRegistration} className={`relative z-10 w-1/2 py-2.5 font-semibold text-center rounded-full transition-colors duration-300 ${!hasRegistered ? 'text-purple-700' : 'text-gray-500'}`}>No</button>
                             </div>
                         </div>
+
+                        {redirectMessage && <p className="mt-4 text-center text-red-600 animate-pulse">{redirectMessage}</p>}
 
                          {hasRegistered && (
                             <div>
@@ -104,7 +120,6 @@ function PaperPosterRegistrationForm() {
                              </div>
                          </div>
                         
-                        {/* Paper Submission Section */}
                         {selection.paper && (
                             <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
                                 <h3 className="text-lg font-semibold text-purple-800">Paper Details</h3>
@@ -119,7 +134,6 @@ function PaperPosterRegistrationForm() {
                             </div>
                         )}
                         
-                        {/* Poster Submission Section */}
                         {selection.poster && (
                             <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
                                 <h3 className="text-lg font-semibold text-purple-800">Poster Details</h3>
@@ -133,10 +147,14 @@ function PaperPosterRegistrationForm() {
                             </div>
                         )}
                         
-                        {/* Submit Button */}
                         <div className="pt-8 border-t border-gray-200">
-                             <button type="button" disabled={!isFormValid} className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                Submit Presentation
+                             <button 
+                                type="button" 
+                                onClick={handleSubmit} 
+                                disabled={!isFormValid} 
+                                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            >
+                                Submit and Proceed
                             </button>
                         </div>
                     </div>
@@ -152,10 +170,20 @@ function PaperPosterRegistrationForm() {
 // ##################################################################
 
 function WorkshopRegistrationForm() {
+    const router = useRouter();
     const [hasRegistered, setHasRegistered] = useState(null);
     const [registrationId, setRegistrationId] = useState('');
     const [selectedWorkshops, setSelectedWorkshops] = useState({});
+    const [redirectMessage, setRedirectMessage] = useState('');
     
+    const handleNoRegistration = () => {
+        setHasRegistered(false);
+        setRedirectMessage('Conference registration is mandatory to attend workshops. Redirecting you to the registration page...');
+        setTimeout(() => {
+            router.push('/register-now');
+        }, 3000);
+    };
+
     const totalAmount = Object.keys(selectedWorkshops).reduce((sum, key) => {
         return selectedWorkshops[key] ? sum + workshopOptions.find(w => w.id === key).price : sum;
     }, 0);
@@ -187,10 +215,13 @@ function WorkshopRegistrationForm() {
                             <p className="text-sm text-blue-500 mt-1">Select &apos;No&apos; if you wish to attend only the workshop(s).</p>
                             <div className="mt-4 grid grid-cols-2 gap-4">
                                 <button onClick={() => setHasRegistered(true)} className={`py-3 px-4 rounded-lg font-semibold transition-all ${hasRegistered === true ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}>Yes</button>
-                                <button onClick={() => setHasRegistered(false)} className={`py-3 px-4 rounded-lg font-semibold transition-all ${hasRegistered === false ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}> No</button>
+                                <button onClick={handleNoRegistration} className={`py-3 px-4 rounded-lg font-semibold transition-all ${hasRegistered === false ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}> No</button>
                             </div>
                         </div>
-                        {hasRegistered !== null && (
+
+                        {redirectMessage && <p className="mt-8 text-center text-red-600 animate-pulse">{redirectMessage}</p>}
+                        
+                        {hasRegistered !== null && !redirectMessage && (
                             <div className="mt-8 pt-6 border-t border-gray-200">
                                 {hasRegistered === true && (
                                     <div>
@@ -313,7 +344,6 @@ function RegistrationDetails() {
   const searchParams = useSearchParams();
   const registrationType = searchParams.get('type');
 
-  // Route to the correct form based on the URL parameter
   switch (registrationType) {
     case 'workshop':
       return <WorkshopRegistrationForm />;
@@ -325,7 +355,6 @@ function RegistrationDetails() {
   }
 }
 
-// Wrap the main component in Suspense as required by useSearchParams
 export default function RegistrationDetailsPage() {
   return (
     <Suspense fallback={<div className="flex justify-center items-center min-h-screen text-lg font-semibold text-gray-600">Loading Registration Form...</div>}>

@@ -168,3 +168,76 @@
 }
 
 
+/*
+  Define the keyframe animations, which is the sequence of styles.
+*/
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/*
+  Create utility classes that apply these keyframe animations.
+  You can now use these class names directly in your HTML/JSX.
+*/
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Add this new keyframe for the button pulse */
+@keyframes pulse-button {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(147, 112, 219, 0.7);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px 15px rgba(147, 112, 219, 0);
+  }
+}
+
+/* Add this new class to apply the pulse animation */
+.animate-pulse-button {
+  animation: pulse-button 3s ease-in-out infinite;
+  animation-delay: 2s; /* Start the pulse after the initial fade-in */
+}
+
+/* Add this for the cool 3D tilt effect on the side carousels */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+.card-3d:hover {
+  transform: perspective(1000px) rotateY(var(--rotateY)) rotateX(var(--rotateX)) scale3d(1.05, 1.05, 1.05);
+}
+
+/*
+  NOTE: For the 3D tilt to be fully dynamic (follow the mouse), 
+  you would need a bit of JavaScript to update the --rotateX and --rotateY CSS variables.
+  But for now, a static hover effect is great and can be achieved with just CSS if you prefer:
+  
+  .card-3d:hover {
+    transform: scale(1.05) rotateY(10deg);
+  }
+*/

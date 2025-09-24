@@ -30,7 +30,7 @@ const OurLegacy = () => {
 
   return (
     <section id="legacy" className="bg-gray-900 text-white py-24 sm:py-32 overflow-hidden">
-      <motion.div 
+      <motion.div
         className="container mx-auto px-6 lg:px-8"
         variants={containerVariants}
         initial="hidden"
@@ -39,7 +39,7 @@ const OurLegacy = () => {
       >
         {/* FIX 1: Grid gap is now responsive */}
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-          
+
           {/* --- Left Column: Narrative & Stats --- */}
           <motion.div variants={itemVariants}>
             <p className="font-semibold text-purple-400 uppercase tracking-wider">
@@ -54,7 +54,7 @@ const OurLegacy = () => {
             <p className="mt-4 text-lg text-gray-300 leading-relaxed">
               Today, we stand as a thriving network of professionals, bound by a shared commitment to ethical practice, continuous learning, and unparalleled patient care.
             </p>
-            
+
             {/* NEW: "Know More" Button */}
             <Link href="/history" passHref>
               <motion.button
@@ -66,7 +66,7 @@ const OurLegacy = () => {
                 <MoveRight className="w-5 h-5" />
               </motion.button>
             </Link>
-            
+
             {/* Key Statistics */}
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center sm:text-left">
               <div className="flex sm:flex-col items-center sm:items-start gap-3">
@@ -95,8 +95,8 @@ const OurLegacy = () => {
 
           {/* --- Right Column: Photo Collage --- */}
           {/* FIX 2: Reordered for mobile-first view and responsive adjustments */}
-          <motion.div 
-            variants={itemVariants} 
+          <motion.div
+            variants={itemVariants}
             className="relative h-80 md:h-96 order-first md:order-last"
           >
             <Image
@@ -122,7 +122,7 @@ const OurLegacy = () => {
               height={160}
             />
           </motion.div>
-          
+
         </div>
       </motion.div>
     </section>
