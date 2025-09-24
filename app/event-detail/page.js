@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { 
     Calendar, MapPin, Mic, Beaker, Users, Link2, Presentation, Stethoscope 
 } from 'lucide-react';
+import Image from 'next/image';
 
 /*
   NOTE FOR THE DEVELOPER:
@@ -61,7 +62,7 @@ const SpeakerCard = ({ name, title, imgSrc }) => (
     <motion.div variants={itemVariants} className="text-center group">
         <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-slate-700 group-hover:border-cyan-400 transition-colors duration-300 transform group-hover:scale-105">
             
-            <img src={imgSrc} alt={name} className="w-full h-full object-cover" />
+            <Image src={imgSrc} alt={name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300"></div>
         </div>
         <h4 className="mt-4 text-xl font-bold text-slate-100">{name}</h4>
@@ -193,7 +194,7 @@ export default function NidaconPageRedesigned() {
             <div className="container mx-auto px-4 text-center bg-slate-900/80 backdrop-blur-sm py-20 rounded-3xl border border-slate-700 shadow-2xl">
                 <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-100">Elevate Your Dental Practice.</h2>
                 <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-                    Don't miss the premier dental event in Central India. Limited seats available for hands-on workshops. Register now to secure your spot.
+                    Don&apos;t miss the premier dental event in Central India. Limited seats available for hands-on workshops. Register now to secure your spot.
                 </p>
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                     <a href="#register-form" className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(56,189,248,0.5)]">
