@@ -16,7 +16,7 @@ export default function UpcomingEvents() {
             description: 'Explore innovative techniques in sustainable design and eco-friendly materials with leading architects and industry experts.',
             category: 'Workshop',
             attendees: '120+',
-            imageSrc: 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=400&h=240&fit=crop&crop=center',
+            imageSrc: '/',
             status: 'Early Bird',
             price: '₹2,500'
         },
@@ -28,7 +28,7 @@ export default function UpcomingEvents() {
             description: 'Deep dive into BIM, AI and digital tools revolutionizing project management in the construction industry.',
             category: 'Conference',
             attendees: '200+',
-            imageSrc: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=240&fit=crop&crop=center',
+            imageSrc: '/',
             status: 'Filling Fast',
             price: '₹3,500'
         },
@@ -117,12 +117,12 @@ export default function UpcomingEvents() {
             <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-12 lg:mb-16">
-                    <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 mb-6">
+                    <div className="inline-flex items-center px-6 py-4 rounded-full text-sm font-medium bg-slate-100 text-slate-700 mb-6">
                         <Calendar className="w-4 h-4 mr-2" />
                         Upcoming Events
                     </div>
                     <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4 tracking-tight">
-                        NIDACON Events & Workshops
+                        NIDACON 2026 Events & Workshops
                     </h2>
                     <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">
                         Join industry leaders and professionals in shaping the future of architecture and design through innovative learning experiences

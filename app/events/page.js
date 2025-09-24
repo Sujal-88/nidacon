@@ -16,7 +16,7 @@ const events = [
         description: 'Explore innovative techniques in sustainable design and eco-friendly materials with leading architects and industry experts.',
         category: 'Workshop',
         attendees: '120+',
-        imageSrc: 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=400&h=240&fit=crop&crop=center',
+        imageSrc: '/',
         status: 'Early Bird',
         price: '₹2,500'
     },
@@ -28,7 +28,7 @@ const events = [
         description: 'Deep dive into BIM, AI and digital tools revolutionizing project management in the construction industry.',
         category: 'Conference',
         attendees: '200+',
-        imageSrc: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=240&fit=crop&crop=center',
+        imageSrc: '/',
         status: 'Filling Fast',
         price: '₹3,500'
     },
