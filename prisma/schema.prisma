@@ -24,13 +24,26 @@ model User {
   updatedAt        DateTime  @updatedAt
 
   // Payment Details
-  transactionId String?   @unique // Your internal transaction ID
-  payuId        String?   @unique // PayU's transaction ID
+  transactionId String?   @unique
+  payuId        String?   @unique
   paymentAmount Float?
   paymentStatus String?
+
+  // Profile Fields
+  workshops        String[]
+  hasPaperOrPoster Boolean?  @default(false)
+  isMember         Boolean?  @default(false)
+  memberId         String?   @unique
 }
 
+// Counter for NIDACON Event User IDs (e.g., NIDA101)
 model Counter {
   id    String @id @default("user_counter")
   value Int    @default(99)
+}
+
+// NEW: Counter for IDA Member IDs (e.g., IDAMEM-1001)
+model MemberCounter {
+  id    String @id @default("member_counter")
+  value Int    @default(1000)
 }

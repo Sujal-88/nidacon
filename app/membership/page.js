@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { initiatePayment } from '@/app/actions';
+import { initiatePayment, processMembership } from '@/app/actions';
 
 const MembershipPage = () => {
     const [selectedPlan, setSelectedPlan] = useState(null);
@@ -81,24 +81,40 @@ const MembershipPage = () => {
         e.preventDefault();
         if (!selectedPlan) return;
 
-        const txnid = `NIDA${Date.now()}`;
-        
-        const formDataObj = new FormData(e.currentTarget);
-        formDataObj.append('amount', selectedPlan.price);
-        formDataObj.append('txnid', txnid);
-        formDataObj.append('productinfo', `NIDACON 2026 - ${selectedPlan.name}`);
-        formDataObj.append('registrationType', 'membership');
-        formDataObj.append('memberType', selectedPlan.name.toLowerCase().replace(' ', '-'));
-        formDataObj.append('subCategory', '');
+        // ** STEP 1: Process and save user data first **
+        const formElement = e.currentTarget;
+        const membershipFormData = new FormData(formElement);
+        membershipFormData.append('memberType', selectedPlan.name.toLowerCase().replace(' ', '-'));
 
+        const processingResult = await processMembership(membershipFormData);
 
-        const payuData = await initiatePayment(formDataObj);
+        if (!processingResult.success) {
+            alert(`Error: ${processingResult.error}`);
+            return;
+        }
+
+        // ** STEP 2: Prepare data for the payment gateway **
+        const paymentFormData = new FormData();
+        paymentFormData.append('name', formData.name);
+        paymentFormData.append('email', formData.email);
+        paymentFormData.append('mobile', formData.mobile);
+        paymentFormData.append('address', formData.address);
+        paymentFormData.append('amount', selectedPlan.price);
+        paymentFormData.append('txnid', processingResult.txnid);
+        paymentFormData.append('productinfo', `IDA Membership - ${selectedPlan.name}`);
+        paymentFormData.append('registrationType', 'membership');
+        paymentFormData.append('memberType', selectedPlan.name.toLowerCase().replace(' ', '-'));
+        paymentFormData.append('subCategory', '');
+        paymentFormData.append('udf5', processingResult.memberId); // Pass memberId to PayU
+
+        const payuData = await initiatePayment(paymentFormData);
 
         if (payuData.error) {
           alert(`Error: ${payuData.error}`);
           return;
         }
   
+        // ** STEP 3: Redirect to PayU **
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'https://test.payu.in/_payment'; 

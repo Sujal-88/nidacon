@@ -2,6 +2,8 @@
 "use server";
 
 import crypto from 'crypto';
+import { prisma } from '@/lib/prisma';
+import { generateMemberId } from '@/lib/memberId';
 
 export async function initiatePayment(formData) {
   const name = formData.get('name');
@@ -71,4 +73,51 @@ export async function initiatePayment(formData) {
   };
 
   return paymentData;
+}
+
+export async function processMembership(formData) {
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const mobile = formData.get('mobile');
+    const address = formData.get('address');
+    const msdcRegistration = formData.get('msdcRegistration');
+    const memberType = formData.get('memberType'); // e.g., 'new-member', 'renewal'
+    
+    try {
+        const newMemberId = await generateMemberId();
+        const txnid = `NIDAMEM-${Date.now()}`;
+
+        // Find user by email to prevent duplicates. If they exist, we update them.
+        // If not, we create a new user record.
+        const user = await prisma.user.upsert({
+            where: { email: email },
+            update: {
+                isMember: true,
+                memberId: newMemberId, // Assign new member ID on renewal/creation
+                transactionId: txnid, // Update with the latest transaction ID for this payment
+                paymentStatus: 'pending'
+            },
+            create: {
+                email: email,
+                name: name,
+                mobile: mobile,
+                address: address,
+                userId: `TEMP-${Date.now()}`, // Temporary placeholder
+                isMember: true,
+                memberId: newMemberId,
+                transactionId: txnid,
+                paymentStatus: 'pending'
+            }
+        });
+
+        return {
+            success: true,
+            txnid: txnid,
+            memberId: user.memberId,
+        };
+
+    } catch (error) {
+        console.error("Error processing membership:", error);
+        return { success: false, error: "Could not process membership request." };
+    }
 }

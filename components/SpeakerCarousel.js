@@ -8,9 +8,9 @@ import Autoplay from 'embla-carousel-autoplay';
 import './carousel.css';
 
 const speakers = [
-  { id: 1, src: '/path/to/speaker1.jpg', alt: 'Speaker 1' },
-  { id: 2, src: '/path/to/speaker2.jpg', alt: 'Speaker 2' },
-  { id: 3, src: '/path/to/speaker3.jpg', alt: 'Speaker 3' },
+  { id: 1, src: '/committee/ketanGarg.jpeg', alt: 'Dr. Ketan Garg' },
+  { id: 2, src: '/committee/rohitMude.jpeg', alt: 'Dr. Rohit Mude' },
+  { id: 3, src: '/committee/tusharShrirao.jpeg', alt: 'Dr. Tushar Shrirao' },
 ];
 
 export default function SpeakerCarousel() {

@@ -55,7 +55,7 @@ function HomePageContent() {
         <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent z-[2]"></div>
 
         {/* ... (EventBar and MembershipPopup remain the same) ... */}
-        <div className="relative z-[3] top-17">
+        <div className="relative z-[3] top-19">
           <EventBar
             message="NIDACON 2026 is coming to Nagpur! Click here to learn more and register!"
             href="/event-detail"
