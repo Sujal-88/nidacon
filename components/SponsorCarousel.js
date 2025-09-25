@@ -31,7 +31,7 @@ export default function SponsorCarousel() {
       {/* Main carousel container with fixed dimensions */}
       <div 
         className="embla relative rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 bg-white/10 backdrop-blur-sm"
-        style={{ width: '200px', height: '200px' }}
+        style={{ width: '280px', height: '280px' }}
         ref={emblaRef}
       >
         <div className="embla__container">
@@ -44,8 +44,8 @@ export default function SponsorCarousel() {
                 <Image
                   src={sponsor.src}
                   alt={sponsor.alt}
-                  width={160}
-                  height={160}
+                  width={200}
+                  height={200}
                   className="object-contain max-w-full max-h-full"
                 />
               </div>

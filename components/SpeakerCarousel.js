@@ -33,7 +33,7 @@ export default function SpeakerCarousel() {
       {/* Main carousel container with fixed dimensions */}
       <div 
         className="embla embla--vertical relative rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20"
-        style={{ width: '200px', height: '200px' }}
+        style={{ width: '280px', height: '280px' }}
         ref={emblaRef}
       >
         <div className="embla__container">
@@ -41,7 +41,7 @@ export default function SpeakerCarousel() {
             <div 
               className="embla__slide flex items-center justify-center" 
               key={speaker.id}
-              style={{ height: '200px' }}
+              style={{ height: '280px' }}
             >
               <div className="relative w-full h-full">
                 <Image

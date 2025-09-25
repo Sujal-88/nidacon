@@ -55,14 +55,14 @@ function HomePageContent() {
         <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent z-[2]"></div>
 
         {/* ... (EventBar and MembershipPopup remain the same) ... */}
-        <div className="relative z-[3] top-19">
+        <div className="relative z-50 top-21">
           <EventBar
             message="NIDACON 2026 is coming to Nagpur! Click here to learn more and register!"
             href="/event-detail"
           />
         </div>
         <div className="relative z-[3] flex flex-col min-h-screen">
-          <div className="flex justify-center pt-22 pb-3">
+          <div className="flex justify-center pt-24.5 pb-3">
             <MembershipPopup />
           </div>
 
@@ -74,16 +74,15 @@ function HomePageContent() {
             <div className="w-full max-w-7xl mx-auto">
               
               {/* Desktop Layout: Three Column Grid */}
-              <div className="hidden lg:grid lg:grid-cols-12 gap-8 items-center">
+              <div className="hidden lg:flex lg:justify-between lg:items-center">
                 
                 {/* Left Column: Speaker Carousel */}
-                {/* CHANGE: Added a cool 3D tilt effect on hover */}
-                <div className="col-span-3 flex justify-center animate-float card-3d">
+                {/* REMOVED: col-span-3 class */}
+                <div className="flex justify-center animate-float card-3d">
                   <SpeakerCarousel />
                 </div>
-
                 {/* Center Column: Main Content */}
-                <div className="col-span-6 text-center">
+                <div className=" text-center">
                   {/* Main Headline */}
                   <div className="space-y-2"> {/* CHANGE: Reduced space between headline parts */}
                     <h1 className="font-bold leading-tight">
