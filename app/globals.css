@@ -156,6 +156,15 @@
   }
 }
 
+html {
+  /* For a 32x32 image, '16 16' sets the hotspot to the center. */
+  cursor: url('/tooth.png') 16 16, auto !important;
+}
+
+/* Retain pointer for interactive elements */
+a, button, [role="button"], input[type="submit"], input[type="button"], label, select, [tabindex]:not([tabindex="-1"]) {
+  cursor: pointer !important;
+}
 @layer base {
   @keyframes marquee {
     from {
