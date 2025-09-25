@@ -40,7 +40,7 @@ export default function SponsorCarousel() {
               className="embla__slide flex items-center justify-center p-4" 
               key={sponsor.id}
             >
-              <div className="relative w-full h-full flex items-center justify-center bg-white/90 rounded-xl">
+              <div className="relative w-full ml-5 p-6 h-full flex items-center justify-center bg-white/90 rounded-xl">
                 <Image
                   src={sponsor.src}
                   alt={sponsor.alt}
