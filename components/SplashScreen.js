@@ -32,7 +32,7 @@ export default function SplashScreen({ onAnimationComplete }) {
       await new Promise(resolve => setTimeout(resolve, 200));
       
       await controls.start({
-        rotate: 180,
+        rotate: 0,
         scale: 40,
         opacity: 0,
         transition: { duration: 1, ease: 'easeIn' }
