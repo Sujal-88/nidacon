@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
@@ -14,11 +14,11 @@ function UserInfoForm() {
 
   // State for form fields and photo preview
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    mobile: '',
-    address: '',
-  });
+        name: searchParams.get('name') || '',
+        email: searchParams.get('email') || '',
+        mobile: searchParams.get('mobile') || '',
+        address: searchParams.get('address') || '',
+    });
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const [errors, setErrors] = useState({});

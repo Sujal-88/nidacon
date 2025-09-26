@@ -1,29 +1,47 @@
-/* components/CtaButton.css */
+/* components/membership-popup.css */
 
+/* --- Container is now an EXPLICITLY INVISIBLE wrapper --- */
 .cta-container {
-  /* --- CUSTOMIZABLE VARIABLES --- */
-  /* CHANGE: Increased base size for more presence */
+  /* This ensures there is no background color or shape */
+  background: transparent;
+  border: none;
+
+  /* Kept original variables */
   --orb-size: 120px; 
-  /* CHANGE: Reverted to dark background for white text visibility */
   --orb-bg-color: rgba(255, 255, 255, 0.75); 
   --orb-border-color: rgba(56, 189, 248, 0.5);
   --glow-color: rgba(56, 189, 248, 0.4);
-  /* NOTE: Text color is now white, as per your provided CSS */
   --text-color: #ffffff; 
   --transition-speed: 0.5s;
-  --orbit-diameter: calc(var(--orb-size) * 1.45); 
 
-  /* --- BASE STYLES --- */
+  /* Using flex to align text and orb */
   position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: var(--orbit-diameter);
-  height: var(--orbit-diameter);
+  gap: 1.5rem; /* Controls space between text and orb */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-decoration: none;
+  padding: 0; /* Removing any padding */
 }
+
+/* --- Static Text Styles --- */
+.static-text {
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  white-space: nowrap; /* Ensures text stays on one line */
+  transition: color 0.4s ease;
+}
+.group:hover .static-text {
+  color: #67e8f9; /* Subtle highlight on hover */
+}
+
+
+/* --- ALL ORIGINAL STYLES FOR THE ORB AND EFFECTS REMAIN UNCHANGED --- */
 
 /* Central logo container */
 .logo-orb {
@@ -39,25 +57,20 @@
   transition: transform var(--transition-speed) cubic-bezier(0.19, 1, 0.22, 1),
               box-shadow var(--transition-speed) ease;
   z-index: 10;
-  /* This ensures the inner Image component doesn't spill out */
   overflow: hidden; 
 }
 
 .group:hover .logo-orb {
-  /* CHANGE: Increased the zoom effect for more impact */
   transform: scale(1.2); 
   box-shadow: 0 0 35px var(--glow-color), inset 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
-/* (The rest of the CSS remains the same) */
-
-/* Animated background glow */
+Animated background glow
 .cta-gradient-bg {
   position: absolute;
   width: 100%;
   height: 100%;
   background: radial-gradient(circle, var(--glow-color) 0%, rgba(255,255,255,0) 65%);
-  border-radius: 50%;
   opacity: 0;
   transform: scale(0.8);
   transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
@@ -67,39 +80,6 @@
 .group:hover .cta-gradient-bg {
   opacity: 1;
   transform: scale(1.1);
-}
-
-/* Orbiting text container and animation */
-.orbit-text {
-  position: absolute;
-  width: var(--orbit-diameter);
-  height: var(--orbit-diameter);
-  animation: rotate 30s linear infinite;
-  transition: transform var(--transition-speed) ease;
-  z-index: 5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.group:hover .orbit-text {
-  animation-play-state: paused;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* SVG text styling */
-.orbit-text svg text {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 10px; /* Readjusted font size for larger orb */
-  font-weight: 600;
-  letter-spacing: 3px; /* Readjusted letter spacing */
-  text-transform: uppercase;
-  fill: var(--text-color);
-  user-select: none;
 }
 
 /* Stardust particles */
