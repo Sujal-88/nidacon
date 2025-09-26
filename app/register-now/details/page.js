@@ -65,10 +65,7 @@ function PaperPosterRegistrationForm() {
 
     const handleNoRegistration = () => {
         setHasRegistered(false);
-        setRedirectMessage('Conference registration is mandatory. Redirecting you to the registration page...');
-        setTimeout(() => {
-            router.push('/register-now');
-        }, 3000);
+        setRedirectMessage('NIDACON registration is compulsory. Please register for the conference first.');
     };
 
     // **CORRECTED LOGIC**: Handle submission by navigating to the user info page.
@@ -98,65 +95,74 @@ function PaperPosterRegistrationForm() {
                            <label className="block text-base font-medium text-gray-800">1. Have you already registered for NIDACON 2026?</label>
                             <div className="mt-4 max-w-sm mx-auto relative flex w-full p-1 bg-gray-200 rounded-full">
                                 <span className="absolute top-0 bottom-0 w-1/2 h-full transition-transform duration-300 ease-in-out bg-white rounded-full shadow-md" style={{ transform: hasRegistered ? 'translateX(0%)' : 'translateX(100%)' }}></span>
-                                <button onClick={() => setHasRegistered(true)} className={`relative z-10 w-1/2 py-2.5 font-semibold text-center rounded-full transition-colors duration-300 ${hasRegistered ? 'text-purple-700' : 'text-gray-500'}`}>Yes</button>
+                                <button onClick={() => { setHasRegistered(true); setRedirectMessage(''); }} className={`relative z-10 w-1/2 py-2.5 font-semibold text-center rounded-full transition-colors duration-300 ${hasRegistered ? 'text-purple-700' : 'text-gray-500'}`}>Yes</button>
                                 <button onClick={handleNoRegistration} className={`relative z-10 w-1/2 py-2.5 font-semibold text-center rounded-full transition-colors duration-300 ${!hasRegistered ? 'text-purple-700' : 'text-gray-500'}`}>No</button>
                             </div>
                         </div>
 
-                        {redirectMessage && <p className="mt-4 text-center text-red-600 animate-pulse">{redirectMessage}</p>}
-
-                         {hasRegistered && (
-                            <div>
-                                <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
-                                <input type="text" id="registration-id" value={registrationId} onChange={(e) => setRegistrationId(e.target.value)} placeholder="e.g., NIDA2026-XXXXX" className="mt-2 block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500"/>
+                        {redirectMessage && (
+                            <div className="mt-4 text-center">
+                                <p className="text-red-600 font-semibold">{redirectMessage}</p>
+                                <Link href="/register-now" className="mt-4 inline-block px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-300">
+                                    Register Now
+                                </Link>
                             </div>
+                        )}
+
+                         {hasRegistered && !redirectMessage && (
+                            <>
+                                <div>
+                                    <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
+                                    <input type="text" id="registration-id" value={registrationId} onChange={(e) => setRegistrationId(e.target.value)} placeholder="e.g., NIDA2026-XXXXX" className="mt-2 block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500"/>
+                                </div>
+
+                                <div className="pt-8 border-t border-gray-200">
+                                    <label className="block text-base font-medium text-gray-800">2. Select submission type(s)</label>
+                                    <div className="mt-4 space-y-3">
+                                        <div className="relative flex items-start"><div className="flex h-6 items-center"><input id="paper" type="checkbox" checked={selection.paper} onChange={(e) => setSelection({...selection, paper: e.target.checked})} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" /></div><div className="ml-3 text-sm leading-6"><label htmlFor="paper" className="font-medium text-gray-900">Paper Submission</label></div></div>
+                                        <div className="relative flex items-start"><div className="flex h-6 items-center"><input id="poster" type="checkbox" checked={selection.poster} onChange={(e) => setSelection({...selection, poster: e.target.checked})} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" /></div><div className="ml-3 text-sm leading-6"><label htmlFor="poster" className="font-medium text-gray-900">Poster Submission</label></div></div>
+                                    </div>
+                                </div>
+                                
+                                {selection.paper && (
+                                    <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
+                                        <h3 className="text-lg font-semibold text-purple-800">Paper Details</h3>
+                                        <fieldset>
+                                            <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                                {presentationCategories.map(cat => (<div key={cat.id} className="flex items-center"><input id={`p-${cat.id}`} name="paper-category" type="radio" value={cat.id} onChange={(e) => setPaperCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" /><label htmlFor={`p-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label></div>))}
+                                            </div>
+                                        </fieldset>
+                                        <FileInput label="Upload your abstract" file={abstractFile} setFile={setAbstractFile} id="abstract-file" />
+                                        <FileInput label="Upload your full paper" file={paperFile} setFile={setPaperFile} id="paper-file" />
+                                    </div>
+                                )}
+                                
+                                {selection.poster && (
+                                    <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
+                                        <h3 className="text-lg font-semibold text-purple-800">Poster Details</h3>
+                                        <fieldset>
+                                            <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                                {presentationCategories.map(cat => (<div key={cat.id} className="flex items-center"><input id={`ps-${cat.id}`} name="poster-category" type="radio" value={cat.id} onChange={(e) => setPosterCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" /><label htmlFor={`ps-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label></div>))}
+                                            </div>
+                                        </fieldset>
+                                        <FileInput label="Upload your poster" file={posterFile} setFile={setPosterFile} id="poster-file" />
+                                    </div>
+                                )}
+                                
+                                <div className="pt-8 border-t border-gray-200">
+                                    <button 
+                                        type="button" 
+                                        onClick={handleSubmit} 
+                                        disabled={!isFormValid} 
+                                        className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                    >
+                                        Submit and Proceed
+                                    </button>
+                                </div>
+                            </>
                          )}
-
-                         <div className="pt-8 border-t border-gray-200">
-                             <label className="block text-base font-medium text-gray-800">2. Select submission type(s)</label>
-                             <div className="mt-4 space-y-3">
-                                 <div className="relative flex items-start"><div className="flex h-6 items-center"><input id="paper" type="checkbox" checked={selection.paper} onChange={(e) => setSelection({...selection, paper: e.target.checked})} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" /></div><div className="ml-3 text-sm leading-6"><label htmlFor="paper" className="font-medium text-gray-900">Paper Submission</label></div></div>
-                                 <div className="relative flex items-start"><div className="flex h-6 items-center"><input id="poster" type="checkbox" checked={selection.poster} onChange={(e) => setSelection({...selection, poster: e.target.checked})} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" /></div><div className="ml-3 text-sm leading-6"><label htmlFor="poster" className="font-medium text-gray-900">Poster Submission</label></div></div>
-                             </div>
-                         </div>
-                        
-                        {selection.paper && (
-                            <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
-                                <h3 className="text-lg font-semibold text-purple-800">Paper Details</h3>
-                                <fieldset>
-                                    <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                                        {presentationCategories.map(cat => (<div key={cat.id} className="flex items-center"><input id={`p-${cat.id}`} name="paper-category" type="radio" value={cat.id} onChange={(e) => setPaperCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" /><label htmlFor={`p-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label></div>))}
-                                    </div>
-                                </fieldset>
-                                <FileInput label="Upload your abstract" file={abstractFile} setFile={setAbstractFile} id="abstract-file" />
-                                <FileInput label="Upload your full paper" file={paperFile} setFile={setPaperFile} id="paper-file" />
-                            </div>
-                        )}
-                        
-                        {selection.poster && (
-                            <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
-                                <h3 className="text-lg font-semibold text-purple-800">Poster Details</h3>
-                                 <fieldset>
-                                    <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                                        {presentationCategories.map(cat => (<div key={cat.id} className="flex items-center"><input id={`ps-${cat.id}`} name="poster-category" type="radio" value={cat.id} onChange={(e) => setPosterCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" /><label htmlFor={`ps-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label></div>))}
-                                    </div>
-                                </fieldset>
-                                <FileInput label="Upload your poster" file={posterFile} setFile={setPosterFile} id="poster-file" />
-                            </div>
-                        )}
-                        
-                        <div className="pt-8 border-t border-gray-200">
-                             <button 
-                                type="button" 
-                                onClick={handleSubmit} 
-                                disabled={!isFormValid} 
-                                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                Submit and Proceed
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -178,10 +184,7 @@ function WorkshopRegistrationForm() {
     
     const handleNoRegistration = () => {
         setHasRegistered(false);
-        setRedirectMessage('Conference registration is mandatory to attend workshops. Redirecting you to the registration page...');
-        setTimeout(() => {
-            router.push('/register-now');
-        }, 3000);
+        setRedirectMessage('NIDACON registration is compulsory to attend workshops. Please register for the conference first.');
     };
 
     const totalAmount = Object.keys(selectedWorkshops).reduce((sum, key) => {
@@ -212,25 +215,29 @@ function WorkshopRegistrationForm() {
                     <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
                         <div>
                             <label className="block text-base font-medium text-gray-800">1. Have you already registered for NIDACON 2026?</label>
-                            <p className="text-sm text-blue-500 mt-1">Select &apos;No&apos; if you wish to attend only the workshop(s).</p>
                             <div className="mt-4 grid grid-cols-2 gap-4">
-                                <button onClick={() => setHasRegistered(true)} className={`py-3 px-4 rounded-lg font-semibold transition-all ${hasRegistered === true ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}>Yes</button>
+                                <button onClick={() => { setHasRegistered(true); setRedirectMessage(''); }} className={`py-3 px-4 rounded-lg font-semibold transition-all ${hasRegistered === true ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}>Yes</button>
                                 <button onClick={handleNoRegistration} className={`py-3 px-4 rounded-lg font-semibold transition-all ${hasRegistered === false ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-200 text-gray-700'}`}> No</button>
                             </div>
                         </div>
 
-                        {redirectMessage && <p className="mt-8 text-center text-red-600 animate-pulse">{redirectMessage}</p>}
+                        {redirectMessage && (
+                            <div className="mt-8 text-center">
+                                <p className="text-red-600 font-semibold">{redirectMessage}</p>
+                                <Link href="/register-now" className="mt-4 inline-block px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-300">
+                                    Register Now
+                                </Link>
+                            </div>
+                        )}
                         
-                        {hasRegistered !== null && !redirectMessage && (
+                        {hasRegistered === true && !redirectMessage && (
                             <div className="mt-8 pt-6 border-t border-gray-200">
-                                {hasRegistered === true && (
-                                    <div>
-                                        <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
-                                        <input type="text" id="registration-id" value={registrationId} onChange={(e) => setRegistrationId(e.target.value)} placeholder="e.g., NIDA2026-XXXXX" className="mt-2 block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500" />
-                                    </div>
-                                )}
-                                <fieldset className={hasRegistered === true ? 'mt-8' : 'mt-0'} disabled={isWorkshopSelectionDisabled}>
-                                    <legend className={`text-sm font-medium ${isWorkshopSelectionDisabled ? 'text-gray-400' : 'text-gray-800'}`}>{hasRegistered ? '2. Select your desired workshop(s)' : 'Select your desired workshop(s)'}</legend>
+                                <div>
+                                    <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
+                                    <input type="text" id="registration-id" value={registrationId} onChange={(e) => setRegistrationId(e.target.value)} placeholder="e.g., NIDA2026-XXXXX" className="mt-2 block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500" />
+                                </div>
+                                <fieldset className={'mt-8'} disabled={isWorkshopSelectionDisabled}>
+                                    <legend className={`text-sm font-medium ${isWorkshopSelectionDisabled ? 'text-gray-400' : 'text-gray-800'}`}>2. Select your desired workshop(s)</legend>
                                     <div className={`mt-4 space-y-4 ${isWorkshopSelectionDisabled ? 'opacity-50' : ''}`}>
                                         {workshopOptions.map((workshop) => (
                                             <div key={workshop.id} className="relative flex items-start p-3 border rounded-lg">
