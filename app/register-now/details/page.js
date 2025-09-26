@@ -50,184 +50,183 @@ function FileInput({ label, file, setFile, id }) {
 }
 
 function PaperPosterRegistrationForm() {
-  const router = useRouter();
-  const [hasRegistered, setHasRegistered] = useState(true);
-  const [registrationId, setRegistrationId] = useState('');
-  const [selection, setSelection] = useState({ paper: false, poster: false });
+    const router = useRouter();
+    const [registrationId, setRegistrationId] = useState('');
+    const [selection, setSelection] = useState({ paper: false, poster: false });
 
-  const [userData, setUserData] = useState(null);
-  const [isFetching, setIsFetching] = useState(false);
-  const [fetchError, setFetchError] = useState('');
+    // State for user data, loading, and errors
+    const [userData, setUserData] = useState(null);
+    const [isFetching, setIsFetching] = useState(false);
+    const [fetchError, setFetchError] = useState('');
 
-  const [paperCategory, setPaperCategory] = useState('');
-  const [abstractFile, setAbstractFile] = useState(null);
-  const [paperFile, setPaperFile] = useState(null);
+    const [paperCategory, setPaperCategory] = useState('');
+    const [abstractFile, setAbstractFile] = useState(null);
+    const [paperFile, setPaperFile] = useState(null);
 
-  const [posterCategory, setPosterCategory] = useState('');
-  const [posterFile, setPosterFile] = useState(null);
-  const [redirectMessage, setRedirectMessage] = useState('');
+    const [posterCategory, setPosterCategory] = useState('');
+    const [posterFile, setPosterFile] = useState(null);
 
-  const handleNoRegistration = () => {
-    setHasRegistered(false);
-    setRedirectMessage('NIDACON registration is compulsory. Please register for the conference first.');
-  };
+    const handleFetchDetails = async () => {
+        if (!registrationId) {
+            setFetchError('Please enter a Registration ID.');
+            return;
+        }
+        setIsFetching(true);
+        setFetchError('');
+        setUserData(null);
+        try {
+            // This is the correct API endpoint to call
+            const res = await fetch(`/api/members/${registrationId}`);
+            const data = await res.json();
 
-  const handleFetchDetails = async () => {
-    if (!registrationId) {
-      setFetchError('Please enter a Registration ID.');
-      return;
-    }
-    setIsFetching(true);
-    setFetchError('');
-    setUserData(null);
-    try {
-      const res = await fetch(`/api/users/${registrationId}`);
-      const data = await res.json();
+            if (res.ok) {
+                setUserData(data);
+            } else {
+                setFetchError(data.error || 'Failed to fetch details.');
+            }
+        } catch (error) {
+            setFetchError('An error occurred while fetching details.');
+        } finally {
+            setIsFetching(false);
+        }
+    };
 
-      if (res.ok) {
-        setUserData(data);
-      } else {
-        setFetchError(data.error || 'Failed to fetch details.');
-      }
-    } catch (error) {
-      setFetchError('An error occurred while fetching details.');
-    } finally {
-      setIsFetching(false);
-    }
-  };
+    const handleSubmit = () => {
+        const queryParams = new URLSearchParams({
+            type: 'paper-poster',
+        });
 
-  // **CORRECTED LOGIC**: Handle submission by navigating to the user info page.
-  const handleSubmit = () => {
-    // Build the query string for the next page
-    const queryParams = new URLSearchParams({
-      type: 'paper-poster',
-    });
+        if (userData) {
+            queryParams.set('name', userData.name);
+            queryParams.set('email', userData.email);
+            queryParams.set('mobile', userData.mobile);
+            queryParams.set('address', userData.address);
+        }
 
-    if (userData) {
-      queryParams.set('name', userData.name);
-      queryParams.set('email', userData.email);
-      queryParams.set('mobile', userData.mobile);
-      queryParams.set('address', userData.address);
-    }
+        router.push(`/register-now/user-info?${queryParams.toString()}`);
+    };
 
-    router.push(`/register-now/user-info?${queryParams.toString()}`);
-  };
+    const isPaperDataComplete = !selection.paper || (paperCategory && abstractFile && paperFile);
+    const isPosterDataComplete = !selection.poster || (posterCategory && posterFile);
+    const isRegIdPresent = registrationId.trim() !== '';
+    const isSelectionMade = selection.paper || selection.poster;
+    const isFormValid = isRegIdPresent && isSelectionMade && isPaperDataComplete && isPosterDataComplete;
 
-  const isPaperDataComplete = selection.paper ? paperCategory && abstractFile && paperFile : true;
-  const isPosterDataComplete = selection.poster ? posterCategory && posterFile : true;
-  const isRegIdPresent = hasRegistered ? registrationId.trim() !== '' : true;
-  const isSelectionMade = selection.paper || selection.poster;
-  const isFormValid = isRegIdPresent && isSelectionMade && isPaperDataComplete && isPosterDataComplete;
+    return (
+        <main className="bg-gray-50 min-h-screen">
+            <div className="container mx-auto px-4 py-24 sm:py-32">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center">
+                        <p className="text-base font-semibold text-purple-600">Scientific Submission</p>
+                        <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Paper & Poster Presentation</h1>
+                        <p className="mt-6 text-lg text-gray-600">Submit your scientific work for NIDACON 2026.</p>
+                    </div>
 
-  return (
-    <main className="bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-4 py-24 sm:py-32">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center">
-            <p className="text-base font-semibold text-purple-600">Scientific Submission</p>
-            <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Paper & Poster Presentation</h1>
-            <p className="mt-6 text-lg text-gray-600">Submit your scientific work for NIDACON 2026.</p>
-          </div>
+                    <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
+                        <div>
+                            <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">
+                                Enter your NIDACON 2026 Registration ID to pre-fill your details.
+                            </label>
+                            <div className="mt-2 flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    id="registration-id"
+                                    value={registrationId}
+                                    onChange={(e) => setRegistrationId(e.target.value)}
+                                    placeholder="e.g., NIDA101"
+                                    className="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleFetchDetails}
+                                    disabled={isFetching}
+                                    className="whitespace-nowrap rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+                                >
+                                    {isFetching ? 'Fetching...' : 'Fetch Details'}
+                                </button>
+                            </div>
+                            {fetchError && <p className="mt-2 text-sm text-red-500">{fetchError}</p>}
+                            {userData && (
+                                <div className="mt-4 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-700">
+                                    <p>Details for <strong>{userData.name}</strong> fetched successfully.</p>
+                                </div>
+                            )}
+                        </div>
 
-          <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
-            <div>
-              <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
-              <div className="mt-2 flex items-center gap-2">
-                <input
-                  type="text"
-                  id="registration-id"
-                  value={registrationId}
-                  onChange={(e) => setRegistrationId(e.target.value)}
-                  placeholder="e.g., NIDA2026-XXXXX"
-                  className="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-                />
-                <button
-                  type="button"
-                  onClick={handleFetchDetails}
-                  disabled={isFetching}
-                  className="whitespace-nowrap rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
-                >
-                  {isFetching ? 'Fetching...' : 'Fetch Details'}
-                </button>
-              </div>
-              {fetchError && <p className="mt-2 text-sm text-red-500">{fetchError}</p>}
-              {userData && (
-                <div className="mt-4 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-700">
-                  <p>
-                    Details for <strong>{userData.name}</strong> fetched successfully.
-                  </p>
+                        <div className="pt-8 border-t border-gray-200">
+                            <label className="block text-base font-medium text-gray-800">Select submission type(s)</label>
+                            <div className="mt-4 space-y-3">
+                                <div className="relative flex items-start">
+                                    <div className="flex h-6 items-center">
+                                        <input id="paper" type="checkbox" checked={selection.paper} onChange={(e) => setSelection({ ...selection, paper: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
+                                    </div>
+                                    <div className="ml-3 text-sm leading-6">
+                                        <label htmlFor="paper" className="font-medium text-gray-900">Paper Submission</label>
+                                    </div>
+                                </div>
+                                <div className="relative flex items-start">
+                                    <div className="flex h-6 items-center">
+                                        <input id="poster" type="checkbox" checked={selection.poster} onChange={(e) => setSelection({ ...selection, poster: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
+                                    </div>
+                                    <div className="ml-3 text-sm leading-6">
+                                        <label htmlFor="poster" className="font-medium text-gray-900">Poster Submission</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {selection.paper && (
+                            <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
+                                <h3 className="text-lg font-semibold text-purple-800">Paper Details</h3>
+                                <fieldset>
+                                    <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                        {presentationCategories.map(cat => (
+                                            <div key={cat.id} className="flex items-center">
+                                                <input id={`p-${cat.id}`} name="paper-category" type="radio" value={cat.id} onChange={(e) => setPaperCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" />
+                                                <label htmlFor={`p-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </fieldset>
+                                <FileInput label="Upload your abstract" file={abstractFile} setFile={setAbstractFile} id="abstract-file" />
+                                <FileInput label="Upload your full paper" file={paperFile} setFile={setPaperFile} id="paper-file" />
+                            </div>
+                        )}
+
+                        {selection.poster && (
+                            <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
+                                <h3 className="text-lg font-semibold text-purple-800">Poster Details</h3>
+                                <fieldset>
+                                    <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                        {presentationCategories.map(cat => (
+                                            <div key={cat.id} className="flex items-center">
+                                                <input id={`ps-${cat.id}`} name="poster-category" type="radio" value={cat.id} onChange={(e) => setPosterCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" />
+                                                <label htmlFor={`ps-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </fieldset>
+                                <FileInput label="Upload your poster" file={posterFile} setFile={setPosterFile} id="poster-file" />
+                            </div>
+                        )}
+
+                        <div className="pt-8 border-t border-gray-200">
+                            <button
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={!isFormValid}
+                                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            >
+                                Submit and Proceed
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              )}
             </div>
-
-            {redirectMessage && (
-              <div className="mt-4 text-center">
-                <p className="text-red-600 font-semibold">{redirectMessage}</p>
-                <Link href="/register-now" className="mt-4 inline-block px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-300">
-                  Register Now
-                </Link>
-              </div>
-            )}
-
-            {hasRegistered && !redirectMessage && (
-              <>
-                <div>
-                  <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
-                  <input type="text" id="registration-id" value={registrationId} onChange={(e) => setRegistrationId(e.target.value)} placeholder="e.g., NIDA2026-XXXXX" className="mt-2 block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500" />
-                </div>
-
-                <div className="pt-8 border-t border-gray-200">
-                  <label className="block text-base font-medium text-gray-800">2. Select submission type(s)</label>
-                  <div className="mt-4 space-y-3">
-                    <div className="relative flex items-start"><div className="flex h-6 items-center"><input id="paper" type="checkbox" checked={selection.paper} onChange={(e) => setSelection({ ...selection, paper: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" /></div><div className="ml-3 text-sm leading-6"><label htmlFor="paper" className="font-medium text-gray-900">Paper Submission</label></div></div>
-                    <div className="relative flex items-start"><div className="flex h-6 items-center"><input id="poster" type="checkbox" checked={selection.poster} onChange={(e) => setSelection({ ...selection, poster: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" /></div><div className="ml-3 text-sm leading-6"><label htmlFor="poster" className="font-medium text-gray-900">Poster Submission</label></div></div>
-                  </div>
-                </div>
-
-                {selection.paper && (
-                  <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
-                    <h3 className="text-lg font-semibold text-purple-800">Paper Details</h3>
-                    <fieldset>
-                      <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                        {presentationCategories.map(cat => (<div key={cat.id} className="flex items-center"><input id={`p-${cat.id}`} name="paper-category" type="radio" value={cat.id} onChange={(e) => setPaperCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" /><label htmlFor={`p-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label></div>))}
-                      </div>
-                    </fieldset>
-                    <FileInput label="Upload your abstract" file={abstractFile} setFile={setAbstractFile} id="abstract-file" />
-                    <FileInput label="Upload your full paper" file={paperFile} setFile={setPaperFile} id="paper-file" />
-                  </div>
-                )}
-
-                {selection.poster && (
-                  <div className="pt-8 border-t border-gray-200 space-y-6 animate-fade-in">
-                    <h3 className="text-lg font-semibold text-purple-800">Poster Details</h3>
-                    <fieldset>
-                      <legend className="text-sm font-medium text-gray-800 mb-2">Select one category</legend>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                        {presentationCategories.map(cat => (<div key={cat.id} className="flex items-center"><input id={`ps-${cat.id}`} name="poster-category" type="radio" value={cat.id} onChange={(e) => setPosterCategory(e.target.value)} className="h-4 w-4 border-gray-300 text-purple-600 focus:ring-purple-500" /><label htmlFor={`ps-${cat.id}`} className="ml-3 block text-sm font-medium leading-6 text-gray-900">{cat.name}</label></div>))}
-                      </div>
-                    </fieldset>
-                    <FileInput label="Upload your poster" file={posterFile} setFile={setPosterFile} id="poster-file" />
-                  </div>
-                )}
-
-                <div className="pt-8 border-t border-gray-200">
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={!isFormValid}
-                    className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    Submit and Proceed
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+        </main>
+    );
 }
 
 
