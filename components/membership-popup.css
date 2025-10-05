@@ -1,53 +1,97 @@
 /* components/membership-popup.css */
 
-/* --- Container is now an EXPLICITLY INVISIBLE wrapper --- */
+/* Container with responsive variables */
 .cta-container {
-  /* This ensures there is no background color or shape */
   background: transparent;
   border: none;
 
-  /* Kept original variables */
-  --orb-size: 120px; 
+  /* Responsive orb size using CSS variables */
+  --orb-size: 80px; /* Mobile default */
   --orb-bg-color: rgba(255, 255, 255, 0.75); 
   --orb-border-color: rgba(56, 189, 248, 0.5);
   --glow-color: rgba(56, 189, 248, 0.4);
   --text-color: #ffffff; 
   --transition-speed: 0.5s;
 
-  /* Using flex to align text and orb */
   position: relative;
   display: flex;
+  flex-direction: column; /* Stack on mobile */
   align-items: center;
-  gap: 1.5rem; /* Controls space between text and orb */
+  justify-content: center;
+  gap: 0.75rem; /* Smaller gap on mobile */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   text-decoration: none;
-  padding: 0; /* Removing any padding */
+  padding: 0;
+  max-width: 100%;
 }
 
-/* --- Static Text Styles --- */
+/* Tablet and up: Horizontal layout */
+@media (min-width: 640px) {
+  .cta-container {
+    --orb-size: 100px;
+    flex-direction: row;
+    gap: 1.25rem;
+  }
+}
+
+/* Desktop: Larger orb */
+@media (min-width: 1024px) {
+  .cta-container {
+    --orb-size: 120px;
+    gap: 1.5rem;
+  }
+}
+
+/* Static Text Styles - Responsive */
 .static-text {
   color: var(--text-color);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 18.5px;
+  font-size: 13px; /* Mobile */
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  white-space: nowrap; /* Ensures text stays on one line */
+  letter-spacing: 1.5px;
+  white-space: normal; /* Allow wrapping on mobile */
+  text-align: center;
   transition: color 0.4s ease;
+  line-height: 1.3;
+  max-width: 280px; /* Prevent too wide on mobile */
 }
+
+@media (min-width: 480px) {
+  .static-text {
+    font-size: 15px;
+    letter-spacing: 1.8px;
+    max-width: 320px;
+  }
+}
+
+@media (min-width: 640px) {
+  .static-text {
+    font-size: 16px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    max-width: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .static-text {
+    font-size: 18.5px;
+  }
+}
+
 .group:hover .static-text {
-  color: #67e8f9; /* Subtle highlight on hover */
+  color: #67e8f9;
 }
 
-
-/* --- ALL ORIGINAL STYLES FOR THE ORB AND EFFECTS REMAIN UNCHANGED --- */
-
-/* Central logo container */
+/* Central logo container - Responsive */
 .logo-orb {
   position: relative;
   width: var(--orb-size);
   height: var(--orb-size);
+  min-width: var(--orb-size); /* Prevent shrinking */
+  min-height: var(--orb-size);
   background-color: var(--orb-bg-color);
   border: 2px solid var(--orb-border-color);
   border-radius: 50%;
@@ -57,61 +101,147 @@
   transition: transform var(--transition-speed) cubic-bezier(0.19, 1, 0.22, 1),
               box-shadow var(--transition-speed) ease;
   z-index: 10;
-  overflow: hidden; 
+  overflow: hidden;
+  flex-shrink: 0; /* Prevent shrinking in flex */
 }
 
 .group:hover .logo-orb {
-  transform: scale(1.2); 
-  box-shadow: 0 0 35px var(--glow-color), inset 0 0 15px rgba(255, 255, 255, 0.2);
+  transform: scale(1.15); /* Slightly reduced scale on mobile */
 }
 
-Animated background glow
+@media (min-width: 1024px) {
+  .group:hover .logo-orb {
+    transform: scale(1.2);
+  }
+}
+
+/* Animated background glow */
 .cta-gradient-bg {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 150%; /* Larger on mobile to cover stacked layout */
+  height: 150%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
   background: radial-gradient(circle, var(--glow-color) 0%, rgba(255,255,255,0) 65%);
   opacity: 0;
-  transform: scale(0.8);
   transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
   z-index: 1;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .cta-gradient-bg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .group:hover .cta-gradient-bg {
   opacity: 1;
-  transform: scale(1.1);
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
-/* Stardust particles */
+/* Stardust particles - Scaled for mobile */
 .stardust {
   position: absolute;
   background-color: var(--text-color); 
   border-radius: 50%;
   opacity: 0;
   z-index: 1;
+  pointer-events: none;
 }
-.stardust-1 { width: 3px; height: 3px; }
-.stardust-2 { width: 2px; height: 2px; }
-.stardust-3 { width: 1px; height: 1px; }
 
-.group:hover .stardust-1 { animation: sparkle 1.2s ease-out forwards; }
-.group:hover .stardust-2 { animation: sparkle 1.2s ease-out 0.2s forwards; }
-.group:hover .stardust-3 { animation: sparkle 1.2s ease-out 0.5s forwards; }
+.stardust-1 { 
+  width: 2px; 
+  height: 2px; 
+}
+.stardust-2 { 
+  width: 1.5px; 
+  height: 1.5px; 
+}
+.stardust-3 { 
+  width: 1px; 
+  height: 1px; 
+}
 
-@keyframes sparkle {
-  0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: scale(1) translate(40px, -60px); opacity: 0; }
+@media (min-width: 640px) {
+  .stardust-1 { width: 3px; height: 3px; }
+  .stardust-2 { width: 2px; height: 2px; }
 }
-.group:hover .stardust-2 { animation-name: sparkle-2; }
-@keyframes sparkle-2 {
-  0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: scale(1.2) translate(-55px, 50px); opacity: 0; }
+
+.group:hover .stardust-1 { 
+  animation: sparkle-mobile 1.2s ease-out forwards; 
 }
-.group:hover .stardust-3 { animation-name: sparkle-3; }
-@keyframes sparkle-3 {
+.group:hover .stardust-2 { 
+  animation: sparkle-2-mobile 1.2s ease-out 0.2s forwards; 
+}
+.group:hover .stardust-3 { 
+  animation: sparkle-3-mobile 1.2s ease-out 0.5s forwards; 
+}
+
+/* Mobile sparkle animations - shorter distances */
+@keyframes sparkle-mobile {
   0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
   50% { opacity: 1; }
-  100% { transform: scale(1) translate(70px, 30px); opacity: 0; }
+  100% { transform: scale(1) translate(25px, -35px); opacity: 0; }
+}
+
+@keyframes sparkle-2-mobile {
+  0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scale(1.2) translate(-30px, 30px); opacity: 0; }
+}
+
+@keyframes sparkle-3-mobile {
+  0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scale(1) translate(40px, 20px); opacity: 0; }
+}
+
+/* Desktop sparkle animations - original distances */
+@media (min-width: 640px) {
+  .group:hover .stardust-1 { 
+    animation: sparkle 1.2s ease-out forwards; 
+  }
+  .group:hover .stardust-2 { 
+    animation: sparkle-2 1.2s ease-out 0.2s forwards; 
+  }
+  .group:hover .stardust-3 { 
+    animation: sparkle-3 1.2s ease-out 0.5s forwards; 
+  }
+
+  @keyframes sparkle {
+    0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1) translate(40px, -60px); opacity: 0; }
+  }
+
+  @keyframes sparkle-2 {
+    0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1.2) translate(-55px, 50px); opacity: 0; }
+  }
+
+  @keyframes sparkle-3 {
+    0% { transform: scale(0.5) translate(0, 0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1) translate(70px, 30px); opacity: 0; }
+  }
+}
+
+/* Touch device optimization */
+@media (hover: none) and (pointer: coarse) {
+  .cta-container {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Simplified hover effects for touch devices */
+  .group:active .logo-orb {
+    transform: scale(1.1);
+  }
+  
+  .group:active .static-text {
+    color: #67e8f9;
+  }
 }

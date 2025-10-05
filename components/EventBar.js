@@ -8,12 +8,10 @@ const EventBar = ({
   href = "/event-detail"
 }) => {
   return (
-    // ✨ WRAPPER: The Link component now has a group class for hover effects
     <Link 
       href={href}
       className="group"
     >
-      {/* ✨ CONTAINER: Added shadow, border, and transition for a premium feel */}
       <div
         className="
           sticky top-[76px] z-40 flex w-full items-center justify-between 
@@ -33,32 +31,40 @@ const EventBar = ({
             className="flex whitespace-nowrap group-hover:[animation-play-state:paused]" 
             style={{ animation: 'marquee 20s linear infinite' }}
           >
-            {/* Content is duplicated for seamless loop */}
-            <span className="mx-8 flex items-center py-2.5">
-              <Megaphone className="mr-3 h-5 w-5 text-yellow-300 animate-pulse" />
-              <span className="font-semibold tracking-wide">{message}</span>
+            {/* Content duplicated for seamless loop */}
+            <span className="mx-4 sm:mx-8 flex items-center py-2 sm:py-2.5">
+              <Megaphone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-yellow-300 animate-pulse flex-shrink-0" />
+              <span className="font-semibold tracking-wide text-xs sm:text-sm md:text-base">{message}</span>
             </span>
-            <span className="mx-8 flex items-center py-2.5">
-              <Megaphone className="mr-3 h-5 w-5 text-yellow-300 animate-pulse" />
-              <span className="font-semibold tracking-wide">{message}</span>
+            <span className="mx-4 sm:mx-8 flex items-center py-2 sm:py-2.5">
+              <Megaphone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-yellow-300 animate-pulse flex-shrink-0" />
+              <span className="font-semibold tracking-wide text-xs sm:text-sm md:text-base">{message}</span>
+            </span>
+            {/* Third duplicate for extra smooth scrolling on mobile */}
+            <span className="mx-4 sm:mx-8 flex items-center py-2 sm:py-2.5">
+              <Megaphone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-yellow-300 animate-pulse flex-shrink-0" />
+              <span className="font-semibold tracking-wide text-xs sm:text-sm md:text-base">{message}</span>
             </span>
           </div>
         </div>
 
-        {/* ✨ ADDED: Static "Call to Action" on the right */}
+        {/* Call to Action Button - Hidden on mobile, visible on tablet+ */}
         <div className="
             hidden sm:flex items-center bg-black/20
-            px-6 py-2.5 h-full
+            px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 h-full
             font-bold text-yellow-300
             transition-colors duration-300
             group-hover:bg-black/40
+            text-xs sm:text-sm md:text-base
           "
         >
-          <span>Details</span>
+          <span className="hidden md:inline">Details</span>
+          <span className="md:hidden">View</span>
           <ArrowRight className="
-              ml-2 h-5 w-5 
+              ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5
               transition-transform duration-300 
               group-hover:translate-x-1
+              flex-shrink-0
             " 
           />
         </div>
