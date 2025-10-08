@@ -53,6 +53,7 @@ model SportRegistration {
   transactionId  String?   @unique
   payuId         String?   @unique
   paymentStatus  String?
+  userId         String?   @unique // Add this line
 }
 
 // Counter for NIDACON Event User IDs (e.g., NIDA101)
