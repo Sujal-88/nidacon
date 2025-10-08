@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
 import { prisma } from '@/lib/prisma';
 import { generateUserId } from '@/lib/userId';
-import { sendRegistrationEmail } from '@/lib/email';
+import { sendRegistrationEmail, sendSportsRegistrationEmail } from '@/lib/email'; // Make sure to import the new function
 
 export async function POST(request) {
   try {
@@ -28,15 +28,24 @@ export async function POST(request) {
     if (payuResponse.status === 'success') {
       const registrationType = payuResponse.udf2;
 
+      // Handle Sports Registration
       if (registrationType === 'sports') {
         const sportRegistration = await prisma.sportRegistration.findUnique({ where: { transactionId: txnid } });
         if (sportRegistration && sportRegistration.paymentStatus === 'pending') {
-          await prisma.sportRegistration.update({
+          const userId = await generateUserId(); // Generate a new User ID
+          const updatedRegistration = await prisma.sportRegistration.update({
             where: { transactionId: txnid },
-            data: { paymentStatus: 'success', payuId: payuResponse.mihpayid },
+            data: {
+              paymentStatus: 'success',
+              payuId: payuResponse.mihpayid,
+              userId: userId, // Save the new User ID
+            },
           });
+          // Send a specific email for sports
+          await sendSportsRegistrationEmail(updatedRegistration, payuResponse);
         }
       } else {
+        // This is your existing logic for other registration types
         const user = await prisma.user.findUnique({ where: { transactionId: txnid } });
         if (user && user.paymentStatus === 'pending') {
           const userId = await generateUserId();
@@ -46,7 +55,6 @@ export async function POST(request) {
               userId: userId,
               paymentStatus: 'success',
               payuId: payuResponse.mihpayid,
-              isMember: true,
             },
           });
           await sendRegistrationEmail(updatedUser, payuResponse);
