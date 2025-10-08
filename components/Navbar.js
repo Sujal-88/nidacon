@@ -32,10 +32,20 @@ const Navbar = () => {
     const pathname = usePathname();
 
     const isHomePage = pathname === '/';
+    const isSportsPage = pathname === '/sports';
     const displayedNavLinks = isHomePage ? mainNavLinks : eventNavLinks;
 
-    const loginHref = isHomePage ? '/login/member' : '/login/event';
-    const loginText = isHomePage ? 'Member Login' : 'Event Login';
+    let loginHref = '/login/member';
+    let loginText = 'Member Login';
+
+    if (isSportsPage) {
+        loginHref = '/sports/login';
+        loginText = 'Sports Login';
+    } else if (!isHomePage) {
+        loginHref = '/login/event';
+        loginText = 'Event Login';
+    }
+
 
     const handleScrollTo = (e, href) => {
         if (!isHomePage && href.startsWith('/#')) {
