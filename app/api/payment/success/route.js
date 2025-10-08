@@ -17,59 +17,47 @@ export async function POST(request) {
       throw new Error('PayU salt is not configured');
     }
 
-    // 1. Verify the hash
-    const isHashValid = verifyHash(payuResponse, merchantSalt);
-    if (!isHashValid) {
+    if (!verifyHash(payuResponse, merchantSalt)) {
       console.error("Hash verification failed for txnid:", txnid);
       const failureUrl = new URL('/payment/failure', request.url);
       failureUrl.searchParams.set('txnid', txnid);
-      failureUrl.searchParams.set('error', 'Security hash mismatch.');
+      failureUrl.searchParams.set('error', 'Security hash mismatch on response.');
       return NextResponse.redirect(failureUrl, { status: 303 });
     }
 
-    // 2. Check payment status
     if (payuResponse.status === 'success') {
-      // 3. Check if the transaction has already been processed
-      const existingUser = await prisma.user.findUnique({
-        where: { transactionId: txnid },
-      });
+      const registrationType = payuResponse.udf2;
 
-      if (existingUser) {
-        console.log("Transaction already processed for txnid:", txnid);
-        const successUrl = new URL('/payment/success', request.url);
-        successUrl.searchParams.set('txnid', txnid);
-        return NextResponse.redirect(successUrl, { status: 303 });
+      if (registrationType === 'sports') {
+        const sportRegistration = await prisma.sportRegistration.findUnique({ where: { transactionId: txnid } });
+        if (sportRegistration && sportRegistration.paymentStatus === 'pending') {
+          await prisma.sportRegistration.update({
+            where: { transactionId: txnid },
+            data: { paymentStatus: 'success', payuId: payuResponse.mihpayid },
+          });
+        }
+      } else {
+        const user = await prisma.user.findUnique({ where: { transactionId: txnid } });
+        if (user && user.paymentStatus === 'pending') {
+          const userId = await generateUserId();
+          const updatedUser = await prisma.user.update({
+            where: { transactionId: txnid },
+            data: {
+              userId: userId,
+              paymentStatus: 'success',
+              payuId: payuResponse.mihpayid,
+              isMember: true,
+            },
+          });
+          await sendRegistrationEmail(updatedUser, payuResponse);
+        }
       }
-
-      // 4. Create new user and save payment details
-      const userId = await generateUserId();
-      const newUser = await prisma.user.create({
-        data: {
-          userId: userId,
-          name: payuResponse.firstname,
-          email: payuResponse.email,
-          mobile: payuResponse.phone,
-          address: payuResponse.udf1 || '',
-          registrationType: payuResponse.udf2 || '',
-          memberType: payuResponse.udf3 || '',
-          subCategory: payuResponse.udf4 || '',
-          transactionId: txnid,
-          payuId: payuResponse.mihpayid, // This is the PayU payment ID
-          paymentAmount: parseFloat(payuResponse.amount),
-          paymentStatus: payuResponse.status,
-        },
-      });
-
-      // 5. Send confirmation email
-      await sendRegistrationEmail(newUser, payuResponse);
-
-      // 6. Redirect to the client-side success page
+      
       const successUrl = new URL('/payment/success', request.url);
       successUrl.searchParams.set('txnid', txnid);
       return NextResponse.redirect(successUrl, { status: 303 });
 
     } else {
-      // Handle other statuses like 'failure' or 'pending'
       const failureUrl = new URL('/payment/failure', request.url);
       failureUrl.searchParams.set('txnid', txnid);
       failureUrl.searchParams.set('error', payuResponse.error_Message || `Payment status: ${payuResponse.status}`);

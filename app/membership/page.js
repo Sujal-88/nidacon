@@ -40,12 +40,12 @@ const MembershipPage = () => {
         setFetchError('');
         setRenewalRegNumber('');
     };
-  
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
-    
+
     const handleFetchDetails = async () => {
         if (!renewalRegNumber) {
             setFetchError('Please enter a registration number.');
@@ -81,7 +81,7 @@ const MembershipPage = () => {
         e.preventDefault();
         if (!selectedPlan) return;
 
-        // ** STEP 1: Process and save user data first **
+        // STEP 1: Process and save user data first
         const formElement = e.currentTarget;
         const membershipFormData = new FormData(formElement);
         membershipFormData.append('memberType', selectedPlan.name.toLowerCase().replace(' ', '-'));
@@ -93,7 +93,7 @@ const MembershipPage = () => {
             return;
         }
 
-        // ** STEP 2: Prepare data for the payment gateway **
+        // STEP 2: Prepare data for the payment gateway
         const paymentFormData = new FormData();
         paymentFormData.append('name', formData.name);
         paymentFormData.append('email', formData.email);
@@ -102,31 +102,33 @@ const MembershipPage = () => {
         paymentFormData.append('amount', selectedPlan.price);
         paymentFormData.append('txnid', processingResult.txnid);
         paymentFormData.append('productinfo', `IDA Membership - ${selectedPlan.name}`);
-        paymentFormData.append('registrationType', 'membership');
+        paymentFormData.append('registrationType', 'membership'); // Differentiator
         paymentFormData.append('memberType', selectedPlan.name.toLowerCase().replace(' ', '-'));
         paymentFormData.append('subCategory', '');
-        paymentFormData.append('udf5', processingResult.memberId); // Pass memberId to PayU
+
+        // ADD THIS LINE: Pass the new memberId to PayU
+        paymentFormData.append('udf5', processingResult.memberId);
 
         const payuData = await initiatePayment(paymentFormData);
 
         if (payuData.error) {
-          alert(`Error: ${payuData.error}`);
-          return;
+            alert(`Error: ${payuData.error}`);
+            return;
         }
-  
-        // ** STEP 3: Redirect to PayU **
+
+        // STEP 3: Redirect to PayU
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = 'https://test.payu.in/_payment'; 
-  
+        form.action = 'https://test.payu.in/_payment'; // Use https://secure.payu.in for production
+
         for (const key in payuData) {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = payuData[key];
-          form.appendChild(input);
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = payuData[key];
+            form.appendChild(input);
         }
-  
+
         document.body.appendChild(form);
         form.submit();
     };
@@ -192,7 +194,7 @@ const MembershipPage = () => {
                                     <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleInputChange} className="w-full p-4 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500" required />
                                     <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} className="w-full p-4 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500" required />
                                     <input type="tel" name="mobile" placeholder="Mobile Number" value={formData.mobile} onChange={handleInputChange} className="w-full p-4 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500" required />
-                                    
+
                                     {(selectedPlan.name === 'New Member' || selectedPlan.name === 'Renewal') && (
                                         <input type="text" name="msdcRegistration" placeholder="MSDC Registration (Optional)" value={formData.msdcRegistration} onChange={handleInputChange} className="w-full p-4 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500" />
                                     )}

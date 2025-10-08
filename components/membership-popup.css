@@ -9,7 +9,6 @@
   --orb-size: 80px; /* Mobile default */
   --orb-bg-color: rgba(255, 255, 255, 0.75); 
   --orb-border-color: rgba(56, 189, 248, 0.5);
-  --glow-color: rgba(56, 189, 248, 0.4);
   --text-color: #ffffff; 
   --transition-speed: 0.5s;
 
@@ -81,9 +80,6 @@
   }
 }
 
-.group:hover .static-text {
-  color: #67e8f9;
-}
 
 /* Central logo container - Responsive */
 .logo-orb {
@@ -241,7 +237,5 @@
     transform: scale(1.1);
   }
   
-  .group:active .static-text {
-    color: #67e8f9;
-  }
+  
 }

@@ -62,7 +62,7 @@ function HomePageContent() {
         <div className="relative z-[3] flex flex-col min-h-screen">
           {/* MembershipPopup - Better mobile spacing */}
           <div className="flex justify-center pt-20 sm:pt-24.5 pb-3 px-4">
-            <MembershipPopup />
+            <MembershipPopup text='BECOME A IDA NAGPUR MEMBER' />
           </div>
 
           {/* Divider - Responsive width */}
