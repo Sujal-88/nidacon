@@ -325,7 +325,7 @@ export default function SportsEventPage() {
                     <p className="text-purple-600">₹{totalPrice}</p>
                   </div>
                   <div className="mt-8">
-                    <h3 className="font-semibold mb-2 text-gray-900">What's Included:</h3>
+                    <h3 className="font-semibold mb-2 text-gray-900">What&apos;s Included:</h3>
                     <ul className="space-y-2 text-gray-600">
                       <li className="flex items-center"><Shirt className="w-5 h-5 mr-2 text-purple-600" />Official Event T-shirt</li>
                       <li className="flex items-center"><Utensils className="w-5 h-5 mr-2 text-purple-600" />Breakfast & High Tea</li>
