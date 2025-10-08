@@ -3,10 +3,12 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const txnid = searchParams.get('txnid');
+  const registrationType = searchParams.get('registrationType');
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-green-50">
@@ -29,12 +31,15 @@ function PaymentSuccessContent() {
         )}
 
         <div className="mt-6">
-          <button 
-            onClick={() => window.location.href = '/'}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-          >
-            Back to Home
-          </button>
+            {registrationType === 'sports' ? (
+                <Link href="/sports/login" className="w-full block bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+                    Go to Sports Login
+                </Link>
+            ) : (
+                <Link href="/" className="w-full block bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                    Back to Home
+                </Link>
+            )}
         </div>
       </div>
     </div>

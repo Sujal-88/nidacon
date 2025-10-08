@@ -27,6 +27,9 @@ export async function POST(request) {
 
     if (payuResponse.status === 'success') {
       const registrationType = payuResponse.udf2;
+      const successUrl = new URL('/payment/success', request.url);
+      successUrl.searchParams.set('txnid', txnid);
+      successUrl.searchParams.set('registrationType', registrationType);
 
       // Handle Sports Registration
       if (registrationType === 'sports') {
@@ -61,8 +64,6 @@ export async function POST(request) {
         }
       }
       
-      const successUrl = new URL('/payment/success', request.url);
-      successUrl.searchParams.set('txnid', txnid);
       return NextResponse.redirect(successUrl, { status: 303 });
 
     } else {
