@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Trophy, Shirt, Utensils, Info, User, Cake, Phone, VenetianMask, ArrowRight, X, ArrowLeft, Calendar, MapPin } from 'lucide-react';
 import MembershipPopup from '@/components/MembershipPopup';
 import { initiateSportsPayment } from '@/app/actions';
+import Link from 'next/link';
 
 const sports = [
   { id: 'cricket', name: 'Cricket', image: '/sports/cricket-svg.svg' },
@@ -172,8 +173,8 @@ export default function SportsEventPage() {
       <SizeChartPopup isOpen={isSizeChartOpen} onClose={() => setIsSizeChartOpen(false)} />
 
       <div className="relative z-10 isolate overflow-hidden pt-16">
-        <Image width={450} height={450} src="/sports/cricket.png" alt="" className="absolute top-0 -left-48 w-[250px] opacity-10 pointer-events-none lg:w-[400px] lg:-left-40" />
-        <Image width={380} height={380} src="/sports/badminton.png" alt="" className="absolute top-24 -right-40 w-[200px] opacity-15 pointer-events-none lg:w-[350px] lg:-right-48" />
+        <Image width={450} height={450} src="/sports/cricket.png" alt="" className="absolute top-20 -left-48 w-[250px] opacity-20 pointer-events-none lg:w-[400px] lg:-left-40" />
+        <Image width={380} height={380} src="/sports/badminton.png" alt="" className="absolute top-52 -right-40 w-[200px] opacity-15 pointer-events-none lg:w-[350px] lg:-right-20" />
 
         <div className="container mx-auto px-6 py-12 sm:py-20">
           
@@ -185,8 +186,10 @@ export default function SportsEventPage() {
             </p>
             {/* NEW: Highlighted date and location */}
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-800 font-semibold">
+              <Link href="https://www.google.com/maps/dir//KT+Nagar,+Nagpur,+Maharashtra+440013/@21.1734469,78.9654397,24741m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bd4c1b12072bf49:0x68bb5618d03e914b!2m2!1d79.0478414!2d21.1734669?entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D" target='blank' rel="noopener noreferrer" className="space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row">
                 <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><Calendar size={18} className="mr-2 text-purple-600" />Sat, 15th & Sun, 16th Nov 2025</div>
                 <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><MapPin size={18} className="mr-2 text-purple-600" />ADBA Sports Complex, Nagpur</div>
+              </Link>
             </div>
           </div>
           
