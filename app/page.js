@@ -20,30 +20,6 @@ import SpeakerCarousel from '@/components/SpeakerCarousel';
 import SponsorCarousel from '@/components/SponsorCarousel';
 import ExecutiveBody from '@/components/ExecutiveBody';
 
-const speakers = [
-  {
-    id: 1,
-    name: 'Dr. Tushar Shrirao',
-    qualification: 'President',
-    description: 'Pioneering techniques in minimally invasive facial surgery.',
-    image: '/committee/ketanGarg.jpeg',
-  },
-  {
-    id: 2,
-    name: 'Dr. Ketan Garg',
-    qualification: 'HON.Secreatary',
-    description: 'Advocating for accessible dental care in rural communities.',
-    image: '/committee/rohitMude.jpeg',
-  },
-  {
-    id: 3,
-    name: 'Dr. Rohit Mude',
-    qualification: 'Treasurer',
-    description: 'Innovating new materials for restorative dental procedures.',
-    image: '/committee/tusharShrirao.jpeg',
-  },
-];
-
 function HomePageContent() {
   return (
     <>
@@ -53,37 +29,43 @@ function HomePageContent() {
         <div className="absolute inset-0 bg-black/40 z-[1]"></div>
         <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent z-[2]"></div>
 
-        {/* EventBar - Sticky positioning handled in component */}
         <EventBar
           message="NIDACON 2026 is coming to Nagpur! Click here to learn more and register!"
           href="/event-detail"
         />
         
         <div className="relative z-[3] flex flex-col min-h-screen">
-          {/* MembershipPopup - Better mobile spacing */}
-          <div className="flex justify-center pt-20 sm:pt-24.5 pb-3 px-4">
+          <div className="flex justify-center pt-20 sm:pt-24 pb-3 px-4">
             <MembershipPopup text='BECOME A IDA NAGPUR MEMBER' />
           </div>
 
-          {/* Divider - Responsive width */}
+          {/* ============== NEW NIDASPORTZ SECTION ============== */}
           <div className="my-8 sm:my-12 flex justify-center px-4">
-            <div className="h-[1px] w-full sm:w-2/3 bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"></div>
+            <div className="max-w-md mx-auto">
+                <Link href="/sports" className="block group">
+                <div className="rounded-lg overflow-hidden shadow-2xl shadow-purple-500/20 transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-purple-500/40">
+                    <Image
+                    src="/sports/nidasports.jpeg" // Ensure nidasports.jpg is in your /public folder
+                    alt="NIDASPORTZ 2025 Flyer"
+                    width={800}
+                    height={1131}
+                    layout="responsive"
+                    />
+                </div>
+                </Link>
+            </div>
           </div>
+          {/* ======================================================= */}
         
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 pb-8">
+          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
             <div className="w-full max-w-7xl mx-auto">
               
-              {/* Desktop Layout: Three Column Grid */}
               <div className="hidden lg:flex lg:justify-between lg:items-center lg:gap-8">
-                
-                {/* Left Column: Speaker Carousel */}
                 <div className="flex justify-center animate-float card-3d flex-shrink-0">
                   <SpeakerCarousel />
                 </div>
 
-                {/* Center Column: Main Content */}
                 <div className="text-center flex-1 px-4">
-                  {/* Main Headline */}
                   <div className="space-y-2">
                     <h1 className="font-bold leading-tight">
                       <span className="block text-3xl xl:text-5xl bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent animate-fade-in-up opacity-0 [--animation-delay:100ms]">
@@ -96,13 +78,11 @@ function HomePageContent() {
                       </span>
                     </h1>
                     
-                    {/* Subtitle */}
                     <p className="pt-4 text-lg xl:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
                       Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
                     </p>
                   </div>
                   
-                  {/* Call to Action Button */}
                   <div className="pt-8 xl:pt-10 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
                     <Link href="/register-now" className="inline-block">
                       <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
@@ -117,15 +97,12 @@ function HomePageContent() {
                   </div>
                 </div>
 
-                {/* Right Column: Sponsor Carousel */}
                 <div className="flex justify-center animate-float card-3d flex-shrink-0" style={{ animationDelay: '0.5s' }}>
                   <SponsorCarousel />
                 </div>
               </div>
 
-              {/* Tablet Layout: Two Column Grid (Carousel below content) */}
               <div className="hidden md:block lg:hidden">
-                {/* Main Content */}
                 <div className="text-center mb-12">
                   <div className="space-y-2">
                     <h1 className="font-bold leading-tight">
@@ -158,7 +135,6 @@ function HomePageContent() {
                   </div>
                 </div>
 
-                {/* Carousels Side by Side on Tablet */}
                 <div className="grid grid-cols-2 gap-6 mt-8">
                   <div className="flex justify-center animate-float card-3d">
                     <SpeakerCarousel />
@@ -169,9 +145,7 @@ function HomePageContent() {
                 </div>
               </div>
 
-              {/* Mobile Layout: Single Column Stack */}
               <div className="block md:hidden">
-                {/* Main Content */}
                 <div className="text-center mb-10">
                   <div className="space-y-2">
                     <h1 className="font-bold leading-tight">
@@ -204,7 +178,6 @@ function HomePageContent() {
                   </div>
                 </div>
 
-                {/* Carousels Stacked on Mobile */}
                 <div className="space-y-8 mt-8">
                   <div className="flex justify-center animate-float card-3d">
                     <SpeakerCarousel />
@@ -221,7 +194,6 @@ function HomePageContent() {
         </div>
       </section>
       
-      {/* About IDA Section */}
       <section id='about' className="bg-gray-900 text-white py-16 sm:py-24 lg:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-5 gap-8 md:gap-10 lg:gap-16 items-center">
