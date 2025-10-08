@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Trophy, Shirt, Utensils, Info, User, Cake, Phone, VenetianMask, ArrowRight, X, ArrowLeft, Calendar, MapPin } from 'lucide-react';
+import { Trophy, Shirt, Utensils, Info, User, Cake, Phone, VenetianMask, ArrowRight, X, ArrowLeft, Calendar, MapPin, Mail } from 'lucide-react';
 import MembershipPopup from '@/components/MembershipPopup';
 import { initiateSportsPayment } from '@/app/actions';
 import Link from 'next/link';
@@ -62,7 +62,7 @@ export default function SportsEventPage() {
   const [basePrice, setBasePrice] = useState(1500);
   const [additionalPrice, setAdditionalPrice] = useState(0);
   const [formData, setFormData] = useState({
-    name: '', age: '', mobile: '', gender: '', tshirtSize: '',
+    name: '', age: '', mobile: '', gender: '', tshirtSize: '', email: ''
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,6 +114,11 @@ export default function SportsEventPage() {
     if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
     if (!formData.gender) newErrors.gender = 'Please select a gender.';
     if (!formData.tshirtSize) newErrors.tshirtSize = 'Please select a T-shirt size.';
+    if (!formData.email) {
+      newErrors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email address is invalid.';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -286,6 +291,11 @@ export default function SportsEventPage() {
                                 <option value="">Select Gender</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
                                 </select>
                                 {errors.gender && <p className="mt-1 text-xs text-red-600">{errors.gender}</p>}
+                            </div>
+                             <div className="relative">
+                                <Mail className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
+                                {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                             </div>
                             <div className="relative md:col-span-2">
                                 <div className="flex items-center gap-2">

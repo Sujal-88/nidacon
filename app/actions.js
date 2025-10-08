@@ -124,6 +124,7 @@ export async function initiateSportsPayment(formData) {
   const age = parseInt(formData.get('age'), 10);
   const mobile = formData.get('mobile');
   const gender = formData.get('gender');
+  const email = formData.get('email');
   const tshirtSize = formData.get('tshirtSize');
   const memberType = formData.get('memberType');
   const selectedSports = formData.getAll('selectedSports');
@@ -137,6 +138,7 @@ export async function initiateSportsPayment(formData) {
         age,
         mobile,
         gender,
+        email,
         tshirtSize,
         memberType,
         selectedSports,
@@ -149,7 +151,7 @@ export async function initiateSportsPayment(formData) {
     const paymentFormData = new FormData();
     paymentFormData.append('name', name);
     // email is optional for sports, but we must pass an empty string
-    paymentFormData.append('email', '');
+    paymentFormData.append('email', email);
     paymentFormData.append('mobile', mobile);
     // address is optional for sports, but we must pass an empty string
     paymentFormData.append('address', '');

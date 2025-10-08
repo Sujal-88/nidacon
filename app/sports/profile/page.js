@@ -9,7 +9,7 @@ import { User, Award, Tally3, DollarSign, CheckCircle, Shirt } from 'lucide-reac
 async function getRegistration() {
     const sessionId = cookies().get('sports_session')?.value;
     if (!sessionId) return null;
-    
+
     const registration = await prisma.sportRegistration.findUnique({
         where: { id: sessionId },
     });
@@ -58,29 +58,29 @@ export default async function SportsProfilePage() {
                                 <p className="text-lg font-bold text-gray-800 capitalize">{registration.memberType}</p>
                             </div>
                         </div>
-                        
+
                         <div>
                             <p className="text-sm font-semibold text-gray-500 mb-2">Selected Sports</p>
                             <div className="flex flex-wrap gap-4">
                                 {registration.selectedSports.map(sport => (
                                     <div key={sport} className="flex items-center bg-blue-50 text-blue-800 font-semibold px-4 py-2 rounded-full">
-                                        <Image src={sportIcons[sport]} width={20} height={20} alt={sport} className="mr-2"/>
+                                        <Image src={sportIcons[sport]} width={20} height={20} alt={sport} className="mr-2" />
                                         <span className="capitalize">{sport}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="bg-gray-50 p-4 rounded-lg flex items-center">
-                                <Shirt className="w-6 h-6 text-gray-500 mr-3"/>
+                                <Shirt className="w-6 h-6 text-gray-500 mr-3" />
                                 <div>
                                     <p className="text-sm font-semibold text-gray-500">T-Shirt Size</p>
                                     <p className="text-lg font-bold text-gray-800">{registration.tshirtSize}</p>
                                 </div>
                             </div>
                             <div className="bg-gray-50 p-4 rounded-lg flex items-center">
-                                <DollarSign className="w-6 h-6 text-gray-500 mr-3"/>
+                                <DollarSign className="w-6 h-6 text-gray-500 mr-3" />
                                 <div>
                                     <p className="text-sm font-semibold text-gray-500">Total Price Paid</p>
                                     <p className="text-lg font-bold text-gray-800">₹{registration.totalPrice}</p>
@@ -88,8 +88,13 @@ export default async function SportsProfilePage() {
                             </div>
                         </div>
 
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="text-sm font-semibold text-gray-500">Email</p>
+                            <p className="text-lg font-bold text-gray-800">{registration.email}</p>
+                        </div>
+
                         <div className="bg-green-50 p-4 rounded-lg flex items-center justify-center text-center">
-                            <CheckCircle className="w-6 h-6 text-green-600 mr-3"/>
+                            <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
                             <div>
                                 <p className="text-sm font-semibold text-green-700">Payment Status</p>
                                 <p className="text-lg font-bold text-green-800 capitalize">{registration.paymentStatus}</p>

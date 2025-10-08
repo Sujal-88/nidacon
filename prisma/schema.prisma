@@ -42,6 +42,7 @@ model SportRegistration {
   age            Int
   mobile         String
   gender         String
+  email          String?   // Add this line
   tshirtSize     String
   memberType     String
   selectedSports String[]
@@ -53,7 +54,7 @@ model SportRegistration {
   transactionId  String?   @unique
   payuId         String?   @unique
   paymentStatus  String?
-  userId         String?   @unique // Add this line
+  userId         String?   @unique
 }
 
 // Counter for NIDACON Event User IDs (e.g., NIDA101)
