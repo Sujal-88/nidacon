@@ -212,9 +212,12 @@ export default function SportsEventPage() {
     if (photo) {
       try {
         const response = await fetch(
-          `/api/upload?filename=${photo.name}`,
+          `/api/upload`, // Remove the query parameter
           {
             method: 'POST',
+            headers: {
+              'x-vercel-filename': photo.name, // Send the filename in the header
+            },
             body: photo,
           },
         );
@@ -280,7 +283,7 @@ export default function SportsEventPage() {
     document.body.appendChild(form);
     form.submit();
   };
-  
+
   const getSportName = (sportId) => {
     const sport = sports.find(s => s.id === sportId);
     return sport ? sport.name : '';

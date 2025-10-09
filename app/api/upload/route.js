@@ -2,30 +2,23 @@
 import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge'; // Vercel Blob works best with the Edge runtime
+
 export async function POST(request) {
-  // Diagnostic Log: Check if the environment variable is loaded
-  console.log('Vercel Blob Token Loaded:', !!process.env.BLOB_READ_WRITE_TOKEN);
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { message: 'Vercel Blob Store is not configured.' },
-      { status: 500 }
-    );
-  }
-
-  const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
+  const file = request.body || '';
+  const filename = request.headers.get('x-vercel-filename') || 'image.png';
 
   try {
-    const blob = await put(filename, request.body, {
+    const blob = await put(filename, file, {
       access: 'public',
     });
 
     return NextResponse.json(blob);
+
   } catch (error) {
-    console.error('Error during blob upload:', error);
+    console.error('VERCEL BLOB UPLOAD ERROR:', error);
     return NextResponse.json(
-      { message: 'Error uploading file.', error: error.message },
+      { message: 'Error uploading file to Vercel Blob.' },
       { status: 500 }
     );
   }
