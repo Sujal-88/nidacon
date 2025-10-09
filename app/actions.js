@@ -120,16 +120,17 @@ export async function processMembership(formData) {
 }
 
 export async function initiateSportsPayment(formData) {
-  const name = formData.get('name');
-  const age = parseInt(formData.get('age'), 10);
-  const mobile = formData.get('mobile');
-  const gender = formData.get('gender');
-  const email = formData.get('email');
-  const tshirtSize = formData.get('tshirtSize');
-  const memberType = formData.get('memberType');
-  const selectedSports = formData.getAll('selectedSports');
-  const totalPrice = parseFloat(formData.get('totalPrice'));
-  const txnid = `NIDASPORTZ-${Date.now()}`;
+    const name = formData.get('name');
+    const age = parseInt(formData.get('age'), 10);
+    const mobile = formData.get('mobile');
+    const gender = formData.get('gender');
+    const email = formData.get('email');
+    const tshirtSize = formData.get('tshirtSize');
+    const memberType = formData.get('memberType');
+    const selectedSports = formData.getAll('selectedSports');
+    const totalPrice = parseFloat(formData.get('totalPrice'));
+    const photoUrl = formData.get('photoUrl'); // Get the photo URL
+    const txnid = `NIDASPORTZ-${Date.now()}`;
 
   try {
     await prisma.sportRegistration.create({
@@ -143,6 +144,7 @@ export async function initiateSportsPayment(formData) {
         memberType,
         selectedSports,
         totalPrice,
+        photoUrl, // Save the photo URL
         transactionId: txnid,
         paymentStatus: 'pending',
       },
