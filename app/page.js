@@ -13,8 +13,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import UpcomingEvents from '@/components/UpcomingEvents';
 import Albums from '@/components/Album';
-
-// Import the new components
 import MembershipPopup from '@/components/MembershipPopup';
 import SpeakerCarousel from '@/components/SpeakerCarousel';
 import SponsorCarousel from '@/components/SponsorCarousel';
@@ -33,31 +31,168 @@ function HomePageContent() {
           message="NIDACON 2026 is coming to Nagpur! Click here to learn more and register!"
           href="/event-detail"
         />
-        
+
         <div className="relative z-[3] flex flex-col min-h-screen">
-          <div className="flex justify-center pt-20 sm:pt-24 pb-3 px-4">
+          {/* Membership Button with improved spacing */}
+          <div className="flex justify-center pt-20 sm:pt-24 pb-8 sm:pb-10 px-4">
             <MembershipPopup text='BECOME A IDA NAGPUR MEMBER' />
           </div>
 
-          {/* ============== NEW NIDASPORTZ SECTION ============== */}
-          <div className="my-8 sm:my-12 flex justify-center px-4">
-            <div className="max-w-md mx-auto">
-                <Link href="/sports" className="block group">
-                <div className="rounded-lg overflow-hidden shadow-2xl shadow-purple-500/20 transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-purple-500/40">
-                    <Image
-                    src="/sports/nidasports.jpeg" // Ensure nidasports.jpg is in your /public folder
-                    alt="NIDASPORTZ 2025 Flyer"
-                    width={800}
-                    height={1131}
-                    layout="responsive"
-                    />
+          {/* Main Content Container with consistent spacing */}
+          <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 pb-12 space-y-12 sm:space-y-16 lg:space-y-20">
+
+            {/* ============== ENHANCED NIDASPORTZ SECTION ============== */}
+            <div className="max-w-6xl mx-auto w-full">
+              <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+
+                {/* Left Side - Main Image */}
+                <div className="order-2 lg:order-1 flex justify-center lg:justify-end">
+                  <Link href="/sports" className="block group relative max-w-md w-full">
+                    {/* Decorative sport icons - floating around the main image */}
+                    <div className="absolute -left-8 top-1/4 w-16 h-16 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden sm:block">
+                      <Image
+                        src="/sports/badminton.png"
+                        alt="Badminton"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="absolute -right-8 top-1/3 w-20 h-20 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden sm:block" style={{ animationDelay: '0.3s' }}>
+                      <Image
+                        src="/sports/cricket.png"
+                        alt="Cricket"
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="absolute -left-12 bottom-1/4 w-18 h-18 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden sm:block" style={{ animationDelay: '0.6s' }}>
+                      <Image
+                        src="/sports/pickleball.png"
+                        alt="Pickleball"
+                        width={72}
+                        height={72}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+
+                    {/* Main Title Image */}
+                    <div className="rounded-lg overflow-hidden shadow-2xl shadow-purple-500/20 transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-purple-500/40 relative">
+                      <Image
+                        src="/sports/title.jpeg"
+                        alt="NIDASPORTZ 2025"
+                        width={800}
+                        height={1131}
+                        layout="responsive"
+                        className="relative z-10"
+                      />
+                      {/* Glow effect on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20"></div>
+                    </div>
+                  </Link>
                 </div>
-                </Link>
+
+                {/* Right Side - Text and CTA */}
+                <div className="order-1 lg:order-2 text-center lg:text-left space-y-6">
+                  <div className="space-y-3">
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-in-up">
+                      Unleash Your Athletic Spirit
+                    </h3>
+                    <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                      Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+                    <Link href="/sports">
+                      <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3.5 rounded-full transition-all duration-300 ease-in-out text-base shadow-lg transform hover:scale-105 hover:-translate-y-1">
+                        <span className="relative z-10">Explore Sports</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                      </button>
+                    </Link>
+
+                    {/* Quick sport icons */}
+                    {/* <div className="flex gap-3 items-center">
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                        <Image src="/sports/badminton.png" alt="Badminton" width={24} height={24} />
+                      </div>
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                        <Image src="/sports/cricket.png" alt="Cricket" width={24} height={24} />
+                      </div>
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                        <Image src="/sports/pickleball.png" alt="Pickleball" width={24} height={24} />
+                      </div>
+                    </div> */}
+                  </div>
+                </div>
+              </div>
             </div>
+            {/* ======================================================= */}
+
+            {/* ============== ENHANCED DATE BLOCKS SECTION ============== */}
+            <div className="max-w-6xl mx-auto w-full">
+              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 sm:p-10 lg:p-12 shadow-2xl">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-8">
+
+                  {/* Left Side - Heading with decorative elements */}
+                  <div className="text-center lg:text-left relative">
+                    {/* Decorative corner accent */}
+                    <div className="absolute -top-4 -left-4 w-16 h-16 border-t-4 border-l-4 border-purple-500/30 rounded-tl-2xl hidden lg:block"></div>
+
+                    <div className="space-y-2">
+                      <p className="text-sm sm:text-base font-semibold text-purple-400 uppercase tracking-wider">
+                        Mark Your Calendar
+                      </p>
+                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+                        Block your dates for
+                        <br className="hidden sm:block" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500"> NIDACON 2026</span>
+                      </h2>
+                    </div>
+                  </div>
+
+                  {/* Right Side - Date Cards */}
+                  <div className="flex justify-center lg:justify-end gap-4 sm:gap-6">
+                    <div className="group relative">
+                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 min-w-[100px] sm:min-w-[120px]">
+                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-blue-200 bg-clip-text text-transparent">13</p>
+                        <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                      </div>
+                    </div>
+
+                    <div className="group relative">
+                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 min-w-[100px] sm:min-w-[120px]">
+                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">14</p>
+                        <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                    </div>
+
+                    <div className="group relative">
+                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-500/20 min-w-[100px] sm:min-w-[120px]">
+                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-pink-200 bg-clip-text text-transparent">15</p>
+                        <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* ======================================================= */}
+
           </div>
-          {/* ======================================================= */}
-        
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
+
+          {/* Bottom spacing */}
+          <div className="h-12 sm:h-16 lg:h-20"></div>
+        </div>
+      </section>
+
+
+      {/* NIDACON REGISTRATION COMPONENT */}
+      {/* <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
             <div className="w-full max-w-7xl mx-auto">
               
               <div className="hidden lg:flex lg:justify-between lg:items-center lg:gap-8">
@@ -189,11 +324,10 @@ function HomePageContent() {
               </div>
 
             </div>
-          </div>
-          <div className="h-12 sm:h-16"></div>
-        </div>
-      </section>
-      
+          </div> */}
+
+
+
       <section id='about' className="bg-gray-900 text-white py-16 sm:py-24 lg:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-5 gap-8 md:gap-10 lg:gap-16 items-center">

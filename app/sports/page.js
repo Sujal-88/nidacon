@@ -1,11 +1,64 @@
+// app/sports/page.js
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Trophy, Shirt, Utensils, Info, User, Cake, Phone, VenetianMask, ArrowRight, X, ArrowLeft, Calendar, MapPin, Mail } from 'lucide-react';
-import MembershipPopup from '@/components/MembershipPopup';
 import { initiateSportsPayment } from '@/app/actions';
 import Link from 'next/link';
+
+
+// --- THIS IS THE UPDATED COMPONENT ---
+// It now correctly positions the arc downwards with Indian flag colors for IDA
+const CurvedText = ({ text }) => {
+    const characters = text.split('');
+    const radius = 400; // Larger radius to accommodate bigger font size
+    const totalAngle = 140; // Wider angle spread to prevent letter overlap
+
+    const anglePerChar = totalAngle / (characters.length > 1 ? characters.length - 1 : 1);
+    const startAngle = -totalAngle / 2;
+
+    // Function to get color for specific characters (I, D, A in "Indian Dental Association")
+    const getCharColor = (char, index) => {
+        // Find positions of I, D, A in "Indian Dental Association"
+        const upperText = text.toUpperCase();
+        if (index === 0 && char === 'I') return '#FF9933'; // Saffron/Orange
+        if (index === 7 && char === 'D') return '#FFFFFF'; // White
+        if (index === 14 && char === 'A') return '#138808'; // Green
+        return '#1F2937'; // Default dark gray
+    };
+
+    return (
+        <div className="text-curve" style={{ height: '110px', position: 'relative', overflow: 'visible' }}>
+            {characters.map((char, i) => {
+                const charAngle = startAngle + (i * anglePerChar);
+                const color = getCharColor(char, i);
+                return (
+                    <span
+                        key={i}
+                        style={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '0px',
+                            transform: `rotate(${charAngle}deg)`,
+                            transformOrigin: `0 ${radius}px`,
+                            fontSize: '2.25rem',
+                            fontWeight: '700',
+                            color: color,
+                            textShadow: color === '#FFFFFF' ? '0 0 3px rgba(0,0,0,0.4)' : 'none',
+                            letterSpacing: '0.02em',
+                        }}
+                    >
+                        {char === ' ' ? '\u00A0' : char}
+                    </span>
+                );
+            })}
+        </div>
+    );
+};
+// --- End of component update ---
+
 
 const sports = [
   { id: 'cricket', name: 'Cricket', image: '/sports/cricket-svg.svg' },
@@ -166,6 +219,12 @@ export default function SportsEventPage() {
     form.submit();
   };
 
+  const getSportName = (sportId) => {
+    const sport = sports.find(s => s.id === sportId);
+    return sport ? sport.name : '';
+  }
+
+
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900 font-sans relative">
       <div className="fixed inset-0 z-0">
@@ -183,13 +242,12 @@ export default function SportsEventPage() {
 
         <div className="container mx-auto px-6 py-12 sm:py-20">
           
-          <div className="max-w-md mx-auto text-center mb-12">
-            {/* NEW: Using title.png as the logo */}
+          <div className="max-w-xl mx-auto text-center mb-12">
+            <div className="relative mb-2">
+                <CurvedText text="Indian Dental Association, Nagpur Branch Presents" />
+            </div>
             <Image src="/sports/title.png" alt="NIDASPORTZ 2025 SEASON-6" width={400} height={200} className="mx-auto" />
-            <p className="mt-4 text-lg font-semibold text-gray-800">
-              Indian Dental Association, Nagpur Branch Presents
-            </p>
-            {/* NEW: Highlighted date and location */}
+            
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-800 font-semibold">
               <Link href="https://www.google.com/maps/dir//KT+Nagar,+Nagpur,+Maharashtra+440013/@21.1734469,78.9654397,24741m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bd4c1b12072bf49:0x68bb5618d03e914b!2m2!1d79.0478414!2d21.1734669?entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D" target='blank' rel="noopener noreferrer" className="space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row">
                 <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><Calendar size={18} className="mr-2 text-purple-600" />Sat, 15th & Sun, 16th Nov 2025</div>
@@ -198,6 +256,7 @@ export default function SportsEventPage() {
             </div>
           </div>
           
+          {/* The rest of the page logic remains unchanged */}
           <form onSubmit={handleSubmit} noValidate>
             {step === 1 && (
                 <div className="max-w-4xl mx-auto">
@@ -213,7 +272,6 @@ export default function SportsEventPage() {
                                 <p className="text-2xl font-bold text-gray-800 mt-1">₹2000</p>
                             </div>
                         </div>
-                         {/* NEW: Highlighted includes section */}
                         <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                             <h4 className="font-bold text-center text-gray-800">Registration Fee Includes:</h4>
                             <ul className="mt-2 text-center text-sm text-gray-600 space-y-1">
@@ -227,10 +285,11 @@ export default function SportsEventPage() {
                         </div>
                     </div>
                     
-                    {/* NEW: Membership Popup moved here */}
                     <div className="text-center text-sm text-red-600 font-bold p-4 bg-white/90 rounded-lg border border-gray-200 mb-8">
-                        <div className="flex items-center justify-center mb-2">
-                           <MembershipPopup text='RENEW/JOIN MEMBERSHIP' textColor='black' />
+                        <div className="flex items-center justify-center mb-2 space-x-4">
+                           <Link href="/membership" className="text-black font-bold underline">RENEW MEMBERSHIP</Link>
+                           <span className='text-black'>/</span>
+                           <Link href="/membership" className="text-black font-bold underline">JOIN MEMBERSHIP</Link>
                         </div>
                          Even if you have a current membership, it is only valid until Dec 31st of this year. <br/>
                          To get member benefits for NIDASPORTZ, please renew your membership for the next year.
@@ -255,6 +314,20 @@ export default function SportsEventPage() {
                                         <span className="font-semibold">{sport.name}</span>
                                     </button>
                                 ))}
+                                <div className="p-4 border rounded-lg bg-gray-50 text-left text-sm">
+                                    <h3 className="font-bold text-gray-800 mb-2">Your Selection:</h3>
+                                    {selectedSports.length === 0 ? (
+                                        <p className="text-gray-500">No sports selected yet.</p>
+                                    ) : (
+                                        <ul className="space-y-1">
+                                            {selectedSports.map(sportId => (
+                                                <li key={sportId} className="capitalize text-gray-700">{getSportName(sportId)}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    <div className="border-t my-2"></div>
+                                    <div className="font-bold">Total: ₹{totalPrice}</div>
+                                </div>
                             </div>
                         </div>
                         <div className="mt-8 text-center">
@@ -321,13 +394,20 @@ export default function SportsEventPage() {
                           
                           <div className="space-y-3 text-gray-700">
                             <div className="flex justify-between">
-                              <p>Base Fee ({selectedSports.length > 0 ? 1 : 0} sport):</p>
-                              <p className="font-semibold">₹{basePrice}</p>
+                                <span>Base Fee ({getSportName(selectedSports[0])}):</span>
+                                <span className="font-semibold">₹{basePrice}</span>
                             </div>
                             {additionalPrice > 0 && (
-                                <div className="flex justify-between">
-                                    <p>Additional Sports ({Math.max(0, selectedSports.length - 1)} x ₹500):</p>
-                                    <p className="font-semibold">₹{additionalPrice}</p>
+                                <div className="border-t pt-3 mt-3">
+                                    <p className="font-semibold mb-2">Additional Sports:</p>
+                                    <ul className="space-y-1 pl-2">
+                                        {selectedSports.slice(1).map(sportId => (
+                                            <li key={sportId} className="flex justify-between">
+                                                <span className='capitalize'>{getSportName(sportId)}:</span>
+                                                <span>₹500</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
                             )}
                           </div>
