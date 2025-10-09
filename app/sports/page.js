@@ -198,6 +198,7 @@ export default function SportsEventPage() {
     }
   }
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateStep2()) {
@@ -205,34 +206,25 @@ export default function SportsEventPage() {
     }
 
     setIsSubmitting(true);
+    let photoUrl = '';
 
-    let photoUrl = ''; // Default to an empty string
-
-    // Step 1: Upload the image if it exists
     if (photo) {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', photo);
+
       try {
-        const response = await fetch(
-          `/api/upload`, // Remove the query parameter
-          {
-            method: 'POST',
-            headers: {
-              'x-vercel-filename': photo.name, // Send the filename in the header
-            },
-            body: photo,
-          },
-        );
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
 
-        const newBlob = await response.json();
+        const result = await response.json();
 
-        // --- THIS IS THE FIX ---
-        // Only assign the URL if it actually exists in the response.
-        if (newBlob && newBlob.url) {
-          photoUrl = newBlob.url;
+        if (response.ok && result.url) {
+          photoUrl = result.url;
         } else {
-            // Optional: Log an error if the upload response is not what we expect
-            console.error('Upload completed but no URL was returned:', newBlob);
+          throw new Error(result.message || 'Upload failed');
         }
-
       } catch (error) {
         console.error('Error uploading image:', error);
         alert('Error uploading image. Please try again.');
@@ -241,25 +233,19 @@ export default function SportsEventPage() {
       }
     }
 
-    // Step 2: Manually create the FormData object
-    const formDataObj = new FormData();
-    
-    // Append data from state
-    formDataObj.append('name', formData.name);
-    formDataObj.append('age', formData.age);
-    formDataObj.append('mobile', formData.mobile);
-    formDataObj.append('gender', formData.gender);
-    formDataObj.append('email', formData.email);
-    formDataObj.append('tshirtSize', formData.tshirtSize);
-    
-    // Append other dynamic values
-    formDataObj.append('memberType', memberType);
-    selectedSports.forEach(sport => formDataObj.append('selectedSports', sport));
-    formDataObj.append('totalPrice', totalPrice);
-    formDataObj.append('photoUrl', photoUrl); // Add the photoUrl (now safely a string)
+    const paymentFormData = new FormData();
+    paymentFormData.append('name', formData.name);
+    paymentFormData.append('age', formData.age);
+    paymentFormData.append('mobile', formData.mobile);
+    paymentFormData.append('gender', formData.gender);
+    paymentFormData.append('email', formData.email);
+    paymentFormData.append('tshirtSize', formData.tshirtSize);
+    paymentFormData.append('memberType', memberType);
+    selectedSports.forEach(sport => paymentFormData.append('selectedSports', sport));
+    paymentFormData.append('totalPrice', totalPrice);
+    paymentFormData.append('photoUrl', photoUrl);
 
-    // Step 3: Call the server action
-    const payuData = await initiateSportsPayment(formDataObj);
+    const payuData = await initiateSportsPayment(paymentFormData);
 
     if (payuData.error) {
       alert(`Error: ${payuData.error}`);
@@ -267,7 +253,6 @@ export default function SportsEventPage() {
       return;
     }
 
-    // Step 4: Redirect to PayU
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'https://test.payu.in/_payment';
