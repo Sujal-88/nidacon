@@ -206,7 +206,7 @@ export default function SportsEventPage() {
 
     setIsSubmitting(true);
 
-    let photoUrl = '';
+    let photoUrl = ''; // Default to an empty string
 
     // Step 1: Upload the image if it exists
     if (photo) {
@@ -220,7 +220,16 @@ export default function SportsEventPage() {
         );
 
         const newBlob = await response.json();
-        photoUrl = newBlob.url;
+
+        // --- THIS IS THE FIX ---
+        // Only assign the URL if it actually exists in the response.
+        if (newBlob && newBlob.url) {
+          photoUrl = newBlob.url;
+        } else {
+            // Optional: Log an error if the upload response is not what we expect
+            console.error('Upload completed but no URL was returned:', newBlob);
+        }
+
       } catch (error) {
         console.error('Error uploading image:', error);
         alert('Error uploading image. Please try again.');
@@ -244,9 +253,9 @@ export default function SportsEventPage() {
     formDataObj.append('memberType', memberType);
     selectedSports.forEach(sport => formDataObj.append('selectedSports', sport));
     formDataObj.append('totalPrice', totalPrice);
-    formDataObj.append('photoUrl', photoUrl); // Add the new photo URL
+    formDataObj.append('photoUrl', photoUrl); // Add the photoUrl (now safely a string)
 
-    // Step 3: Call the server action with the manually created data
+    // Step 3: Call the server action
     const payuData = await initiateSportsPayment(formDataObj);
 
     if (payuData.error) {
@@ -255,10 +264,10 @@ export default function SportsEventPage() {
       return;
     }
 
-    // Step 4: Redirect to PayU (this part remains the same)
+    // Step 4: Redirect to PayU
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = 'https://test.payu.in/_payment'; // Use https://secure.payu.in for production
+    form.action = 'https://test.payu.in/_payment';
 
     for (const key in payuData) {
       const input = document.createElement('input');
@@ -271,6 +280,7 @@ export default function SportsEventPage() {
     document.body.appendChild(form);
     form.submit();
   };
+  
   const getSportName = (sportId) => {
     const sport = sports.find(s => s.id === sportId);
     return sport ? sport.name : '';
