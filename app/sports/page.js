@@ -292,9 +292,10 @@ export default function SportsEventPage() {
 
         <div className="container mx-auto px-6 py-12 sm:py-20">
 
-          <div className="max-w-xl mx-auto text-center mb-12">
+          <div className="max-w-xl mx-auto mb-12">
             <div className="relative mb-2">
               <CurvedText text="Indian Dental Association, Nagpur Branch Presents" />
+              {/* <Image src="/sports/text-title.png" alt="Indian Dental Association, Nagpur Branch Presents" width={1000} height={100} className="mx-auto" /> */}
             </div>
             <Image src="/sports/title.png" alt="NIDASPORTZ 2025 SEASON-6" width={400} height={200} className="mx-auto" />
 
