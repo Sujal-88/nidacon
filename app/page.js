@@ -156,24 +156,27 @@ function HomePageContent() {
                   <div className="flex justify-center lg:justify-end gap-4 sm:gap-6">
                     <div className="group relative">
                       <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 min-w-[100px] sm:min-w-[120px]">
-                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-blue-200 bg-clip-text text-transparent">13</p>
+                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-blue-200 bg-clip-text text-transparent">9<sup className='text-white'>th</sup></p>
                         <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
+                        <p className="text-bold sm:text-lg font-medium text-white mt-2">Friday</p>
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                       </div>
                     </div>
 
                     <div className="group relative">
                       <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 min-w-[100px] sm:min-w-[120px]">
-                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">14</p>
+                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">10<sup className='text-white'>th</sup></p>
                         <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
+                        <p className="text-bold sm:text-lg font-medium text-white mt-2">Saturday</p>
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
                       </div>
                     </div>
 
                     <div className="group relative">
                       <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-500/20 min-w-[100px] sm:min-w-[120px]">
-                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-pink-200 bg-clip-text text-transparent">15</p>
+                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-pink-200 bg-clip-text text-transparent">11<sup className='text-white'>th</sup></p>
                         <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
+                        <p className="text-bold sm:text-lg font-medium text-white mt-2">Sunday</p>
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                       </div>
                     </div>
