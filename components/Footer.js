@@ -45,9 +45,9 @@ const Footer = () => {
           
           {/* Column 1: Branding & About */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <h2 className="text-xl sm:text-2xl font-bold">NIDACON 2026</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">Indian Dental Association</h2>
             <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 leading-relaxed">
-              The premier dental conference by IDA Nagpur, fostering innovation, community, and professional excellence.
+              The Nagpur Branch of the Indian Dental Association (IDA) is dedicated to advancing dental health and education. Join us in our mission to promote excellence in dentistry and community well-being.
             </p>
             <div className="mt-5 sm:mt-6 flex space-x-3 sm:space-x-4">
               {socialLinks.map((social, index) => (

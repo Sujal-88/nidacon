@@ -14,7 +14,7 @@ const EventBar = ({
     >
       <div
         className="
-          sticky top-[76px] z-40 flex w-full items-center justify-between 
+          sticky top-[82px] z-40 flex w-full items-center justify-between 
           overflow-hidden 
           bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 
           text-white shadow-lg shadow-blue-500/20

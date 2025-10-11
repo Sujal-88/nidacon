@@ -158,7 +158,7 @@
 
 html {
   /* For a 32x32 image, '16 16' sets the hotspot to the center. */
-  cursor: url('/tooth.png') 16 16, auto !important;
+  cursor: url('/tooth.png') 16 16, auto;
 }
 
 /* Retain pointer for interactive elements */

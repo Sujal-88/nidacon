@@ -46,7 +46,6 @@ const Navbar = () => {
         loginText = 'Event Login';
     }
 
-
     const handleScrollTo = (e, href) => {
         if (!isHomePage && href.startsWith('/#')) {
             setMobileMenuOpen(false);
@@ -65,7 +64,8 @@ const Navbar = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            // A threshold of 10px is enough for the effect
+            setIsScrolled(window.scrollY > 10);
 
             if (isHomePage) {
                 let currentSection = '';
@@ -83,12 +83,14 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [isHomePage]);
     
-    const hasDarkBg = isScrolled || isMobileMenuOpen || !isHomePage;
+    // This variable determines when the blurred background is shown
+    const hasBackground = isScrolled || isMobileMenuOpen || !isHomePage;
 
     return (
         <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ease-in-out ${
-            hasDarkBg
-                ? 'bg-black/30 backdrop-blur-xl shadow-lg border-b border-white/10' 
+            hasBackground
+                // UPDATED: Replaced solid bg with semi-transparent black and a stronger blur
+                ? 'bg-black/30 backdrop-blur-lg shadow-lg' 
                 : 'bg-transparent'
         }`}>
             <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
@@ -108,17 +110,17 @@ const Navbar = () => {
                         </div>
                         <div className="flex flex-col -space-y-0.5 sm:-space-y-1 lg:-space-y-1.5">
                             <h1 className="text-xs sm:text-sm md:text-base lg:text-xl font-bold text-gray-200 tracking-tight leading-tight">
-                                <span className="text-orange-500">I</span>ndian{' '}
-                                <span className="text-white">D</span>ental{' '}
-                                <span className="text-green-500">A</span>ssociation
+                                <span className="text-orange-500">Indian</span>{' '}
+                                <span className="text-white">Dental</span>{' '}
+                                <span className="text-green-300">Association</span>
                             </h1>
-                            <span className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-semibold text-gray-400 tracking-wider lg:tracking-widest pl-0.5 sm:pl-1">
+                            <span className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-semibold text-white tracking-wider lg:tracking-widest pl-0.5 sm:pl-1">
                                 NAGPUR BRANCH
                             </span>
                         </div>
                     </Link>
 
-                    {/* Desktop Navigation - Improved spacing */}
+                    {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center space-x-1">
                         {displayedNavLinks.map((link) => (
                             <NavLink 
@@ -137,7 +139,7 @@ const Navbar = () => {
                                 <Link 
                                     href="/sponsor-brochure.pdf"
                                     download="IDA_Nagpur_Sponsorship_Brochure.pdf"
-                                    className="px-3 xl:px-4 py-2 bg-green-500/80 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-all duration-300 hover:scale-105 hover:bg-green-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                    className="px-3 xl:px-4 py-2 bg-amber-500 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-all duration-300 hover:scale-105 hover:bg-amber-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
                                 >
                                     <div className="flex items-center space-x-1.5 xl:space-x-2">
                                         <Download className="w-3.5 h-3.5 xl:w-4 xl:h-4" />
@@ -148,7 +150,7 @@ const Navbar = () => {
                                 
                                 <Link 
                                     href={loginHref}
-                                    className="px-3 xl:px-4 py-2 bg-cyan-500/80 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-all duration-300 hover:scale-105 hover:bg-cyan-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                                    className="px-3 xl:px-4 py-2 bg-indigo-800/80 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-all duration-300 hover:scale-105 hover:bg-indigo-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2"
                                 >
                                     <div className="flex items-center space-x-1.5 xl:space-x-2">
                                         <LogIn className="w-3.5 h-3.5 xl:w-4 xl:h-4" />
@@ -169,7 +171,7 @@ const Navbar = () => {
                         </div>
                     </div>
 
-                    {/* Tablet Navigation (md-lg) - Compact buttons */}
+                    {/* Tablet Navigation (md-lg) */}
                     <div className="hidden md:flex lg:hidden items-center space-x-2">
                         <Link 
                             href="/sponsor-brochure.pdf"
@@ -200,7 +202,7 @@ const Navbar = () => {
 
                         <button 
                             onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-                            className={`p-2 rounded-lg transition-colors ml-2 ${hasDarkBg ? 'bg-white/10' : 'bg-white/50'}`}
+                            className={`p-2 rounded-lg transition-colors ml-2 ${hasBackground ? 'bg-white/10' : 'bg-white/50'}`}
                             aria-label="Toggle menu"
                         >
                             {isMobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}
@@ -221,7 +223,7 @@ const Navbar = () => {
 
                         <button 
                             onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-                            className={`p-1.5 sm:p-2 rounded-lg transition-colors ${hasDarkBg ? 'bg-white/10' : 'bg-white/50'}`}
+                            className={`p-1.5 sm:p-2 rounded-lg transition-colors ${hasBackground ? 'bg-white/10' : 'bg-white/50'}`}
                             aria-label="Toggle mobile menu"
                         >
                             {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-white" />}
@@ -232,48 +234,51 @@ const Navbar = () => {
 
             {/* Mobile/Tablet Menu */}
             <div className={`lg:hidden transition-all duration-300 ease-in-out ${
-                isMobileMenuOpen ? 'max-h-[calc(100vh-4rem)] py-3 sm:py-4' : 'max-h-0'
-            } overflow-y-auto bg-black/50 backdrop-blur-xl`}>
-                <div className="flex flex-col space-y-1.5 sm:space-y-2 px-3 sm:px-4">
-                    {displayedNavLinks.map((link) => (
-                        <MobileNavLink 
-                            key={link.name}
-                            href={link.href}
-                            isActive={isHomePage && activeSection === link.id}
-                            onClick={(e) => handleScrollTo(e, link.href)}
-                        >
-                            {link.icon}
-                            <span>{link.name}</span>
-                        </MobileNavLink>
-                    ))}
-                    <div className="pt-3 sm:pt-4 mt-2 border-t border-white/20 space-y-2">
-                        <a 
-                            href="/sponsor-brochure.pdf"
-                            download="IDA_Nagpur_Sponsorship_Brochure.pdf"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="w-full py-2.5 sm:py-3 bg-green-500 text-white rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center space-x-2 hover:bg-green-600 transition-colors"
-                        >
-                            <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-                            <span>Download Brochure</span>
-                        </a>
-                        
-                        <Link 
-                            href={loginHref} 
-                            onClick={() => setMobileMenuOpen(false)} 
-                            className="w-full py-2.5 sm:py-3 bg-cyan-500 text-white rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center space-x-2 hover:bg-cyan-600 transition-colors"
-                        >
-                            <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
-                            <span>{loginText}</span>
-                        </Link>
+                isMobileMenuOpen ? 'max-h-[calc(100vh-4rem)]' : 'max-h-0'
+            } overflow-hidden`}>
+                {/* UPDATED: Removed old background classes and placed them on a new inner div for padding */}
+                <div className="bg-gray-900/90 backdrop-blur-md px-3 sm:px-4 py-3 sm:py-4">
+                    <div className="flex flex-col space-y-1.5 sm:space-y-2">
+                        {displayedNavLinks.map((link) => (
+                            <MobileNavLink 
+                                key={link.name}
+                                href={link.href}
+                                isActive={isHomePage && activeSection === link.id}
+                                onClick={(e) => handleScrollTo(e, link.href)}
+                            >
+                                {link.icon}
+                                <span>{link.name}</span>
+                            </MobileNavLink>
+                        ))}
+                        <div className="pt-3 sm:pt-4 mt-2 border-t border-white/20 space-y-2">
+                            <a 
+                                href="/sponsor-brochure.pdf"
+                                download="IDA_Nagpur_Sponsorship_Brochure.pdf"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="w-full py-2.5 sm:py-3 bg-green-500 text-white rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center space-x-2 hover:bg-green-600 transition-colors"
+                            >
+                                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span>Download Brochure</span>
+                            </a>
+                            
+                            <Link 
+                                href={loginHref} 
+                                onClick={() => setMobileMenuOpen(false)} 
+                                className="w-full py-2.5 sm:py-3 bg-cyan-500 text-white rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center space-x-2 hover:bg-cyan-600 transition-colors"
+                            >
+                                <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span>{loginText}</span>
+                            </Link>
 
-                        <Link 
-                            href="/register-now" 
-                            onClick={() => setMobileMenuOpen(false)} 
-                            className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center space-x-2 hover:shadow-lg transition-shadow"
-                        >
-                            <Ticket className="w-4 h-4 sm:w-5 sm:h-5" />
-                            <span>Register Now</span>
-                        </Link>
+                            <Link 
+                                href="/register-now" 
+                                onClick={() => setMobileMenuOpen(false)} 
+                                className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold text-sm sm:text-base flex items-center justify-center space-x-2 hover:shadow-lg transition-shadow"
+                            >
+                                <Ticket className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span>Register Now</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
