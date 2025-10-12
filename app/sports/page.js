@@ -76,13 +76,13 @@ export default function SportsEventPage() {
   const [photoPreview, setPhotoPreview] = useState('');
 
   useEffect(() => {
-    const newBasePrice = memberType === 'member' ? 15 : 20;
+    const newBasePrice = memberType === 'member' ? 1500 : 2000;
     const additionalSportsCount = Math.max(0, selectedSports.length - 1);
-    const newAdditionalPrice = additionalSportsCount * 5;
+    const newAdditionalPrice = additionalSportsCount * 500;
 
     setBasePrice(newBasePrice);
     setAdditionalPrice(newAdditionalPrice);
-    setTotalPrice(newBasePrice + newAdditionalPrice + (newBasePrice + newAdditionalPrice) * 2.30 / 100); // Including 2.30% 
+    setTotalPrice(newBasePrice + newAdditionalPrice + (newBasePrice + newAdditionalPrice) * 2.50 / 100); // Including 2.50% 
   }, [memberType, selectedSports]);
 
   useEffect(() => {
