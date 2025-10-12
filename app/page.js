@@ -1,7 +1,7 @@
 // app/page.js
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Import useEffect
 import SplashScreen from '@/components/SplashScreen';
 import BackgroundVideo from '@/components/BackgroundVideo';
 import { Ticket, Users, BookOpen, HeartHandshake } from 'lucide-react';
@@ -273,6 +273,20 @@ function HomePageContent() {
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
+  // This effect will run once when the component mounts
+  useEffect(() => {
+    // Check if the splash screen has been shown before in this session
+    const hasVisited = sessionStorage.getItem('hasVisitedHomePage');
+
+    if (hasVisited) {
+      // If it has, skip the splash screen
+      setIsLoading(false);
+    } else {
+      // If not, mark it as shown for this session
+      sessionStorage.setItem('hasVisitedHomePage', 'true');
+    }
+  }, []); // The empty dependency array ensures this runs only once on mount
+
   const handleAnimationComplete = () => {
     setIsLoading(false);
   };
@@ -288,7 +302,7 @@ export default function Home() {
   );
 }
 
-{/* NIDACON REGISTRATION COMPONENT */ }
+{/* NIDACON REGISTRATION COMPONENT */}
 {/* <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
             <div className="w-full max-w-7xl mx-auto">
               
