@@ -258,7 +258,7 @@ export default function SportsEventPage() {
             <Image src="/sports/title.png" alt="NIDASPORTZ 2025 SEASON-6" width={400} height={200} className="mx-auto" />
 
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-800 font-semibold">
-                <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><Calendar size={18} className="mr-2 text-purple-600" />Saturday, 15th Nov 2025 <br /> Sunday, 16th Nov 2025</div>
+              <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><Calendar size={18} className="mr-2 text-purple-600" />Saturday, 15th Nov 2025 <br /> Sunday, 16th Nov 2025</div>
               <Link href="https://www.google.com/maps/dir//KT+Nagar,+Nagpur,+Maharashtra+440013/@21.1734469,78.9654397,24741m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bd4c1b12072bf49:0x68bb5618d03e914b!2m2!1d79.0478414!2d21.1734669?entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D" target='blank' rel="noopener noreferrer" className="space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row">
                 <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-5 flex items-center shadow-sm"><MapPin size={18} className="mr-2 text-purple-600" />ADBA Sports Complex, Nagpur</div>
               </Link>
@@ -324,8 +324,8 @@ export default function SportsEventPage() {
                           key={sport.id}
                           onClick={() => handleSportChange(sport.id)}
                           className={`p-4 border rounded-lg transition-all duration-300 ease-in-out text-center transform hover:scale-105 ${selectedSports.includes(sport.id)
-                              ? 'bg-purple-100 border-purple-500 text-purple-700 shadow-md'
-                              : 'bg-white border-gray-300 text-gray-700 hover:border-purple-400  hover:bg-purple-100 hover:shadow-lg'
+                            ? 'bg-purple-100 border-purple-500 text-purple-700 shadow-md'
+                            : 'bg-white border-gray-300 text-gray-700 hover:border-purple-400  hover:bg-purple-100 hover:shadow-lg'
                             }`}
                         >
                           <div className="w-16 h-16 mx-auto mb-2 relative"><Image src={sport.image} alt={`${sport.name} icon`} fill sizes="64px" className="object-contain" /></div>
@@ -388,11 +388,11 @@ export default function SportsEventPage() {
                         <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
                         {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                       </div>
-
-                      <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
-                        Profile Photo
-                      </label>
+                      
                       <div className="mt-2 flex items-center gap-x-3">
+                        <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
+                          Profile Photo
+                        </label>
                         {photoPreview ? (
                           <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
                         ) : (
