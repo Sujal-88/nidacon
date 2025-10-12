@@ -43,7 +43,7 @@ export async function initiatePayment(formData) {
 
   const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
   
-  const hash = crypto.createHash('sha522').update(hashString).digest('hex');
+  const hash = crypto.createHash('sha512').update(hashString).digest('hex');
 
   const paymentData = {
     key: merchantKey,
