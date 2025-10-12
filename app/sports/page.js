@@ -82,7 +82,7 @@ export default function SportsEventPage() {
 
     setBasePrice(newBasePrice);
     setAdditionalPrice(newAdditionalPrice);
-    setTotalPrice(newBasePrice + newAdditionalPrice);
+    setTotalPrice(newBasePrice + newAdditionalPrice + (newBasePrice + newAdditionalPrice) * 2.30 / 100); // Including 2.30% 
   }, [memberType, selectedSports]);
 
   useEffect(() => {
