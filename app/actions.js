@@ -28,6 +28,7 @@ export async function initiatePayment(formData) {
 
   const amountString = parseFloat(amount).toFixed(2);
 
+  // Ensure all fields are defined as empty strings if null, to guarantee hash integrity.
   const firstname = (name || '').replace(/\|/g, "");
   const email_clean = (email || '').replace(/\|/g, "");
   const productinfo_clean = (productinfo || '').replace(/\|/g, "");
@@ -37,22 +38,24 @@ export async function initiatePayment(formData) {
   const udf4 = (subCategory || '').replace(/\|/g, "");
   const udf5 = (formData.get('udf5') || '').replace(/\|/g, "");
 
-  const successUrl = new URL('api/payment/success', baseUrl).href;
-  const failureUrl = new URL('api/payment/failure', baseUrl).href;
+  const successUrl = `${baseUrl}/api/payment/success`;
+  const failureUrl = `${baseUrl}/api/payment/failure`;
 
-  // ==================== THE FINAL, CORRECTED HASH STRING ====================
-  // This string format has been verified to match PayU's SHA512 requirements exactly,
-  // including the 6 pipes (representing 5 empty UDFs) between udf5 and the salt.
+  // --- THIS IS THE CRITICAL FIX ---
+  // The string MUST contain |||||| (6 pipes) between udf5 and the SALT.
   const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
+
+  console.log("--- FINAL HASH STRING FOR PAYU ---");
+  console.log(hashString);
+
   const hash = crypto.createHash('sha512').update(hashString).digest('hex');
-  // ==========================================================================
 
   const paymentData = {
     key: merchantKey,
     txnid,
     amount: amountString,
     productinfo: productinfo_clean,
-    firstname,
+    firstname: firstname,
     email: email_clean,
     phone: mobile,
     surl: successUrl,
@@ -67,8 +70,7 @@ export async function initiatePayment(formData) {
 
   return paymentData;
 }
-
-// (The other functions in this file remain unchanged)
+// (The other functions in this file, processMembership and initiateSportsPayment, do not need changes)
 export async function processMembership(formData) {
   const name = formData.get('name');
   const email = formData.get('email');
@@ -127,7 +129,7 @@ export async function initiateSportsPayment(formData) {
     const memberType = formData.get('memberType');
     const selectedSports = formData.getAll('selectedSports');
     const totalPrice = parseFloat(formData.get('totalPrice'));
-    const photoUrl = formData.get('photoUrl');
+    const photoUrl = formData.get('photoUrl'); // Get the photo URL
     const txnid = `NIDASPORTZ-${Date.now()}`;
 
   try {
@@ -142,7 +144,7 @@ export async function initiateSportsPayment(formData) {
         memberType,
         selectedSports,
         totalPrice,
-        photoUrl,
+        photoUrl, // Save the photo URL
         transactionId: txnid,
         paymentStatus: 'pending',
       },
@@ -150,8 +152,10 @@ export async function initiateSportsPayment(formData) {
 
     const paymentFormData = new FormData();
     paymentFormData.append('name', name);
+    // email is optional for sports, but we must pass an empty string
     paymentFormData.append('email', email);
     paymentFormData.append('mobile', mobile);
+    // address is optional for sports, but we must pass an empty string
     paymentFormData.append('address', '');
     paymentFormData.append('amount', totalPrice);
     paymentFormData.append('txnid', txnid);
