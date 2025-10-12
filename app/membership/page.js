@@ -119,7 +119,7 @@ const MembershipPage = () => {
         // STEP 3: Redirect to PayU
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = 'https://payu.in/_payment'; // Use https://secure.payu.in for production
+        form.action = 'https://secure.payu.in/_payment'; // Use https://secure.payu.in for production
 
         for (const key in payuData) {
             const input = document.createElement('input');
