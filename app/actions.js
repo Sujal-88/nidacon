@@ -28,7 +28,6 @@ export async function initiatePayment(formData) {
 
   const amountString = parseFloat(amount).toFixed(2);
 
-  // --- Field Cleanup: Ensure no extra pipes ---
   const firstname = (name || '').replace(/\|/g, "");
   const email_clean = (email || '').replace(/\|/g, "");
   const productinfo_clean = (productinfo || '').replace(/\|/g, "");
@@ -38,16 +37,16 @@ export async function initiatePayment(formData) {
   const udf4 = (subCategory || '').replace(/\|/g, "");
   const udf5 = (formData.get('udf5') || '').replace(/\|/g, "");
 
-  // --- URL FIX: Use URL constructor to handle slashes correctly ---
   const successUrl = new URL('api/payment/success', baseUrl).href;
   const failureUrl = new URL('api/payment/failure', baseUrl).href;
 
-  // --- ROBUST HASHING: Use an array to guarantee correct pipe separation ---
+  // --- FINAL FIX: Use an array with the EXACT number of required placeholders ---
+  // This array ensures the hash string is always correctly formatted as per PayU's spec.
   const hashParams = [
     merchantKey, txnid, amountString, productinfo_clean,
     firstname, email_clean,
     udf1, udf2, udf3, udf4, udf5,
-    '', '', '', '', '', // The five empty placeholders
+    '', '', '', '', '', '', // The SIX required empty placeholders
     salt
   ];
   const hashString = hashParams.join('|');
@@ -58,7 +57,7 @@ export async function initiatePayment(formData) {
     txnid,
     amount: amountString,
     productinfo: productinfo_clean,
-    firstname: firstname,
+    firstname,
     email: email_clean,
     phone: mobile,
     surl: successUrl,
@@ -70,11 +69,6 @@ export async function initiatePayment(formData) {
     udf5,
     hash,
   };
-  
-  // Log the final data for verification
-  console.log("---------- PAYU PRE-PAYMENT DEBUG (v2) ----------");
-  console.log("Full Payment Data Payload:", paymentData);
-  console.log("------------------------------------------");
 
   return paymentData;
 }
@@ -138,7 +132,7 @@ export async function initiateSportsPayment(formData) {
     const memberType = formData.get('memberType');
     const selectedSports = formData.getAll('selectedSports');
     const totalPrice = parseFloat(formData.get('totalPrice'));
-    const photoUrl = formData.get('photoUrl'); // Get the photo URL
+    const photoUrl = formData.get('photoUrl');
     const txnid = `NIDASPORTZ-${Date.now()}`;
 
   try {
@@ -153,7 +147,7 @@ export async function initiateSportsPayment(formData) {
         memberType,
         selectedSports,
         totalPrice,
-        photoUrl, // Save the photo URL
+        photoUrl,
         transactionId: txnid,
         paymentStatus: 'pending',
       },
@@ -161,10 +155,8 @@ export async function initiateSportsPayment(formData) {
 
     const paymentFormData = new FormData();
     paymentFormData.append('name', name);
-    // email is optional for sports, but we must pass an empty string
     paymentFormData.append('email', email);
     paymentFormData.append('mobile', mobile);
-    // address is optional for sports, but we must pass an empty string
     paymentFormData.append('address', '');
     paymentFormData.append('amount', totalPrice);
     paymentFormData.append('txnid', txnid);
