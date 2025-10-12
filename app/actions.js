@@ -5,7 +5,6 @@ import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { generateMemberId } from '@/lib/memberId';
 
-// This is the function we are adding detailed logging to.
 export async function initiatePayment(formData) {
   const name = formData.get('name');
   const email = formData.get('email');
@@ -29,6 +28,7 @@ export async function initiatePayment(formData) {
 
   const amountString = parseFloat(amount).toFixed(2);
 
+  // --- Field Cleanup: Ensure no extra pipes ---
   const firstname = (name || '').replace(/\|/g, "");
   const email_clean = (email || '').replace(/\|/g, "");
   const productinfo_clean = (productinfo || '').replace(/\|/g, "");
@@ -38,11 +38,19 @@ export async function initiatePayment(formData) {
   const udf4 = (subCategory || '').replace(/\|/g, "");
   const udf5 = (formData.get('udf5') || '').replace(/\|/g, "");
 
-  const successUrl = `${baseUrl}/api/payment/success`;
-  const failureUrl = `${baseUrl}/api/payment/failure`;
+  // --- URL FIX: Use URL constructor to handle slashes correctly ---
+  const successUrl = new URL('api/payment/success', baseUrl).href;
+  const failureUrl = new URL('api/payment/failure', baseUrl).href;
 
-  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
-  
+  // --- ROBUST HASHING: Use an array to guarantee correct pipe separation ---
+  const hashParams = [
+    merchantKey, txnid, amountString, productinfo_clean,
+    firstname, email_clean,
+    udf1, udf2, udf3, udf4, udf5,
+    '', '', '', '', '', // The five empty placeholders
+    salt
+  ];
+  const hashString = hashParams.join('|');
   const hash = crypto.createHash('sha512').update(hashString).digest('hex');
 
   const paymentData = {
@@ -62,24 +70,17 @@ export async function initiatePayment(formData) {
     udf5,
     hash,
   };
-
-  // ==================== NEW DEBUG LOGGING ====================
-  console.log("---------- PAYU PRE-PAYMENT DEBUG ----------");
-  console.log("Timestamp:", new Date().toISOString());
-  console.log("Transaction ID (txnid):", txnid);
-  console.log("Using Merchant Key:", merchantKey ? `"${merchantKey.substring(0, 4)}... (LIVE)"` : "NOT FOUND");
-  console.log("Hash String Sent for Generation:", hashString);
-  console.log("Generated Hash:", hash);
+  
+  // Log the final data for verification
+  console.log("---------- PAYU PRE-PAYMENT DEBUG (v2) ----------");
   console.log("Full Payment Data Payload:", paymentData);
   console.log("------------------------------------------");
-  // =========================================================
 
   return paymentData;
 }
 
 // (The other functions in this file remain unchanged)
 export async function processMembership(formData) {
-  // ... (no changes needed here)
   const name = formData.get('name');
   const email = formData.get('email');
   const mobile = formData.get('mobile');
@@ -128,7 +129,6 @@ export async function processMembership(formData) {
 }
 
 export async function initiateSportsPayment(formData) {
-  // ... (no changes needed here)
     const name = formData.get('name');
     const age = parseInt(formData.get('age'), 10);
     const mobile = formData.get('mobile');
