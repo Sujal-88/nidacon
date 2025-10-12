@@ -76,9 +76,9 @@ export default function SportsEventPage() {
   const [photoPreview, setPhotoPreview] = useState('');
 
   useEffect(() => {
-    const newBasePrice = memberType === 'member' ? 1500 : 2000;
+    const newBasePrice = memberType === 'member' ? 15 : 20;
     const additionalSportsCount = Math.max(0, selectedSports.length - 1);
-    const newAdditionalPrice = additionalSportsCount * 500;
+    const newAdditionalPrice = additionalSportsCount * 5;
 
     setBasePrice(newBasePrice);
     setAdditionalPrice(newAdditionalPrice);
