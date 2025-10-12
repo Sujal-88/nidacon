@@ -205,7 +205,7 @@ export default function SportsEventPage() {
 
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = 'https://test.payu.in/_payment';
+    form.action = 'https://payu.in/_payment';
 
     for (const key in payuData) {
       const input = document.createElement('input');
