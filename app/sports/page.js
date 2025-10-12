@@ -75,14 +75,29 @@ export default function SportsEventPage() {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
 
+  const [subtotal, setSubtotal] = useState(0);
+  const [platformFee, setPlatformFee] = useState(0);
+
   useEffect(() => {
     const newBasePrice = memberType === 'member' ? 1500 : 2000;
     const additionalSportsCount = Math.max(0, selectedSports.length - 1);
     const newAdditionalPrice = additionalSportsCount * 500;
 
+    // 1. Calculate the subtotal
+    const currentSubtotal = newBasePrice + newAdditionalPrice;
+    
+    // 2. Calculate the fee based on the subtotal
+    const fee = currentSubtotal * 2.5 / 100;
+    
+    // 3. Calculate the final total price
+    const currentTotalPrice = currentSubtotal + fee;
+
+    // 4. Update all state variables
     setBasePrice(newBasePrice);
     setAdditionalPrice(newAdditionalPrice);
-    setTotalPrice(newBasePrice + newAdditionalPrice + (newBasePrice + newAdditionalPrice) * 2.50 / 100); // Including 2.50% 
+    setSubtotal(currentSubtotal);
+    setPlatformFee(fee);
+    setTotalPrice(currentTotalPrice);
   }, [memberType, selectedSports]);
 
   useEffect(() => {
@@ -344,7 +359,7 @@ export default function SportsEventPage() {
                           </ul>
                         )}
                         <div className="border-t my-2"></div>
-                        <div className="font-bold">Total: ₹{totalPrice}</div>
+                        <div className="font-bold">Total: ₹{subtotal}</div>
                       </div>
                     </div>
                   </div>
@@ -447,6 +462,11 @@ export default function SportsEventPage() {
                             </ul>
                           </div>
                         )}
+
+                        <div className='flex justify-between'>
+                          <p>Platform Fee (2.5%) :</p>
+                          <p className="font-semibold">₹{platformFee}</p>
+                        </div>
                       </div>
 
                       <div className="my-6 border-t border-gray-300"></div>
