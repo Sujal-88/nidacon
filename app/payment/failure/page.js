@@ -41,7 +41,7 @@ function PaymentFailureContent() {
 
         <div className="mt-6 space-y-2">
           <button 
-            onClick={() => window.location.href = '/payment'}
+            onClick={() => window.location.href = '/sports'}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
           >
             Try Again
