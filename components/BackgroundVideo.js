@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 const BackgroundVideo = () => {
   const videoRef = useRef(null);
@@ -22,7 +23,7 @@ const BackgroundVideo = () => {
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-[-1]">
       <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50"></div>
       
-      <video
+      {/* <video
         ref={videoRef}
         className="w-full h-full object-cover"
         // These 3 attributes are essential for autoplay
@@ -32,7 +33,8 @@ const BackgroundVideo = () => {
       >
         <source src="/video/bg-vid.mp4" type="video/mp4" />
         Your browser does not support the video tag.
-      </video>
+      </video> */}
+      <Image src="/video/background.jpg" layout="fill" objectFit="cover" alt="Background Video" />
     </div>
   )
 }

@@ -25,7 +25,7 @@ function HomePageContent() {
       <section id="home" className="relative min-h-screen text-white overflow-hidden">
         <BackgroundVideo />
         <div className="absolute inset-0 bg-black/40 z-[1]"></div>
-        <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent z-[2]"></div>
+        <div className="absolute bottom-0 left-0 w-full h-32 sm:h-40 md:h-48 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent z-[2]"></div>
 
         <EventBar
           message="NIDACON 2026 is coming to Nagpur! Click here to learn more and register!"
@@ -34,22 +34,22 @@ function HomePageContent() {
 
         <div className="relative z-[3] flex flex-col min-h-screen">
           {/* Membership Button with improved spacing */}
-          <div className="flex justify-center pt-20 sm:pt-24 pb-8 sm:pb-10 px-4">
+          <div className="flex justify-center pt-16 sm:pt-20 md:pt-24 pb-6 sm:pb-8 md:pb-10 px-4">
             <MembershipPopup text='BECOME A IDA NAGPUR MEMBER' />
           </div>
 
           {/* Main Content Container with consistent spacing */}
-          <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 pb-12 space-y-12 sm:space-y-16 lg:space-y-20">
+          <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 pb-8 sm:pb-10 md:pb-12 space-y-8 sm:space-y-12 md:space-y-16 lg:space-y-20">
 
             {/* ============== ENHANCED NIDASPORTZ SECTION ============== */}
             <div className="max-w-6xl mx-auto w-full">
-              <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
 
                 {/* Left Side - Main Image */}
                 <div className="order-2 lg:order-1 flex justify-center lg:justify-end">
-                  <Link href="/sports" className="block group relative max-w-md w-full">
+                  <Link href="/sports" className="block group relative max-w-sm sm:max-w-md w-full">
                     {/* Decorative sport icons - floating around the main image */}
-                    <div className="absolute -left-8 top-1/4 w-16 h-16 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden sm:block">
+                    <div className="absolute -left-6 sm:-left-8 top-1/4 w-12 sm:w-16 h-12 sm:h-16 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden md:block">
                       <Image
                         src="/sports/badminton.png"
                         alt="Badminton"
@@ -58,7 +58,7 @@ function HomePageContent() {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="absolute -right-8 top-1/3 w-20 h-20 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden sm:block" style={{ animationDelay: '0.3s' }}>
+                    <div className="absolute -right-6 sm:-right-8 top-1/3 w-16 sm:w-20 h-16 sm:h-20 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden md:block" style={{ animationDelay: '0.3s' }}>
                       <Image
                         src="/sports/cricket.png"
                         alt="Cricket"
@@ -67,7 +67,7 @@ function HomePageContent() {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="absolute -left-12 bottom-1/4 w-18 h-18 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden sm:block" style={{ animationDelay: '0.6s' }}>
+                    <div className="absolute -left-8 sm:-left-12 bottom-1/4 w-14 sm:w-18 h-14 sm:h-18 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden md:block" style={{ animationDelay: '0.6s' }}>
                       <Image
                         src="/sports/pickleball.png"
                         alt="Pickleball"
@@ -78,7 +78,7 @@ function HomePageContent() {
                     </div>
 
                     {/* Main Title Image */}
-                    <div className="rounded-lg overflow-hidden shadow-2xl shadow-purple-500/20 transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-purple-500/40 relative">
+                    <div className="rounded-lg overflow-hidden shadow-xl sm:shadow-2xl shadow-purple-500/20 transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-purple-500/40 relative">
                       <Image
                         src="/sports/title.jpeg"
                         alt="NIDASPORTZ 2025"
@@ -94,98 +94,45 @@ function HomePageContent() {
                 </div>
 
                 {/* Right Side - Text and CTA */}
-                <div className="order-1 lg:order-2 text-center lg:text-left space-y-6">
-                  <div className="space-y-3">
-                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-in-up">
+                <div className="order-1 lg:order-2 text-center lg:text-left space-y-4 sm:space-y-6">
+                  <div className="space-y-2 sm:space-y-3">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent animate-fade-in-up">
                       Unleash Your Athletic Spirit
                     </h3>
-                    <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl mx-auto lg:mx-0">
                       Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.
                     </p>
-                    <div className='flex gap-4 justify-center lg:justify-start items-center'>
 
-                    <button className="
-    relative flex flex-col items-center justify-center
-    h-28 w-40
-    overflow-hidden
-    border border-indigo-600
-    text-white
-    rounded-lg shadow-lg
-    transition-all duration-300 ease-out
-    group
-    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-  ">
-                      <span className="
-      absolute top-0 left-0 w-full h-full
-      bg-indigo-600
-      transition-all duration-300 ease-out
-      transform scale-0 group-hover:scale-100 group-focus:scale-100
-      opacity-90
-    "></span>
+                    {/* Date Buttons */}
+                    <div className='flex flex-col flex-row xs:flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center pt-2'>
+                      <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                        <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                          <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
+                          <span className="text-4xl sm:text-5xl font-bold leading-tight">15</span>
+                          <span className="text-xs sm:text-sm">November 2025</span>
+                        </span>
+                      </button>
 
-                      <span className="
-      relative z-10 flex flex-col items-center
-      transition-colors duration-300
-      group-hover:text-white group-focus:text-white
-    ">
-                        <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
-                        <span className="text-5xl font-bold leading-tight">15</span>
-                        <span className="text-sm">November 2025</span>
-                      </span>
-                    </button>
-
-                    <button className="
-    relative flex flex-col items-center justify-center
-    h-28 w-40
-    overflow-hidden
-    border border-indigo-600
-    text-white
-    rounded-lg shadow-lg
-    transition-all duration-300 ease-out
-    group
-    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-    ">
-                      <span className="
-      absolute top-0 left-0 w-full h-full
-      bg-indigo-600
-      transition-all duration-300 ease-out
-      transform scale-0 group-hover:scale-100 group-focus:scale-100
-      opacity-90
-    "></span>
-
-                      <span className="
-      relative z-10 flex flex-col items-center
-      transition-colors duration-300
-      group-hover:text-white group-focus:text-white
-      ">
-                        <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
-                        <span className="text-5xl font-bold leading-tight">16</span>
-                        <span className="text-sm">November 2025</span>
-                      </span>
-                    </button>
-      </div>
+                      <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                        <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                          <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
+                          <span className="text-4xl sm:text-5xl font-bold leading-tight">16</span>
+                          <span className="text-xs sm:text-sm">November 2025</span>
+                        </span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+                  {/* CTA Button */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center pt-2">
                     <Link href="/sports">
-                      <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3.5 rounded-full transition-all duration-300 ease-in-out text-base shadow-lg transform hover:scale-105 hover:-translate-y-1">
+                      <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-6 sm:px-8 py-3 sm:py-3.5 rounded-full transition-all duration-300 ease-in-out text-sm sm:text-base shadow-lg transform hover:scale-105 hover:-translate-y-1">
                         <span className="relative z-10">Explore Sports</span>
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                       </button>
                     </Link>
-
-                    {/* Quick sport icons */}
-                    {/* <div className="flex gap-3 items-center">
-                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-                        <Image src="/sports/badminton.png" alt="Badminton" width={24} height={24} />
-                      </div>
-                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-                        <Image src="/sports/cricket.png" alt="Cricket" width={24} height={24} />
-                      </div>
-                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-                        <Image src="/sports/pickleball.png" alt="Pickleball" width={24} height={24} />
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -194,52 +141,52 @@ function HomePageContent() {
 
             {/* ============== ENHANCED DATE BLOCKS SECTION ============== */}
             <div className="max-w-6xl mx-auto w-full">
-              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 sm:p-10 lg:p-12 shadow-2xl">
-                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-8">
+              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-xl sm:shadow-2xl">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 sm:gap-8">
 
                   {/* Left Side - Heading with decorative elements */}
                   <div className="text-center lg:text-left relative">
                     {/* Decorative corner accent */}
-                    <div className="absolute -top-4 -left-4 w-16 h-16 border-t-4 border-l-4 border-purple-500/30 rounded-tl-2xl hidden lg:block"></div>
+                    <div className="absolute -top-4 -left-4 w-12 sm:w-16 h-12 sm:h-16 border-t-4 border-l-4 border-purple-500/30 rounded-tl-2xl hidden lg:block"></div>
 
-                    <div className="space-y-2">
-                      <p className="text-sm sm:text-base font-semibold text-purple-400 uppercase tracking-wider">
+                    <div className="space-y-1 sm:space-y-2">
+                      <p className="text-xs sm:text-sm md:text-base font-semibold text-purple-700 uppercase tracking-wider">
                         Mark Your Calendar
                       </p>
-                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+                      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
                         Block your dates for
                         <br className="hidden sm:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500"> NIDACON 2026</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700"> NIDACON 2026</span>
                       </h2>
                     </div>
                   </div>
 
                   {/* Right Side - Date Cards */}
-                  <div className="flex justify-center lg:justify-end gap-4 sm:gap-6">
+                  <div className="flex flex-wrap justify-center lg:justify-end gap-3 sm:gap-4 md:gap-6">
                     <div className="group relative">
-                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 min-w-[100px] sm:min-w-[120px]">
-                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-blue-200 bg-clip-text text-transparent">9<sup className='text-white'>th</sup></p>
-                        <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
-                        <p className="text-bold sm:text-lg font-medium text-white mt-2">Friday</p>
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">
+                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-blue-200 bg-clip-text text-transparent">9<sup className='text-white text-sm sm:text-base'>th</sup></p>
+                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">January</p>
+                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">Friday</p>
+                        <div className="absolute -top-1 -right-1 w-2 sm:w-3 h-2 sm:h-3 bg-blue-500 rounded-full animate-pulse"></div>
                       </div>
                     </div>
 
                     <div className="group relative">
-                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 min-w-[100px] sm:min-w-[120px]">
-                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">10<sup className='text-white'>th</sup></p>
-                        <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
-                        <p className="text-bold sm:text-lg font-medium text-white mt-2">Saturday</p>
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">
+                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">10<sup className='text-white text-sm sm:text-base'>th</sup></p>
+                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">January</p>
+                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">Saturday</p>
+                        <div className="absolute -top-1 -right-1 w-2 sm:w-3 h-2 sm:h-3 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
                       </div>
                     </div>
 
                     <div className="group relative">
-                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-500/20 min-w-[100px] sm:min-w-[120px]">
-                        <p className="text-4xl sm:text-5xl font-bold bg-gradient-to-br from-white to-pink-200 bg-clip-text text-transparent">11<sup className='text-white'>th</sup></p>
-                        <p className="text-base sm:text-lg font-medium text-gray-300 mt-2">January</p>
-                        <p className="text-bold sm:text-lg font-medium text-white mt-2">Sunday</p>
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-500/20 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">
+                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-pink-200 bg-clip-text text-transparent">11<sup className='text-white text-sm sm:text-base'>th</sup></p>
+                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">January</p>
+                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">Sunday</p>
+                        <div className="absolute -top-1 -right-1 w-2 sm:w-3 h-2 sm:h-3 bg-pink-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                       </div>
                     </div>
                   </div>
@@ -251,13 +198,98 @@ function HomePageContent() {
           </div>
 
           {/* Bottom spacing */}
-          <div className="h-12 sm:h-16 lg:h-20"></div>
+          <div className="h-8 sm:h-12 md:h-16 lg:h-20"></div>
         </div>
       </section>
 
+      {/* About Section */}
+      <section id='about' className="bg-gray-900 text-white py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-5 gap-6 sm:gap-8 md:gap-10 lg:gap-16 items-center">
+            <div className="md:col-span-2">
+              <p className="text-xs sm:text-sm md:text-base font-semibold text-purple-400 uppercase tracking-wider">
+                About IDA Nagpur
+              </p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mt-2 sm:mt-3 md:mt-4">
+                Unity in Profession.
+                <br />
+                Excellence in Practice.
+              </h2>
+            </div>
+            <div className="md:col-span-3">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed">
+                As a cornerstone of the Nagpur dental community, our mission is to advance the science and art of dentistry. We are dedicated to fostering a powerful network of professionals, promoting the highest standards of oral health, and championing continuing education.
+              </p>
+              <p className="mt-3 sm:mt-4 md:mt-6 text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed">
+                Through collaboration, outreach, and events like NIDACON, we strive to elevate our profession and serve our community with integrity and care.
+              </p>
+            </div>
+          </div>
 
-      {/* NIDACON REGISTRATION COMPONENT */}
-      {/* <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
+          {/* Feature Cards */}
+          <div className="mt-10 sm:mt-12 md:mt-16 lg:mt-20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-2">
+                <div className="inline-block p-3 sm:p-4 bg-purple-500/10 rounded-full">
+                  <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-purple-400" />
+                </div>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-3 sm:mt-4">Continuous Learning</h3>
+                <p className="mt-2 text-xs sm:text-sm md:text-base text-gray-400">
+                  Championing workshops and seminars to keep our members at the forefront of dental innovation.
+                </p>
+              </div>
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-2">
+                <div className="inline-block p-3 sm:p-4 bg-purple-500/10 rounded-full">
+                  <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-purple-400" />
+                </div>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-3 sm:mt-4">Professional Unity</h3>
+                <p className="mt-2 text-xs sm:text-sm md:text-base text-gray-400">
+                  Fostering a powerful network for collaboration, mentorship, and mutual support among dental professionals.
+                </p>
+              </div>
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg sm:rounded-xl p-5 sm:p-6 md:p-8 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-2 sm:col-span-2 lg:col-span-1">
+                <div className="inline-block p-3 sm:p-4 bg-purple-500/10 rounded-full">
+                  <HeartHandshake className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-purple-400" />
+                </div>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-3 sm:mt-4">Community Service</h3>
+                <p className="mt-2 text-xs sm:text-sm md:text-base text-gray-400">
+                  Dedicated to improving public oral health through outreach programs and awareness campaigns.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <ExecutiveBody />
+
+      <UpcomingEvents id="upcoming-events" />
+      <Albums id="albums" />
+      <Footer />
+    </>
+  );
+}
+
+export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleAnimationComplete = () => {
+    setIsLoading(false);
+  };
+
+  return (
+    <div>
+      {isLoading ? (
+        <SplashScreen onAnimationComplete={handleAnimationComplete} />
+      ) : (
+        <HomePageContent />
+      )}
+    </div>
+  );
+}
+
+{/* NIDACON REGISTRATION COMPONENT */ }
+{/* <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
             <div className="w-full max-w-7xl mx-auto">
               
               <div className="hidden lg:flex lg:justify-between lg:items-center lg:gap-8">
@@ -390,88 +422,3 @@ function HomePageContent() {
 
             </div>
           </div> */}
-
-
-
-      <section id='about' className="bg-gray-900 text-white py-16 sm:py-24 lg:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-5 gap-8 md:gap-10 lg:gap-16 items-center">
-            <div className="md:col-span-2">
-              <p className="text-sm sm:text-base font-semibold text-purple-400 uppercase tracking-wider">
-                About IDA Nagpur
-              </p>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mt-3 sm:mt-4">
-                Unity in Profession.
-                <br />
-                Excellence in Practice.
-              </h2>
-            </div>
-            <div className="md:col-span-3">
-              <p className="text-base sm:text-lg lg:text-xl text-gray-400 leading-relaxed">
-                As a cornerstone of the Nagpur dental community, our mission is to advance the science and art of dentistry. We are dedicated to fostering a powerful network of professionals, promoting the highest standards of oral health, and championing continuing education.
-              </p>
-              <p className="mt-4 sm:mt-6 text-base sm:text-lg lg:text-xl text-gray-400 leading-relaxed">
-                Through collaboration, outreach, and events like NIDACON, we strive to elevate our profession and serve our community with integrity and care.
-              </p>
-            </div>
-          </div>
-          <div className="mt-12 sm:mt-16 lg:mt-20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 sm:p-8 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-2">
-                <div className="inline-block p-3 sm:p-4 bg-purple-500/10 rounded-full">
-                  <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold mt-3 sm:mt-4">Continuous Learning</h3>
-                <p className="mt-2 text-sm sm:text-base text-gray-400">
-                  Championing workshops and seminars to keep our members at the forefront of dental innovation.
-                </p>
-              </div>
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 sm:p-8 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-2">
-                <div className="inline-block p-3 sm:p-4 bg-purple-500/10 rounded-full">
-                  <Users className="w-7 h-7 sm:w-8 sm:h-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold mt-3 sm:mt-4">Professional Unity</h3>
-                <p className="mt-2 text-sm sm:text-base text-gray-400">
-                  Fostering a powerful network for collaboration, mentorship, and mutual support among dental professionals.
-                </p>
-              </div>
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 sm:p-8 text-center transition-all duration-300 hover:bg-white/10 hover:-translate-y-2 sm:col-span-2 lg:col-span-1">
-                <div className="inline-block p-3 sm:p-4 bg-purple-500/10 rounded-full">
-                  <HeartHandshake className="w-7 h-7 sm:w-8 sm:h-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold mt-3 sm:mt-4">Community Service</h3>
-                <p className="mt-2 text-sm sm:text-base text-gray-400">
-                  Dedicated to improving public oral health through outreach programs and awareness campaigns.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <ExecutiveBody />
-
-      <UpcomingEvents id="upcoming-events" />
-      <Albums id="albums" />
-      <Footer />
-    </>
-  );
-}
-
-export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const handleAnimationComplete = () => {
-    setIsLoading(false);
-  };
-
-  return (
-    <div>
-      {isLoading ? (
-        <SplashScreen onAnimationComplete={handleAnimationComplete} />
-      ) : (
-        <HomePageContent />
-      )}
-    </div>
-  );
-}
