@@ -150,7 +150,7 @@ const Navbar = () => {
                                 
                                 <Link 
                                     href={loginHref}
-                                    className="px-3 xl:px-4 py-2 bg-indigo-800/80 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-all duration-300 hover:scale-105 hover:bg-indigo-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2"
+                                    className="px-3 xl:px-4 py-2 bg-teal-500 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-all duration-300 hover:scale-105 hover:bg-teal-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                                 >
                                     <div className="flex items-center space-x-1.5 xl:space-x-2">
                                         <LogIn className="w-3.5 h-3.5 xl:w-4 xl:h-4" />
