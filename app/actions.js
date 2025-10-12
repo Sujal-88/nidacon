@@ -40,17 +40,19 @@ export async function initiatePayment(formData) {
   const successUrl = new URL('api/payment/success', baseUrl).href;
   const failureUrl = new URL('api/payment/failure', baseUrl).href;
 
-  // --- FINAL FIX: Use an array with the EXACT number of required placeholders ---
-  // This array ensures the hash string is always correctly formatted as per PayU's spec.
+  // ==================== THE FINAL FIX ====================
+  // The hash string MUST include placeholders for udf1-udf10.
+  // This array ensures there are exactly 6 empty values after udf5.
   const hashParams = [
     merchantKey, txnid, amountString, productinfo_clean,
     firstname, email_clean,
     udf1, udf2, udf3, udf4, udf5,
-    '', '', '', '', '', '', // The SIX required empty placeholders
+    '', '', '', '', '', '', // Correctly provides 6 empty placeholders for udf6-10
     salt
   ];
   const hashString = hashParams.join('|');
   const hash = crypto.createHash('sha512').update(hashString).digest('hex');
+  // =======================================================
 
   const paymentData = {
     key: merchantKey,
