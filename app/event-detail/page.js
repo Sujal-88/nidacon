@@ -1,248 +1,193 @@
-// "use client"
-// import React from 'react';
-// // For animations, install: npm install framer-motion
-// import { motion } from 'framer-motion';
-// // For icons, install: npm install lucide-react
-// import { 
-//     Calendar, MapPin, Mic, Beaker, Users, Link2, Presentation, Stethoscope 
-// } from 'lucide-react';
-// import Image from 'next/image';
-
-// /*
-//   NOTE FOR THE DEVELOPER:
-//   1.  **Fonts:** This design uses the 'Poppins' font. Please import it into your project.
-//       A simple way is to add this to your main CSS file:
-//       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
-//       And then add 'Poppins' to your tailwind.config.js file.
-
-//   2.  **Dependencies:** Make sure to install the required libraries:
-//       `npm install framer-motion lucide-react`
-// */
-
-// // Reusable animated container for sections
-// const MotionContainer = ({ children, className }) => (
-//     <motion.div
-//         initial="hidden"
-//         whileInView="visible"
-//         viewport={{ once: true, amount: 0.2 }}
-//         transition={{ staggerChildren: 0.2 }}
-//         className={className}
-//     >
-//         {children}
-//     </motion.div>
-// );
-
-// // Animation variants for children
-// const itemVariants = {
-//     hidden: { opacity: 0, y: 20 },
-//     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-// };
-
-// // --- Re-designed Components ---
-
-// const FeatureCard = ({ icon, title, description }) => (
-//     <motion.div 
-//         variants={itemVariants}
-//         className="group relative p-8 bg-slate-800/60 rounded-2xl shadow-lg overflow-hidden border border-slate-700"
-//     >
-//         {/* Glow effect on hover */}
-//         <div className="absolute top-0 left-0 w-full h-full bg-cyan-400/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-//         <div className="absolute top-0 left-0 w-1/2 h-full bg-cyan-400/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-//         <div className="relative">
-//             <div className="flex items-center justify-center h-14 w-14 rounded-full bg-slate-700 mb-6 border border-slate-600 text-cyan-400 group-hover:scale-110 transition-transform duration-300">
-//                 {icon}
-//             </div>
-//             <h3 className="text-xl font-bold text-slate-100 mb-2">{title}</h3>
-//             <p className="text-slate-400 leading-relaxed">{description}</p>
-//         </div>
-//     </motion.div>
-// );
-
-// const SpeakerCard = ({ name, title, imgSrc }) => (
-//     <motion.div variants={itemVariants} className="text-center group">
-//         <div className="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-slate-700 group-hover:border-cyan-400 transition-colors duration-300 transform group-hover:scale-105">
-            
-//             <Image src={imgSrc} alt={name} className="w-full h-full object-cover" />
-//             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300"></div>
-//         </div>
-//         <h4 className="mt-4 text-xl font-bold text-slate-100">{name}</h4>
-//         <p className="text-cyan-400">{title}</p>
-//     </motion.div>
-// );
-
-
-// // --- Main Page Component ---
-
-// export default function NidaconPageRedesigned() {
-//   return (
-//     <div className="min-h-screen bg-slate-900 text-slate-200 font-sans antialiased">
-        
-//         {/* --- Hero Section --- */}
-//         <div className="relative h-screen flex items-center justify-center overflow-hidden">
-//             <div 
-//                 className="absolute inset-0 bg-cover bg-center z-0" 
-//                 style={{backgroundImage: "url('https://images.unsplash.com/photo-1579684385127-6abf7489ce04?q=80&w=1920&auto=format&fit=crop')"}}
-//             ></div>
-//             <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900"></div>
-            
-//             <div className="relative z-10 text-center px-4">
-//                 <motion.h1 
-//                     initial={{ opacity: 0, y: -20 }}
-//                     animate={{ opacity: 1, y: 0 }}
-//                     transition={{ duration: 0.8 }}
-//                     className="text-5xl md:text-8xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400"
-//                 >
-//                     NIDACON <span className="text-cyan-400">2026</span>
-//                 </motion.h1>
-//                 <motion.p 
-//                     initial={{ opacity: 0, y: 20 }}
-//                     animate={{ opacity: 1, y: 0 }}
-//                     transition={{ duration: 0.8, delay: 0.2 }}
-//                     className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto"
-//                 >
-//                     Advancing Frontiers in Modern Dentistry 🩺
-//                 </motion.p>
-//                 <motion.div 
-//                     initial={{ opacity: 0, y: 20 }}
-//                     animate={{ opacity: 1, y: 0 }}
-//                     transition={{ duration: 0.8, delay: 0.4 }}
-//                     className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-lg"
-//                 >
-//                     <div className="flex items-center bg-slate-800/70 backdrop-blur-sm px-6 py-3 rounded-full border border-slate-700">
-//                         <Calendar className="h-5 w-5 mr-3 text-cyan-400" />
-//                         <span>9th – 11th January 2026</span>
-//                     </div>
-//                     <div className="flex items-center bg-slate-800/70 backdrop-blur-sm px-6 py-3 rounded-full border border-slate-700">
-//                         <MapPin className="h-5 w-5 mr-3 text-cyan-400" />
-//                         <span>Nagpur, India</span>
-//                     </div>
-//                 </motion.div>
-//                 <motion.div 
-//                     initial={{ opacity: 0, scale: 0.8 }}
-//                     animate={{ opacity: 1, scale: 1 }}
-//                     transition={{ duration: 0.5, delay: 0.6 }}
-//                     className="mt-12"
-//                 >
-//                     <a href="#register" className="inline-block bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(56,189,248,0.5)]">
-//                         Secure Your Spot
-//                     </a>
-//                 </motion.div>
-//             </div>
-//         </div>
-
-//         {/* --- What's in Store Section --- */}
-//         <section id="features" className="py-20 md:py-28">
-//             <div className="container mx-auto px-4">
-//                 <div className="text-center mb-16">
-//                     <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-100">An Unforgettable Experience Awaits</h2>
-//                     <p className="text-lg text-slate-400 max-w-2xl mx-auto">A powerful blend of cutting-edge science, practical skills, and collaborative networking.</p>
-//                 </div>
-                
-//                 <MotionContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-//                     <FeatureCard 
-//                         icon={<Mic size={28} />} 
-//                         title="10+ Renowned Speakers" 
-//                         description="Learn from the global pioneers and innovators shaping the future of dentistry." 
-//                     />
-//                     <FeatureCard 
-//                         icon={<Beaker size={28} />} 
-//                         title="12+ Hands-on Workshops" 
-//                         description="Gain practical skills with our immersive workshops on the latest techniques and technologies." 
-//                     />
-//                     <FeatureCard 
-//                         icon={<Presentation size={28} />} 
-//                         title="Insightful Scientific Lectures" 
-//                         description="Dive deep into groundbreaking research, complex case studies, and evidence-based practices." 
-//                     />
-//                     <FeatureCard 
-//                         icon={<Stethoscope size={28} />} 
-//                         title="Grand Dental Exhibition" 
-//                         description="Explore 50+ stalls featuring state-of-the-art dental equipment, materials, and solutions." 
-//                     />
-//                     <FeatureCard 
-//                         icon={<Users size={28} />} 
-//                         title="800+ Professional Attendees" 
-//                         description="Connect with a vast network of dentists, specialists, researchers, and students." 
-//                     />
-//                     <FeatureCard 
-//                         icon={<Link2 size={28} />} 
-//                         title="Elite Networking Events" 
-//                         description="Build lasting professional relationships during our curated social events and mixers." 
-//                     />
-//                 </MotionContainer>
-//             </div>
-//         </section>
-
-//         {/* --- Featured Speakers Section (NEW) --- */}
-//         <section className="py-20 md:py-28 bg-slate-800/40">
-//             <div className="container mx-auto px-4">
-//                 <div className="text-center mb-16">
-//                     <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-100">Meet The Visionaries</h2>
-//                     <p className="text-lg text-slate-400 max-w-2xl mx-auto">Our esteemed speakers are leaders in their fields, ready to share their expertise.</p>
-//                 </div>
-//                 <MotionContainer className="flex flex-wrap justify-center gap-x-12 gap-y-16">
-//                     <SpeakerCard name="Dr. Evelyn Reed" title="Prosthodontics & Digital Dentistry" imgSrc="https://placehold.co/200x200/415A77/E0E1DD?text=Dr.+Reed" />
-//                     <SpeakerCard name="Dr. Marcus Chen" title="Oral & Maxillofacial Surgery" imgSrc="https://placehold.co/200x200/415A77/E0E1DD?text=Dr.+Chen" />
-//                     <SpeakerCard name="Dr. Sofia Al-Jamil" title="Pediatric Dentistry" imgSrc="https://placehold.co/200x200/415A77/E0E1DD?text=Dr.+Al-Jamil" />
-//                     <SpeakerCard name="Dr. Kenji Tanaka" title="Orthodontic Innovations" imgSrc="https://placehold.co/200x200/415A77/E0E1DD?text=Dr.+Tanaka" />
-//                 </MotionContainer>
-//             </div>
-//         </section>
-
-//         {/* --- Call to Action / Registration Section --- */}
-//         <section id="register" className="py-20 md:py-28 bg-cover bg-center bg-fixed" style={{backgroundImage: "url('https://images.unsplash.com/photo-1580281658223-9b93f18ae9ae?q=80&w=1920&auto=format&fit=crop')"}}>
-//             <div className="container mx-auto px-4 text-center bg-slate-900/80 backdrop-blur-sm py-20 rounded-3xl border border-slate-700 shadow-2xl">
-//                 <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-100">Elevate Your Dental Practice.</h2>
-//                 <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-//                     Don&apos;t miss the premier dental event in Central India. Limited seats available for hands-on workshops. Register now to secure your spot.
-//                 </p>
-//                 <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-//                     <a href="#register-form" className="bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-4 px-10 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(56,189,248,0.5)]">
-//                         Register Online
-//                     </a>
-//                     <a href="#brochure" className="border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-400 hover:text-slate-900 font-bold py-3.5 px-10 rounded-full text-lg transition-all duration-300 transform hover:scale-105">
-//                         Download Brochure
-//                     </a>
-//                 </div>
-//             </div>
-//         </section>
-        
-//         {/* --- Footer --- */}
-//         <footer className="bg-slate-900 border-t border-slate-800 py-10">
-//             <div className="container mx-auto px-4 text-center text-slate-500">
-//                 <p className="text-lg font-bold text-slate-200 mb-2">NIDACON 2026</p>
-//                 <p>&copy; {new Date().getFullYear()} NIDA Nagpur. All Rights Reserved.</p>
-//                 <p className="text-sm mt-2">Organized for the dental community, by the dental community.</p>
-//                 <div className="mt-4 text-slate-300">
-//                     <a href="tel:+910000000000" className="hover:text-cyan-400 transition-colors duration-300">Phone: +91 000 000 0000</a>
-//                     <span className="mx-2">|</span>
-//                     <a href="mailto:contact@nidacon.com" className="hover:text-cyan-400 transition-colors duration-300">Email: contact@nidacon.com</a>
-//                 </div>
-//             </div>
-//         </footer>
-//     </div>
-//   );
-// }
 "use client";
 
-import React from "react";
-import Image from "next/image";
+import React from 'react';
+import { Calendar, MapPin, Mic, Beaker, Users, Award, ArrowRight } from 'lucide-react';
 
-const CenteredImagePage = () => {
+export default function NidaconLanding() {
   return (
-    <div className="w-full h-screen bg-white flex items-center justify-center">
-      {/* Centered image container */}
-      <div className="relative w-96 h-96">
-        <Image
-          src="/under-construction/photo.jpg"
-          alt="Centered vector"
-          fill
-          priority
-          className="object-contain"
-        />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* Hero Section */}
+      <section className="relative py-24 px-6">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-cyan-50/30"></div>
+        
+        <div className="relative max-w-5xl mx-auto text-center">
+          <div className="mb-8">
+            <span className="inline-block px-5 py-2 bg-white border border-blue-200 text-blue-700 rounded-full text-sm font-medium shadow-sm">
+              Central India's Premier Dental Conference
+            </span>
+          </div>
+          
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 text-gray-900 tracking-tight">
+            NIDACON <span className="text-blue-600">2026</span>
+          </h1>
+          
+          <p className="text-2xl md:text-3xl text-gray-600 mb-12 font-light">
+            Advancing Frontiers in Modern Dentistry
+          </p>
+
+          {/* Date & Location */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-14">
+            <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
+              <Calendar className="w-5 h-5 text-blue-600" />
+              <span className="font-medium text-gray-700">9th – 11th January 2026</span>
+            </div>
+            <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
+              <MapPin className="w-5 h-5 text-blue-600" />
+              <span className="font-medium text-gray-700">Nagpur, India</span>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <a 
+            href="#register" 
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 transform hover:-translate-y-0.5"
+          >
+            Secure Your Spot
+            <ArrowRight className="w-5 h-5" />
+          </a>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { number: "10+", label: "Expert Speakers", icon: <Mic className="w-6 h-6" /> },
+              { number: "12+", label: "Hands-on Workshops", icon: <Beaker className="w-6 h-6" /> },
+              { number: "800+", label: "Professional Attendees", icon: <Users className="w-6 h-6" /> }
+            ].map((stat, index) => (
+              <div 
+                key={index}
+                className="bg-white p-8 rounded-xl shadow-md border border-gray-100 text-center hover:shadow-xl hover:border-blue-200 transition-all duration-300 group"
+              >
+                <div className="text-blue-600 mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                  {stat.icon}
+                </div>
+                <div className="text-4xl font-bold mb-2 text-gray-900">{stat.number}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+              What Awaits You
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Three days of transformative learning, networking, and innovation
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { 
+                icon: <Mic className="w-7 h-7" />, 
+                title: "Renowned Speakers", 
+                desc: "Learn from global pioneers shaping the future of dentistry" 
+              },
+              { 
+                icon: <Beaker className="w-7 h-7" />, 
+                title: "Practical Workshops", 
+                desc: "Master cutting-edge techniques through hands-on experience" 
+              },
+              { 
+                icon: <Award className="w-7 h-7" />, 
+                title: "Scientific Lectures", 
+                desc: "Explore groundbreaking research and evidence-based practices" 
+              },
+              { 
+                icon: <Users className="w-7 h-7" />, 
+                title: "Grand Exhibition", 
+                desc: "Discover 50+ stalls with state-of-the-art dental innovations" 
+              },
+              { 
+                icon: <Users className="w-7 h-7" />, 
+                title: "Premium Networking", 
+                desc: "Connect with specialists, researchers, and practitioners" 
+              },
+              { 
+                icon: <Award className="w-7 h-7" />, 
+                title: "CME Credits", 
+                desc: "Earn continuing education credits for your participation" 
+              }
+            ].map((item, index) => (
+              <div 
+                key={index}
+                className="group bg-white p-8 rounded-xl border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all duration-300"
+              >
+                <div className="text-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section id="register" className="py-20 px-6 bg-gradient-to-br from-blue-50 to-cyan-50">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-12 md:p-16 rounded-2xl shadow-xl border border-blue-100">
+            <div className="text-center">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+                Elevate Your Dental Practice
+              </h2>
+              <p className="text-gray-600 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
+                Don't miss the premier dental event in Central India. Limited seats available 
+                for hands-on workshops. Register now to secure your spot.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a 
+                  href="#registration-form" 
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 transform hover:-translate-y-0.5"
+                >
+                  Register Online
+                  <ArrowRight className="w-5 h-5" />
+                </a>
+                <a 
+                  href="#brochure" 
+                  className="inline-flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-600 hover:text-white transition-all duration-300"
+                >
+                  Download Brochure
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
-};
+}
+// "use client";
 
-export default CenteredImagePage;
+// import React from "react";
+// import Image from "next/image";
+
+// const CenteredImagePage = () => {
+//   return (
+//     <div className="w-full h-screen bg-white flex items-center justify-center">
+//       {/* Centered image container */}
+//       <div className="relative w-96 h-96">
+//         <Image
+//           src="/under-construction/photo.jpg"
+//           alt="Centered vector"
+//           fill
+//           priority
+//           className="object-contain"
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CenteredImagePage;
