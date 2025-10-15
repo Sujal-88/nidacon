@@ -13,7 +13,7 @@ export default function NidaconLanding() {
         <div className="relative max-w-5xl mx-auto text-center">
           <div className="mb-8">
             <span className="inline-block px-5 py-2 bg-white border border-blue-200 text-blue-700 rounded-full text-sm font-medium shadow-sm">
-              Central India's Premier Dental Conference
+              Central India&apos;s Premier Dental Conference
             </span>
           </div>
           
@@ -143,7 +143,7 @@ export default function NidaconLanding() {
                 Elevate Your Dental Practice
               </h2>
               <p className="text-gray-600 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-                Don't miss the premier dental event in Central India. Limited seats available 
+                Don&apos;t miss the premier dental event in Central India. Limited seats available
                 for hands-on workshops. Register now to secure your spot.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
