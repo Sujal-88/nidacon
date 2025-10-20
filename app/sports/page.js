@@ -9,8 +9,6 @@ import { initiateSportsPayment } from '@/app/actions';
 import Link from 'next/link';
 import MembershipPopup from '@/components/MembershipPopup';
 
-// --- CurvedText component has been removed ---
-
 const sports = [
   { id: 'cricket', name: 'Cricket', image: '/sports/cricket-svg.svg' },
   { id: 'badminton', name: 'Badminton', image: '/sports/badminton-svg.svg' },
@@ -85,10 +83,10 @@ export default function SportsEventPage() {
 
     // 1. Calculate the subtotal
     const currentSubtotal = newBasePrice + newAdditionalPrice;
-    
+
     // 2. Calculate the fee based on the subtotal
     const fee = currentSubtotal * 2.5 / 100;
-    
+
     // 3. Calculate the final total price
     const currentTotalPrice = currentSubtotal + fee;
 
@@ -258,18 +256,15 @@ export default function SportsEventPage() {
         <div className="container mx-auto px-6 py-12 sm:py-20">
 
           <div className="max-w-xl mx-auto mb-12">
-            {/* --- CHANGES START HERE --- */}
             <div className="relative mb-2">
               <Image
                 src="/sports/Indian Medical Association.png"
                 alt="Indian Dental Association, Nagpur Branch Presents"
                 width={1000}
                 height={100}
-                // These classes make the image responsive
                 className="w-full max-w-lg h-auto mx-auto"
               />
             </div>
-            {/* --- CHANGES END HERE --- */}
             <Image src="/sports/title.png" alt="NIDASPORTZ 2025 SEASON-6" width={400} height={200} className="mx-auto" />
 
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-800 font-semibold">
@@ -280,7 +275,6 @@ export default function SportsEventPage() {
             </div>
           </div>
 
-          {/* The rest of the page logic remains unchanged */}
           <form onSubmit={handleSubmit} noValidate>
             {step === 1 && (
               <div className="max-w-4xl mx-auto">
@@ -309,16 +303,25 @@ export default function SportsEventPage() {
                   </div>
                 </div>
 
+                {/* --- RESPONSIVENESS IMPROVEMENT START --- */}
                 <div className="text-center text-sm text-red-600 font-bold p-4 bg-white/90 rounded-lg border border-gray-200 mb-8">
-                  <div className="flex items-center justify-center mb-2 space-x-4">
-                    <Link href="/membership" className="text-black font-bold underline">RENEW MEMBERSHIP</Link>
-                    <span className='text-black'>/</span>
-                    <Link href="/membership" className="text-black font-bold underline">JOIN MEMBERSHIP</Link>
-                    <MembershipPopup text='' />
+                  {/* Flex container for the links and button */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-2">
+                    {/* Links */}
+                    <div className="flex items-center gap-2">
+                        <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">RENEW MEMBERSHIP</Link>
+                        <span className='text-black text-lg'>/</span>
+                        <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">JOIN MEMBERSHIP</Link>
+                    </div>
+                    {/* Membership Popup (consider making text='' dynamic or removing if not needed) */}
+                    <MembershipPopup text='' /> {/* Removed unnecessary text */}
                   </div>
-                  Even if you have a current membership, it is only valid until Dec 31st of this year. <br />
+                   {/* Warning text */}
+                  Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
                   To get member benefits for NIDASPORTZ, please renew your membership for the next year.
                 </div>
+                {/* --- RESPONSIVENESS IMPROVEMENT END --- */}
+
 
                 <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
                   <div className="flex flex-col items-center">
@@ -403,7 +406,7 @@ export default function SportsEventPage() {
                         <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
                         {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                       </div>
-                      
+
                       <div className="mt-2 flex items-center gap-x-3">
                         <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
                           Profile Photo
@@ -421,8 +424,11 @@ export default function SportsEventPage() {
                         </label>
                       </div>
 
-
-                      <div className="relative md:col-span-2">
+                      {/* --- T-SHIRT NOTE ADDED START --- */}
+                       <div className="relative md:col-span-2">
+                        <p className="mb-2 text-sm font-medium text-gray-700">
+                          Select one size larger than your usual size for the T-shirt.
+                        </p>
                         <div className="flex items-center gap-2">
                           <div className="relative flex-grow">
                             <Shirt className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 z-10" />
@@ -435,6 +441,7 @@ export default function SportsEventPage() {
                         </div>
                         {errors.tshirtSize && <p className="mt-1 text-xs text-red-600">{errors.tshirtSize}</p>}
                       </div>
+                      {/* --- T-SHIRT NOTE ADDED END --- */}
                     </div>
                   </div>
                 </div>
