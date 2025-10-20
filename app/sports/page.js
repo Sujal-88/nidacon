@@ -426,8 +426,8 @@ export default function SportsEventPage() {
 
                       {/* --- T-SHIRT NOTE ADDED START --- */}
                        <div className="relative md:col-span-2">
-                        <p className="mb-2 text-sm font-medium text-gray-700">
-                          Select one size larger than your usual size for the T-shirt.
+                        <p className="mb-2 text-sm font-medium text-red-400">
+                          *Select one size larger than your usual size for the T-shirt.
                         </p>
                         <div className="flex items-center gap-2">
                           <div className="relative flex-grow">
