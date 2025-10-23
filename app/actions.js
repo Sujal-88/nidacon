@@ -173,14 +173,17 @@
 // }
 
 // app/actions.js
+// app/actions.js
 "use server";
 
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { generateMemberId } from '@/lib/memberId'; // Keep this for processMembership
+import { generateMemberId } from '@/lib/memberId';
+import { generateUserId } from '@/lib/userId'; // Import generateUserId
 
-// --- initiatePayment MODIFIED ---
+// --- initiatePayment (Keep existing) ---
 export async function initiatePayment(formData) {
+  // ... (existing initiatePayment code) ...
   const name = formData.get('name');
   const email = formData.get('email');
   const mobile = formData.get('mobile');
@@ -259,12 +262,10 @@ export async function initiatePayment(formData) {
 
   return paymentData;
 }
-// --- End initiatePayment ---
 
-
-// --- processMembership remains unchanged ---
+// --- processMembership (Keep existing) ---
 export async function processMembership(formData) {
-  // ... (Keep existing processMembership code)
+  // ... (existing processMembership code) ...
    const name = formData.get('name');
   const email = formData.get('email');
   const mobile = formData.get('mobile');
@@ -325,9 +326,9 @@ export async function processMembership(formData) {
   }
 }
 
-// --- initiateSportsPayment remains unchanged ---
+// --- initiateSportsPayment (Keep existing) ---
 export async function initiateSportsPayment(formData) {
-  // ... (Keep existing initiateSportsPayment code)
+  // ... (existing initiateSportsPayment code) ...
     const name = formData.get('name');
     const age = parseInt(formData.get('age'), 10);
     const mobile = formData.get('mobile');
@@ -385,3 +386,67 @@ export async function initiateSportsPayment(formData) {
     return { error: "Could not process your sports registration due to a server error." };
   }
 }
+
+// --- NEW: Server Action to Save Paper/Poster Submission ---
+export async function saveSubmission(submissionData) {
+    console.log("Received submission data:", submissionData);
+    try {
+        // Data to be saved or updated in the User table
+        const userData = {
+            name: submissionData.name,
+            email: submissionData.email,
+            mobile: submissionData.mobile,
+            address: submissionData.address,
+            registrationType: 'paper-poster',
+            hasPaperOrPoster: true,
+            paperCategory: submissionData.paperCategory || null, // Ensure null if not provided
+            abstractUrl: submissionData.abstractUrl || null,
+            paperUrl: submissionData.paperUrl || null,
+            posterCategory: submissionData.posterCategory || null,
+            posterUrl: submissionData.posterUrl || null,
+            // We don't handle payment for paper/poster here
+            paymentStatus: 'not-applicable', // Or null, depending on your preference
+        };
+
+        let user;
+
+        // Check if a NIDA User ID was potentially fetched earlier
+        const existingUserId = submissionData.registrationId; // Assuming you passed this if fetched
+
+        if (existingUserId && existingUserId.startsWith('NIDA')) {
+             // Try to update based on the fetched User ID
+             console.log(`Attempting to update user by userId: ${existingUserId}`);
+            user = await prisma.user.update({
+                where: { userId: existingUserId },
+                data: userData,
+            });
+             console.log(`Updated existing user: ${user.userId}`);
+        } else {
+            // If no valid existing ID, try to upsert based on email
+             console.log(`Attempting to upsert user by email: ${submissionData.email}`);
+            const newUserId = await generateUserId(); // Generate a NIDA ID for new users
+            user = await prisma.user.upsert({
+                where: { email: submissionData.email },
+                update: userData, // Update if email exists
+                create: {
+                    ...userData,
+                    userId: newUserId, // Assign new ID only on creation
+                },
+            });
+             console.log(`Upserted user: ${user.userId}`);
+        }
+
+        return { success: true, userId: user.userId };
+
+    } catch (error) {
+        console.error("Error saving submission:", error);
+         if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+            // This case might happen if upsert logic somehow fails on concurrent requests,
+            // but Prisma upsert should handle it. Logging just in case.
+            console.warn(`Potential race condition or duplicate email during submission save: ${submissionData.email}`);
+             return { success: false, error: 'An account with this email already exists. Please contact support if you intended to update.' };
+        }
+        return { success: false, error: "Could not save your submission due to a database error." };
+    }
+}
+// --- End NEW Server Action ---

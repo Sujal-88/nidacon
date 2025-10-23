@@ -1,12 +1,16 @@
 // app/register-now/user-info/page.js
 
+// app/register-now/user-info/page.js
+
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
-import { initiatePayment } from '@/app/actions';
+// --- Import the NEW server action ---
+import { initiatePayment, saveSubmission } from '@/app/actions';
+// --- End Import ---
 
 function UserInfoForm() {
   const router = useRouter();
@@ -22,11 +26,12 @@ function UserInfoForm() {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   // Handler for text input changes
   const handleChange = (e) => {
+    // ... (keep existing) ...
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
      // Clear error when user starts typing
@@ -37,7 +42,7 @@ function UserInfoForm() {
 
   // Handler for photo upload
   const handlePhotoChange = (e) => {
-    // ... (keep existing photo change logic)
+    // ... (keep existing) ...
      const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
       setPhoto(file);
@@ -52,7 +57,7 @@ function UserInfoForm() {
 
   // Form validation
   const validateForm = () => {
-    // ... (keep existing validation logic)
+    // ... (keep existing) ...
      const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Full Name is required.';
     if (!formData.email.trim()) newErrors.email = 'Email Address is required.';
@@ -69,43 +74,70 @@ function UserInfoForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-        return; // Stop submission if validation fails
+        return;
     }
-    setIsSubmitting(true); // Set submitting state
+    setIsSubmitting(true);
+    setErrors({}); // Clear previous form-wide errors
 
     const registrationType = searchParams.get('type');
     const memberType = searchParams.get('memberType');
-    // For delegate, subCategory can represent add-ons or be empty
     const subCategory = searchParams.get('subCategory') || '';
-    const amount = searchParams.get('price'); // Get price from URL
-
-    // --- NEW: Get Add-on Flags ---
+    const amount = searchParams.get('price');
     const implantAddon = searchParams.get('implant') === 'true';
     const banquetAddon = searchParams.get('banquet') === 'true';
-    // --- End NEW ---
 
-
-    // If the registration is for a paper/poster, redirect without payment.
+    // --- PAPER/POSTER SUBMISSION LOGIC ---
     if (registrationType === 'paper-poster') {
-        // Here you would typically save the user's data + submission info to your database.
-        // For this example, we'll just redirect.
-        // TODO: Add logic here to save paper/poster data before redirecting
-        router.push('/register-now/submission-success');
-        setIsSubmitting(false); // Reset submitting state
-        return;
-    }
+        try {
+            const submissionData = {
+                name: formData.name,
+                email: formData.email,
+                mobile: formData.mobile,
+                address: formData.address,
+                // Get categories and URLs from searchParams
+                paperCategory: searchParams.get('paperCat') || null, // Use null if param missing
+                abstractUrl: searchParams.get('abstractUrl') || null,
+                paperUrl: searchParams.get('paperUrl') || null,
+                posterCategory: searchParams.get('posterCat') || null,
+                posterUrl: searchParams.get('posterUrl') || null,
+                // registrationId: searchParams.get('registrationId') || null // Pass if needed for linking update
+            };
 
-    // --- Payment Logic for other types ---
+            console.log("Sending data to saveSubmission:", submissionData);
+
+            // --- Call the server action ---
+            const result = await saveSubmission(submissionData);
+            // --- End call ---
+
+            if (result.success) {
+                console.log("Submission saved successfully, redirecting...");
+                router.push('/register-now/submission-success');
+                // No need to reset isSubmitting, page navigates away
+            } else {
+                throw new Error(result.error || 'Failed to save submission');
+            }
+
+        } catch (error) {
+            console.error("Submission save error:", error);
+            setErrors(prev => ({ ...prev, form: error.message || 'Could not save submission.' }));
+             setIsSubmitting(false); // Reset on error
+        }
+        return; // Stop execution for paper/poster here
+    }
+    // --- END PAPER/POSTER SUBMISSION LOGIC ---
+
+
+    // --- PAYMENT LOGIC for other types ---
     if (!amount) {
         alert("Error: Price not found. Cannot proceed with payment.");
-        setIsSubmitting(false); // Reset submitting state
+        setIsSubmitting(false);
         return;
     }
 
     const txnid = `NIDA${Date.now()}`;
     // Construct productinfo more dynamically
     let productinfoText = `NIDACON 2026 - ${registrationType}`;
-    if (registrationType === 'delegate') {
+     if (registrationType === 'delegate') {
       productinfoText += ` (${memberType === 'member' ? 'Member' : 'Non-Member'})`;
       if (implantAddon) productinfoText += ' + Implant';
       if (banquetAddon) productinfoText += ' + Banquet';
@@ -121,22 +153,19 @@ function UserInfoForm() {
     formDataObj.append('amount', amount);
     formDataObj.append('txnid', txnid);
     formDataObj.append('productinfo', productinfoText);
-    formDataObj.append('registrationType', registrationType); // e.g., 'delegate', 'workshop-registered'
-    formDataObj.append('memberType', memberType || ''); // e.g., 'member', 'non-member', or empty for workshop-only
-    formDataObj.append('subCategory', subCategory); // Keep original subCategory if needed, otherwise maybe add-on info here?
-
-    // --- NEW: Append Add-on Flags to FormData ---
-    formDataObj.append('implant', implantAddon.toString()); // Send as 'true' or 'false' string
+    formDataObj.append('registrationType', registrationType);
+    formDataObj.append('memberType', memberType || '');
+    formDataObj.append('subCategory', subCategory);
+    formDataObj.append('implant', implantAddon.toString());
     formDataObj.append('banquet', banquetAddon.toString());
-    // --- End NEW ---
 
-    // Call the Server Action
+    // Call the initiatePayment Server Action
     const payuData = await initiatePayment(formDataObj);
 
 
     if (payuData.error) {
       alert(`Error initializing payment: ${payuData.error}`);
-      setIsSubmitting(false); // Reset submitting state
+      setIsSubmitting(false);
       return;
     }
 
@@ -146,7 +175,7 @@ function UserInfoForm() {
     form.action = 'https://secure.payu.in/_payment'; // Use https://test.payu.in for testing
 
     for (const key in payuData) {
-      if (payuData.hasOwnProperty(key) && payuData[key] !== null && payuData[key] !== undefined) { // Check for null/undefined
+      if (payuData.hasOwnProperty(key) && payuData[key] !== null && payuData[key] !== undefined) {
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = key;
@@ -156,17 +185,17 @@ function UserInfoForm() {
     }
 
     document.body.appendChild(form);
+    console.log("Submitting form to PayU...");
     form.submit();
-    // No need to reset isSubmitting here as the page will navigate away
+    // No need to reset isSubmitting here
   };
 
   return (
     <main className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-6 py-24 sm:py-32">
         <div className="max-w-2xl mx-auto">
-          {/* Header and Progress */}
+          {/* Header */}
           <div className="text-center">
-            {/* Adjust Step number if paper/poster skips this */}
              <p className="text-base font-semibold text-purple-600">
                {searchParams.get('type') === 'paper-poster' ? 'Step 2 of 2' : 'Step 3 of 3'}
              </p>
@@ -174,15 +203,17 @@ function UserInfoForm() {
               Your Information
             </h1>
             <p className="mt-6 text-lg text-gray-600">
-              Please provide your details below. This information will be used for your delegate pass and certificate.
+               {searchParams.get('type') === 'paper-poster'
+                    ? "Please provide your details below. This information will be used for communication regarding your submission."
+                    : "Please provide your details below. This information will be used for your delegate pass and certificate."}
             </p>
           </div>
 
            <form onSubmit={handleSubmit} className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
             {/* Form Fields */}
-            {/* --- Keep existing form fields for name, email, mobile, address, photo --- */}
              <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
-              {/* Full Name */}
+              {/* --- Keep existing fields: Name, Email, Mobile, Address, Photo --- */}
+               {/* Full Name */}
               <div className="sm:col-span-2">
                 <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">Full Name</label>
                 <div className="mt-2 relative">
@@ -222,38 +253,56 @@ function UserInfoForm() {
                 {errors.address && <p className="mt-1 text-xs text-red-600">{errors.address}</p>}
               </div>
 
-               {/* Profile Photo (Optional) */}
-               <div className="sm:col-span-2">
-                <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional - Used for delegate pass if provided)</span></label>
-                 <div className="mt-2 flex items-center gap-x-3">
-                  {photoPreview ? (
-                    <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
-                  ) : (
-                    <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
-                      <ImageIcon className="h-8 w-8 text-gray-400" />
+               {/* Profile Photo (Optional) - Only show if not paper/poster */}
+               {searchParams.get('type') !== 'paper-poster' && (
+                  <div className="sm:col-span-2">
+                    <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional - Used for delegate pass if provided)</span></label>
+                    <div className="mt-2 flex items-center gap-x-3">
+                      {photoPreview ? (
+                        <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
+                      ) : (
+                        <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
+                          <ImageIcon className="h-8 w-8 text-gray-400" />
+                        </div>
+                      )}
+                      <label htmlFor="photo-upload" className="cursor-pointer rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                        <span>Upload photo</span>
+                        <input id="photo-upload" name="photo" type="file" onChange={handlePhotoChange} className="sr-only" accept="image/*" />
+                      </label>
                     </div>
-                  )}
-                  <label htmlFor="photo-upload" className="cursor-pointer rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                    <span>Upload a file</span>
-                    <input id="photo-upload" name="photo" type="file" onChange={handlePhotoChange} className="sr-only" accept="image/*" />
-                  </label>
-                  {/* TODO: Add photo upload logic if needed */}
-                </div>
-                 {errors.photo && <p className="mt-1 text-xs text-red-600">{errors.photo}</p>}
-              </div>
+                    {errors.photo && <p className="mt-1 text-xs text-red-600">{errors.photo}</p>}
+                  </div>
+                )}
             </div>
+
+            {/* Display Form-wide Error */}
+            {errors.form && (
+                 <div className="rounded-md bg-red-50 p-4">
+                     <p className="text-sm font-medium text-red-800">{errors.form}</p>
+                 </div>
+            )}
 
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-200">
               <button
                 type="submit"
-                disabled={isSubmitting} // Disable button while submitting
-                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={isSubmitting}
+                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center" // Added flex for centering loading
               >
-                 {isSubmitting
-                    ? 'Processing...' // Show loading text
-                    : (searchParams.get('type') === 'paper-poster' ? 'Submit' : 'Proceed to Payment')}
-                 <ArrowRight className="inline w-5 h-5 ml-2" />
+                 {isSubmitting ? (
+                    <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                    </>
+                 ) : (
+                    <>
+                        {searchParams.get('type') === 'paper-poster' ? 'Submit Details' : 'Proceed to Payment'}
+                        <ArrowRight className="inline w-5 h-5 ml-2" />
+                    </>
+                 )}
               </button>
             </div>
           </form>
@@ -263,7 +312,7 @@ function UserInfoForm() {
   );
 }
 
-// Wrap in Suspense because useSearchParams is a Client Component hook
+// --- Keep Suspense wrapper ---
 export default function UserInfoPage() {
   return (
     <Suspense fallback={<div>Loading form...</div>}>

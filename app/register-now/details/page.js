@@ -35,12 +35,12 @@ function FileInput({ label, file, setFile, id }) {
           <svg className="mx-auto h-10 w-10 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12A2.25 2.25 0 0120.25 20.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" /></svg>
           <div className="mt-2 flex text-sm leading-6 text-gray-600">
             <label htmlFor={id} className="relative cursor-pointer rounded-md bg-white font-semibold text-purple-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-600 focus-within:ring-offset-2 hover:text-purple-500">
-              <span>Upload a file</span>
+              <span>Upload a file:</span>
               <input id={id} name={id} type="file" className="sr-only" onChange={(e) => setFile(e.target.files[0])} />
-            </label>
-            <p className="pl-1">or drag and drop</p>
-          </div>
           {file ? <p className="text-xs leading-5 text-purple-700 font-medium mt-1">{file.name}</p> : <p className="text-xs leading-5 text-gray-600">PDF, DOCX, JPG, PNG up to 10MB</p>}
+            </label>
+           
+          </div>
         </div>
       </div>
     </div>
@@ -86,24 +86,86 @@ function PaperPosterRegistrationForm() {
         }
     };
 
-    const handleSubmit = () => {
-        // ... (Keep the existing handleSubmit code)
-         const queryParams = new URLSearchParams({
+    const uploadFile = async (file) => {
+        if (!file) return null; // Return null if no file
+
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
+
+        try {
+            // Use the existing endpoint (or create a dedicated one if needed)
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: uploadFormData,
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.url) {
+                return result.url; // Return the URL on success
+            } else {
+                throw new Error(result.message || `Upload failed for ${file.name}`);
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setFetchError(`Error uploading ${file.name}. Please try again.`); // Show error to user
+            return null; // Indicate failure
+        }
+    };
+
+    const handleSubmit = async () => { // Make it async
+        if (!isFormValid) return; // Basic validation check
+
+        setIsFetching(true); // Reuse isFetching state for loading indicator
+        setFetchError(''); // Clear previous errors
+
+        let abstractUrl = null;
+        let paperUrl = null;
+        let posterUrl = null;
+        let uploadSuccess = true;
+
+        // Upload files sequentially (or in parallel with Promise.all if preferred)
+        if (selection.paper && abstractFile) {
+            abstractUrl = await uploadFile(abstractFile);
+            if (!abstractUrl) uploadSuccess = false;
+        }
+        if (selection.paper && paperFile && uploadSuccess) {
+            paperUrl = await uploadFile(paperFile);
+            if (!paperUrl) uploadSuccess = false;
+        }
+        if (selection.poster && posterFile && uploadSuccess) {
+            posterUrl = await uploadFile(posterFile);
+            if (!posterUrl) uploadSuccess = false;
+        }
+
+        setIsFetching(false); // Stop loading indicator
+
+        if (!uploadSuccess) {
+            // Error message is already set by uploadFile helper
+            return; // Stop if any upload failed
+        }
+
+        // Construct query parameters ONLY if uploads were successful
+        const queryParams = new URLSearchParams({
             type: 'paper-poster',
-            // Pass categories and indicate file presence if needed for the next step
+            // Include categories
             ...(selection.paper && { paperCat: paperCategory }),
             ...(selection.poster && { posterCat: posterCategory }),
+            // Include File URLs
+            ...(abstractUrl && { abstractUrl: abstractUrl }),
+            ...(paperUrl && { paperUrl: paperUrl }),
+            ...(posterUrl && { posterUrl: posterUrl }),
         });
 
-         // Pre-fill user data if fetched
+        // Add user data if fetched
         if (userData) {
-            queryParams.set('name', userData.name);
-            queryParams.set('email', userData.email);
-            queryParams.set('mobile', userData.mobile);
-            queryParams.set('address', userData.address);
+            queryParams.set('name', userData.name || ''); // Ensure fallback empty strings
+            queryParams.set('email', userData.email || '');
+            queryParams.set('mobile', userData.mobile || '');
+            queryParams.set('address', userData.address || '');
         }
-        // TODO: Handle file uploads here or pass info to the next step
 
+        console.log("Navigating to user-info with params:", queryParams.toString());
         router.push(`/register-now/user-info?${queryParams.toString()}`);
     };
 

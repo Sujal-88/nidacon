@@ -27,9 +27,16 @@ model User {
 
   // Profile Fields (Keep existing ones)
   workshops        String[]
-  hasPaperOrPoster Boolean?  @default(false)
   isMember         Boolean?  @default(false)
   memberId         String?   @unique // For IDA Membership ID
+
+
+  paperCategory       String?
+  abstractUrl         String?
+  paperUrl            String?
+  posterCategory      String?
+  posterUrl           String?
+  hasPaperOrPoster    Boolean?  @default(false)
 
   // Payment Details
   transactionId String?   @unique
