@@ -1,21 +1,23 @@
 // app/register/page.js
 
 import React from 'react';
-import { UserCheck, Wrench, FileText, ArrowRight } from 'lucide-react';
+import { UserCheck, Wrench, FileText, ArrowRight, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
 import Link from 'next/link';
 
 // Data for the registration cards
 const registrationOptions = [
   {
     icon: <UserCheck className="w-10 h-10 text-purple-600" />,
-    title: 'Register',
-    price: '₹XXXX',
+    title: 'Delegate Registration',
+    // Updated price display
+    price: 'From ₹2000*',
     description: 'For all students, faculty, and practicing dentists attending the main conference.',
     features: [
       'Access to all keynote lectures',
       'Entry to the trade exhibition',
       'Conference lunch & high tea',
       'Delegate kit & certificate',
+      '*Early bird pricing for Members. Add-ons available.', // Added note
     ],
     buttonText: 'Register as Delegate',
     href: '/register-now/details?type=delegate',
@@ -24,7 +26,7 @@ const registrationOptions = [
   {
     icon: <Wrench className="w-10 h-10 text-blue-600" />,
     title: 'Hands-on Workshop',
-    price: '₹XXXX',
+    price: '', // Keep original or update if needed
     description: 'Limited-seat workshops for practical, in-depth skill development. *Conference registration required.',
     features: [
       'Choose from specialized topics',
@@ -38,7 +40,7 @@ const registrationOptions = [
   {
     icon: <FileText className="w-10 h-10 text-teal-600" />,
     title: 'Paper/Poster Presenter',
-    price: '₹XXXX',
+    price: '', // Keep original or update if needed
     description: 'For students and faculty who wish to present their research at the conference.',
     features: [
       'Dedicated presentation slot',
@@ -59,26 +61,26 @@ export default function RegisterPage() {
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
             Join NIDACON 2026
           </h1>
+          {/* Early Bird Notice Added */}
+          <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
+            <AlertTriangle className="w-5 h-5" />
+            <span className="font-semibold">Early Bird Registration ends 15th November! Prices will increase after this date.</span>
+          </div>
           <p className="mt-6 text-lg text-gray-600 leading-8">
             Choose the registration category that best suits your participation. We look forward to welcoming you to Nagpur for an unforgettable experience of learning and collaboration.
           </p>
         </div>
 
-        {/* Registration Cards Grid */}
+        {/* Registration Cards Grid - No changes needed below this line in the grid structure */}
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {registrationOptions.map((option) => (
-            <div 
-              key={option.title} 
+            <div
+              key={option.title}
               className={`flex flex-col rounded-2xl shadow-lg border transition-transform duration-300 hover:-translate-y-2 ${
                 option.popular ? 'bg-white border-purple-300' : 'bg-white border-gray-200'
               }`}
             >
               <div className="p-8 flex-grow">
-                {/* {option.popular && (
-                  <p className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    MOST POPULAR
-                  </p>
-                )} */}
                 <div className="inline-block p-3 bg-gray-100 rounded-lg">
                   {option.icon}
                 </div>

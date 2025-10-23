@@ -32,7 +32,7 @@ const Navbar = () => {
     const pathname = usePathname();
 
     const isHomePage = pathname === '/';
-    const isSportsPage = pathname === '/sports';
+    const isSportsPage = pathname === '/register-now';
     const displayedNavLinks = isHomePage ? mainNavLinks : eventNavLinks;
 
     let loginHref = '/login/member';
@@ -162,7 +162,7 @@ const Navbar = () => {
 
                             <div className="w-px h-7 bg-white/20 mx-3 xl:mx-4"></div>
 
-                            <Link href="/sports" className="px-4 xl:px-5 py-2 xl:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                            <Link href="/register-now" className="px-4 xl:px-5 py-2 xl:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold text-xs xl:text-sm transform transition-transform duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
                                 <div className="flex items-center space-x-1.5 xl:space-x-2">
                                     <Ticket className="w-3.5 h-3.5 xl:w-4 xl:h-4" />
                                     <span>Register</span>

@@ -22,16 +22,23 @@ function UserInfoForm() {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state
+
 
   // Handler for text input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+     // Clear error when user starts typing
+     if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   // Handler for photo upload
   const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
+    // ... (keep existing photo change logic)
+     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
       setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
@@ -45,13 +52,14 @@ function UserInfoForm() {
 
   // Form validation
   const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = 'Full Name is required.';
-    if (!formData.email) newErrors.email = 'Email Address is required.';
-    if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Email address is invalid.';
-    if (!formData.mobile) newErrors.mobile = 'Mobile Number is required.';
-    if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
-    if (!formData.address) newErrors.address = 'Address is required.';
+    // ... (keep existing validation logic)
+     const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = 'Full Name is required.';
+    if (!formData.email.trim()) newErrors.email = 'Email Address is required.';
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Email address is invalid.';
+    if (!formData.mobile.trim()) newErrors.mobile = 'Mobile Number is required.';
+    else if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
+    if (!formData.address.trim()) newErrors.address = 'Address is required.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -60,71 +68,96 @@ function UserInfoForm() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      const registrationType = searchParams.get('type');
+    if (!validateForm()) {
+        return; // Stop submission if validation fails
+    }
+    setIsSubmitting(true); // Set submitting state
 
-      // If the registration is for a paper/poster, redirect to a success page without payment.
-      if (registrationType === 'paper-poster') {
-        // Here you would typically save the user's data to your database.
+    const registrationType = searchParams.get('type');
+    const memberType = searchParams.get('memberType');
+    // For delegate, subCategory can represent add-ons or be empty
+    const subCategory = searchParams.get('subCategory') || '';
+    const amount = searchParams.get('price'); // Get price from URL
+
+    // --- NEW: Get Add-on Flags ---
+    const implantAddon = searchParams.get('implant') === 'true';
+    const banquetAddon = searchParams.get('banquet') === 'true';
+    // --- End NEW ---
+
+
+    // If the registration is for a paper/poster, redirect without payment.
+    if (registrationType === 'paper-poster') {
+        // Here you would typically save the user's data + submission info to your database.
         // For this example, we'll just redirect.
+        // TODO: Add logic here to save paper/poster data before redirecting
         router.push('/register-now/submission-success');
+        setIsSubmitting(false); // Reset submitting state
         return;
-      }
+    }
 
-      // --- Dynamic pricing logic (for other registration types) ---
-      const memberType = searchParams.get('memberType');
-      const subCategory = searchParams.get('subCategory');
-      let amount = 2000;
-
-      if (registrationType === 'workshop') {
-        amount += 3500;
-      } else if (registrationType === 'presenter') {
-        amount += 2500;
-      }
-
-      const txnid = `NIDA${Date.now()}`;
-      const productinfo = `NIDACON 2026 - ${registrationType}`;
-
-      // --- REPLACEMENT LOGIC STARTS HERE ---
-
-      // 2. Create a FormData object from the form element
-      const formElement = e.currentTarget;
-      const formDataObj = new FormData(formElement);
-
-      // 3. Append your dynamic/calculated values to the FormData object
-      formDataObj.append('amount', amount);
-      formDataObj.append('txnid', txnid);
-      formDataObj.append('productinfo', productinfo);
-      formDataObj.append('registrationType', registrationType);
-      formDataObj.append('memberType', memberType);
-      formDataObj.append('subCategory', subCategory);
-
-      // 4. Call the Server Action directly with the FormData
-      const payuData = await initiatePayment(formDataObj);
-
-      // --- REPLACEMENT LOGIC ENDS HERE ---
-
-      if (payuData.error) {
-        alert(`Error: ${payuData.error}`);
+    // --- Payment Logic for other types ---
+    if (!amount) {
+        alert("Error: Price not found. Cannot proceed with payment.");
+        setIsSubmitting(false); // Reset submitting state
         return;
-      }
+    }
 
-      // This part remains the same: create and submit a dynamic form to PayU
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = 'https://secure.payu.in/_payment'; // Use https://secure.payu.in for production
+    const txnid = `NIDA${Date.now()}`;
+    // Construct productinfo more dynamically
+    let productinfoText = `NIDACON 2026 - ${registrationType}`;
+    if (registrationType === 'delegate') {
+      productinfoText += ` (${memberType === 'member' ? 'Member' : 'Non-Member'})`;
+      if (implantAddon) productinfoText += ' + Implant';
+      if (banquetAddon) productinfoText += ' + Banquet';
+    } else if (registrationType === 'workshop-registered' || registrationType === 'workshop-only') {
+       const workshops = searchParams.get('workshops');
+       if (workshops) productinfoText += ` Workshops: ${workshops}`;
+    }
 
-      for (const key in payuData) {
+
+    const formElement = e.currentTarget;
+    const formDataObj = new FormData(formElement);
+
+    formDataObj.append('amount', amount);
+    formDataObj.append('txnid', txnid);
+    formDataObj.append('productinfo', productinfoText);
+    formDataObj.append('registrationType', registrationType); // e.g., 'delegate', 'workshop-registered'
+    formDataObj.append('memberType', memberType || ''); // e.g., 'member', 'non-member', or empty for workshop-only
+    formDataObj.append('subCategory', subCategory); // Keep original subCategory if needed, otherwise maybe add-on info here?
+
+    // --- NEW: Append Add-on Flags to FormData ---
+    formDataObj.append('implant', implantAddon.toString()); // Send as 'true' or 'false' string
+    formDataObj.append('banquet', banquetAddon.toString());
+    // --- End NEW ---
+
+    // Call the Server Action
+    const payuData = await initiatePayment(formDataObj);
+
+
+    if (payuData.error) {
+      alert(`Error initializing payment: ${payuData.error}`);
+      setIsSubmitting(false); // Reset submitting state
+      return;
+    }
+
+    // Create and submit a dynamic form to PayU
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://secure.payu.in/_payment'; // Use https://test.payu.in for testing
+
+    for (const key in payuData) {
+      if (payuData.hasOwnProperty(key) && payuData[key] !== null && payuData[key] !== undefined) { // Check for null/undefined
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = key;
         input.value = payuData[key];
         form.appendChild(input);
       }
-
-      document.body.appendChild(form);
-      form.submit();
     }
+
+    document.body.appendChild(form);
+    form.submit();
+    // No need to reset isSubmitting here as the page will navigate away
   };
 
   return (
@@ -133,7 +166,10 @@ function UserInfoForm() {
         <div className="max-w-2xl mx-auto">
           {/* Header and Progress */}
           <div className="text-center">
-            <p className="text-base font-semibold text-purple-600">Step 3 of 4</p>
+            {/* Adjust Step number if paper/poster skips this */}
+             <p className="text-base font-semibold text-purple-600">
+               {searchParams.get('type') === 'paper-poster' ? 'Step 2 of 2' : 'Step 3 of 3'}
+             </p>
             <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
               Your Information
             </h1>
@@ -142,9 +178,11 @@ function UserInfoForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
+           <form onSubmit={handleSubmit} className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
             {/* Form Fields */}
-            <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+            {/* --- Keep existing form fields for name, email, mobile, address, photo --- */}
+             <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+              {/* Full Name */}
               <div className="sm:col-span-2">
                 <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">Full Name</label>
                 <div className="mt-2 relative">
@@ -154,6 +192,7 @@ function UserInfoForm() {
                 {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
               </div>
 
+              {/* Email Address */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email Address</label>
                 <div className="mt-2 relative">
@@ -163,6 +202,7 @@ function UserInfoForm() {
                 {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
               </div>
 
+               {/* Mobile Number */}
               <div>
                 <label htmlFor="mobile" className="block text-sm font-medium leading-6 text-gray-900">Mobile Number</label>
                 <div className="mt-2 relative">
@@ -172,6 +212,7 @@ function UserInfoForm() {
                 {errors.mobile && <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>}
               </div>
 
+              {/* Full Address */}
               <div className="sm:col-span-2">
                 <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">Full Address</label>
                 <div className="mt-2 relative">
@@ -181,9 +222,10 @@ function UserInfoForm() {
                 {errors.address && <p className="mt-1 text-xs text-red-600">{errors.address}</p>}
               </div>
 
-              <div className="sm:col-span-2">
-                <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional)</span></label>
-                <div className="mt-2 flex items-center gap-x-3">
+               {/* Profile Photo (Optional) */}
+               <div className="sm:col-span-2">
+                <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional - Used for delegate pass if provided)</span></label>
+                 <div className="mt-2 flex items-center gap-x-3">
                   {photoPreview ? (
                     <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
                   ) : (
@@ -195,8 +237,9 @@ function UserInfoForm() {
                     <span>Upload a file</span>
                     <input id="photo-upload" name="photo" type="file" onChange={handlePhotoChange} className="sr-only" accept="image/*" />
                   </label>
+                  {/* TODO: Add photo upload logic if needed */}
                 </div>
-                {errors.photo && <p className="mt-1 text-xs text-red-600">{errors.photo}</p>}
+                 {errors.photo && <p className="mt-1 text-xs text-red-600">{errors.photo}</p>}
               </div>
             </div>
 
@@ -204,9 +247,13 @@ function UserInfoForm() {
             <div className="pt-6 border-t border-gray-200">
               <button
                 type="submit"
-                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                disabled={isSubmitting} // Disable button while submitting
+                className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {searchParams.get('type') === 'paper-poster' ? 'Submit' : 'Proceed to Payment'} <ArrowRight className="inline w-5 h-5 ml-2" />
+                 {isSubmitting
+                    ? 'Processing...' // Show loading text
+                    : (searchParams.get('type') === 'paper-poster' ? 'Submit' : 'Proceed to Payment')}
+                 <ArrowRight className="inline w-5 h-5 ml-2" />
               </button>
             </div>
           </form>

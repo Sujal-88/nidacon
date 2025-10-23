@@ -17,23 +17,28 @@ model User {
   email            String    @unique
   mobile           String?
   address          String?
-  registrationType String?
-  memberType       String?
-  subCategory      String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  registrationType String?   // e.g., 'delegate', 'workshop', 'membership', 'paper-poster'
+  memberType       String?   // e.g., 'member', 'non-member', 'student-member'
+  subCategory      String?   // Specific type within registrationType if needed
+
+  // NEW: Add-on fields for Delegates
+  purchasedImplantAddon Boolean? @default(false)
+  purchasedBanquetAddon Boolean? @default(false)
+
+  // Profile Fields (Keep existing ones)
+  workshops        String[]
+  hasPaperOrPoster Boolean?  @default(false)
+  isMember         Boolean?  @default(false)
+  memberId         String?   @unique // For IDA Membership ID
 
   // Payment Details
   transactionId String?   @unique
   payuId        String?   @unique
   paymentAmount Float?
-  paymentStatus String?
+  paymentStatus String?   // e.g., 'pending', 'success', 'failure'
 
-  // Profile Fields
-  workshops        String[]
-  hasPaperOrPoster Boolean?  @default(false)
-  isMember         Boolean?  @default(false)
-  memberId         String?   @unique
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model SportRegistration {
@@ -42,30 +47,29 @@ model SportRegistration {
   age            Int
   mobile         String
   gender         String
-  email          String?   // Add this line
+  email          String?
   tshirtSize     String
-  memberType     String
+  memberType     String // 'member' or 'non-member' for sports context
   selectedSports String[]
   totalPrice     Float
   photoUrl       String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  userId         String?   @unique // Specific ID for sports login (e.g., NIDASPORTZ-101)
 
   // Payment Details
   transactionId  String?   @unique
   payuId         String?   @unique
   paymentStatus  String?
-  userId         String?   @unique
 }
 
-// Counter for NIDACON Event User IDs (e.g., NIDA101)
+// Counters (Keep existing ones)
 model Counter {
-  id    String @id @default("user_counter")
+  id    String @id @default("user_counter") // For NIDAxxxx IDs
   value Int    @default(99)
 }
 
-// NEW: Counter for IDA Member IDs (e.g., IDAMEM-1001)
 model MemberCounter {
-  id    String @id @default("member_counter")
+  id    String @id @default("member_counter") // For IDAMEM-xxxx IDs
   value Int    @default(1000)
 }
