@@ -61,26 +61,32 @@ function PaperPosterRegistrationForm() {
     const [posterFile, setPosterFile] = useState(null);
 
     const handleFetchDetails = async () => {
-        // ... (Keep the existing handleFetchDetails code)
-         if (!registrationId) {
+        if (!registrationId) {
             setFetchError('Please enter a Registration ID.');
             return;
         }
         setIsFetching(true);
         setFetchError('');
-        setUserData(null);
+        setUserData(null); // Clear previous data
         try {
-            // This is the correct API endpoint to call
-            const res = await fetch(`/api/members/${registrationId}`);
+            // Call the API endpoint
+            const res = await fetch(`/api/members/${registrationId.trim()}`); // Trim input
             const data = await res.json();
 
-            if (res.ok) {
+            if (res.ok) { // Status 200-299
                 setUserData(data);
+                setFetchError(''); // Clear error on success
+            } else if (res.status === 404) {
+                setFetchError('Registration ID not found. Please check and try again.');
+            } else if (res.status === 400) {
+                 setFetchError(data.error || 'Invalid Registration ID format.');
             } else {
-                setFetchError(data.error || 'Failed to fetch details.');
+                 // Handle other errors (like 500 Internal Server Error)
+                setFetchError(data.error || 'Failed to fetch details due to a server issue.');
             }
         } catch (error) {
-            setFetchError('An error occurred while fetching details.');
+            console.error('Fetch details error:', error); // Log the actual error
+            setFetchError('An network error occurred while fetching details. Please check your connection.');
         } finally {
             setIsFetching(false);
         }
