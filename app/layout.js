@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "IDA Nagpur",
-  description: "Welcome to IDA Nagpur - The official website of the Indian Dentist Association, Nagpur. Explore our events, membership, and resources for architects and designers in Nagpur.",
+  description: "The Nagpur Branch of the Indian Dental Association (IDA) is dedicated to advancing dental health and education. Join us in our mission to promote excellence in dentistry and community well-being.",
 };
 
 export default function RootLayout({ children }) {
