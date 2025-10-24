@@ -5,25 +5,25 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { AlertTriangle } from 'lucide-react'; // Added AlertTriangle
+import { AlertTriangle, Lock } from 'lucide-react'; // Added Lock icon
+import MembershipPopup from '@/components/MembershipPopup'; // Import MembershipPopup
 
-// --- Data for All Flows ---
+// --- Data (workshopOptions, presentationCategories remain the same) ---
 const workshopOptions = [
+  // ... (keep existing workshop options)
   { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 1500 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 1300 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1600 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
 ];
 const presentationCategories = [
+  // ... (keep existing presentation categories)
   { id: 'cat1', name: 'Prosthodontics and Crown & Bridge' }, { id: 'cat2', name: 'Conservative Dentistry and Endodontics' }, { id: 'cat3', name: 'Orthodontics & Dentofacial Orthopedics' }, { id: 'cat4', name: 'Periodontology and Implantology' }, { id: 'cat5', name: 'Oral & Maxillofacial Surgery' }, { id: 'cat6', name: 'Pedodontics and Preventive Dentistry' }, { id: 'cat7', name: 'Oral Medicine and Radiology' }, { id: 'cat8', name: 'Public Health Dentistry' }, { id: 'cat9', name: 'Oral Pathology & Microbiology' },
 ];
 
-// --- Added Features Lists Back ---
-const memberFeatures = ["NIDA Master Class on 9th January", "GALA Buffet Dinner", "Free Implant (If selected)", "Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
-const nonMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
-// --- End Added Features Lists ---
+// --- Features Lists ---
+const baseMemberFeatures = ["NIDA Master Class on 9th January", "Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
+const baseNonMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
+const implantFeature = "WITH FREE IMPLANT"; // Define feature text
+const banquetFeature = "GALA Buffet Dinner"; // Define feature text
 
-
-// ##################################################################
-// ##               PAPER/POSTER REGISTRATION COMPONENT             ##
-// ##################################################################
 // --- PaperPosterRegistrationForm and FileInput components remain unchanged ---
 function FileInput({ label, file, setFile, id }) {
   // ... (Keep the existing FileInput code)
@@ -39,7 +39,7 @@ function FileInput({ label, file, setFile, id }) {
               <input id={id} name={id} type="file" className="sr-only" onChange={(e) => setFile(e.target.files[0])} />
           {file ? <p className="text-xs leading-5 text-purple-700 font-medium mt-1">{file.name}</p> : <p className="text-xs leading-5 text-gray-600">PDF, DOCX, JPG, PNG up to 10MB</p>}
             </label>
-           
+
           </div>
         </div>
       </div>
@@ -59,8 +59,17 @@ function PaperPosterRegistrationForm() {
     const [paperFile, setPaperFile] = useState(null);
     const [posterCategory, setPosterCategory] = useState('');
     const [posterFile, setPosterFile] = useState(null);
+    const [isPaperPosterOpen, setIsPaperPosterOpen] = useState(false); // State for date check
+
+     useEffect(() => {
+        // Check if the current date is on or after November 10th, 2025
+        const openDate = new Date('2025-11-10T00:00:00');
+        const currentDate = new Date();
+        setIsPaperPosterOpen(currentDate >= openDate);
+    }, []);
 
     const handleFetchDetails = async () => {
+        // ... (keep existing handleFetchDetails code)
         if (!registrationId) {
             setFetchError('Please enter a Registration ID.');
             return;
@@ -93,6 +102,7 @@ function PaperPosterRegistrationForm() {
     };
 
     const uploadFile = async (file) => {
+       // ... (keep existing uploadFile code)
         if (!file) return null; // Return null if no file
 
         const uploadFormData = new FormData();
@@ -119,8 +129,9 @@ function PaperPosterRegistrationForm() {
         }
     };
 
-    const handleSubmit = async () => { // Make it async
-        if (!isFormValid) return; // Basic validation check
+    const handleSubmit = async () => {
+        // ... (keep existing handleSubmit code)
+         if (!isFormValid) return; // Basic validation check
 
         setIsFetching(true); // Reuse isFetching state for loading indicator
         setFetchError(''); // Clear previous errors
@@ -177,9 +188,29 @@ function PaperPosterRegistrationForm() {
 
     const isPaperDataComplete = !selection.paper || (paperCategory && abstractFile && paperFile);
     const isPosterDataComplete = !selection.poster || (posterCategory && posterFile);
-    // User data is optional now
     const isSelectionMade = selection.paper || selection.poster;
-    const isFormValid = isSelectionMade && isPaperDataComplete && isPosterDataComplete; // Registration ID no longer required here
+    // Check form validity AND if registration is open
+    const isFormValid = isPaperPosterOpen && isSelectionMade && isPaperDataComplete && isPosterDataComplete;
+
+    // Render message if registration is not open yet
+    if (!isPaperPosterOpen) {
+         return (
+            <main className="bg-gray-50 min-h-screen flex items-center justify-center">
+                <div className="container mx-auto px-4 py-24 sm:py-32">
+                    <div className="max-w-xl mx-auto text-center bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                        <Lock className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Paper & Poster Submission</h1>
+                        <p className="mt-4 text-lg text-gray-600">
+                            Submissions for Paper & Poster Presentations will open on <strong>November 10th, 2025</strong>. Please check back then.
+                        </p>
+                        <Link href="/register-now" className="mt-8 inline-block px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-300">
+                            Back to Registration Options
+                        </Link>
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     return (
          <main className="bg-gray-50 min-h-screen">
@@ -194,6 +225,11 @@ function PaperPosterRegistrationForm() {
 
                     {/* Form Content */}
                     <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
+                         {/* Membership Popup Integration */}
+                        <div className="flex justify-center -mt-2 mb-6 px-4">
+                            <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black'/>
+                        </div>
+
                         {/* Registration ID Input (Optional Prefill) */}
                         <div>
                             <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">
@@ -297,10 +333,10 @@ function PaperPosterRegistrationForm() {
                              <button
                                 type="button"
                                 onClick={handleSubmit}
-                                disabled={!isFormValid} // Use the updated validation
+                                disabled={!isFormValid || isFetching} // Disable during fetching too
                                 className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
-                                {userData ? 'Submit & Prefill Info' : 'Submit & Enter Info'}
+                                {isFetching ? 'Uploading & Submitting...' : (userData ? 'Submit & Prefill Info' : 'Submit & Enter Info')}
                             </button>
                              {/* Helpful message for disabled button */}
                             {!isFormValid && (
@@ -308,6 +344,8 @@ function PaperPosterRegistrationForm() {
                                     Please select at least one submission type and complete the required fields (category & file uploads) to proceed.
                                 </p>
                              )}
+                             {/* Display upload/submit errors */}
+                            {fetchError && !isFetching && <p className="mt-2 text-sm text-red-500 text-center">{fetchError}</p>}
                         </div>
                     </div>
                 </div>
@@ -317,12 +355,8 @@ function PaperPosterRegistrationForm() {
 }
 
 
-// ##################################################################
-// ##               WORKSHOP REGISTRATION COMPONENT                ##
-// ##################################################################
-// --- WorkshopRegistrationForm remains unchanged ---
 function WorkshopRegistrationForm() {
-    // ... (Keep the existing WorkshopRegistrationForm code)
+    // ... (Keep the existing WorkshopRegistrationForm code, just add MembershipPopup)
   const router = useRouter();
   const [hasRegistered, setHasRegistered] = useState(null);
   const [registrationId, setRegistrationId] = useState('');
@@ -359,9 +393,14 @@ function WorkshopRegistrationForm() {
             <p className="text-base font-semibold text-purple-600">Workshop Registration</p>
             <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Hands-On Workshops</h1>
             <p className="mt-6 text-lg text-gray-600">Select from our exclusive range of hands-on workshops.</p>
+            <div className="flex justify-center -mt-2 mb-6 px-4">
+                 <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black'/>
+            </div>
           </div>
           {/* Form Content */}
           <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+            {/* Membership Popup Integration */}
+
             {/* NIDACON Registration Check */}
             <div>
               <label className="block text-base font-medium text-gray-800">1. Have you already registered for NIDACON 2026?</label>
@@ -431,13 +470,9 @@ function WorkshopRegistrationForm() {
 }
 
 
-// ##################################################################
-// ##               DELEGATE REGISTRATION COMPONENT (MODIFIED)     ##
-// ##################################################################
-
 function DelegateRegistrationForm({ registrationType }) {
   const router = useRouter();
-  const [isMember, setIsMember] = useState(null); // Use null initially
+  const [isMember, setIsMember] = useState(null);
   const [addOns, setAddOns] = useState({
     implant: false,
     banquet: false,
@@ -476,31 +511,27 @@ function DelegateRegistrationForm({ registrationType }) {
   // --- Determine current features list ---
   let currentFeatures = [];
   if (isMember !== null) {
-      currentFeatures = isMember ? memberFeatures : nonMemberFeatures;
-      // Dynamically add add-on features if selected
-      if (addOns.implant && !currentFeatures.includes("Free Implant (If selected)")) {
-          currentFeatures = ["Free Implant (If selected)", ...currentFeatures];
-      } else if (!addOns.implant){
-           currentFeatures = currentFeatures.filter(f => f !== "Free Implant (If selected)"); // Remove if deselected
-      }
-      if (addOns.banquet && !currentFeatures.includes("GALA Buffet Dinner")) {
-           currentFeatures = ["GALA Buffet Dinner", ...currentFeatures];
-      } else if (!addOns.banquet) {
-           currentFeatures = currentFeatures.filter(f => f !== "GALA Buffet Dinner"); // Remove if deselected
-      }
-      // Ensure specific member-only features are only shown for members
-      if (!isMember) {
-          currentFeatures = currentFeatures.filter(f => f !== "NIDA Master Class on 9th January");
-      } else if (isMember && !currentFeatures.includes("NIDA Master Class on 9th January")) {
-          // Add it back if member is re-selected and it's missing
-          const insertIndex = currentFeatures.findIndex(f => f === "GALA Buffet Dinner" || f === "Free Implant (If selected)");
-          if (insertIndex !== -1) {
-              currentFeatures.splice(insertIndex, 0, "NIDA Master Class on 9th January");
-          } else {
-              currentFeatures.unshift("NIDA Master Class on 9th January");
-          }
-      }
+      currentFeatures = isMember ? [...baseMemberFeatures] : [...baseNonMemberFeatures]; // Create copies
 
+      // Add add-on features if selected
+      if (addOns.implant) {
+        // Find index of "Registration to main event..." to insert before it, or add to start
+        const insertIndex = currentFeatures.findIndex(f => f.startsWith("Registration to main event"));
+        if (insertIndex !== -1) {
+          currentFeatures.splice(insertIndex, 0, implantFeature);
+        } else {
+          currentFeatures.unshift(implantFeature);
+        }
+      }
+      if (addOns.banquet) {
+         // Find index of "NIDA Master Class..." or "Registration to main event..."
+         const insertIndex = currentFeatures.findIndex(f => f === "NIDA Master Class on 9th January" || f.startsWith("Registration to main event"));
+         if (insertIndex !== -1) {
+            currentFeatures.splice(insertIndex, 0, banquetFeature);
+         } else {
+            currentFeatures.unshift(banquetFeature);
+         }
+      }
   }
   // --- End determine current features list ---
 
@@ -508,23 +539,23 @@ function DelegateRegistrationForm({ registrationType }) {
   return (
     <main className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-24 sm:py-32">
-        <div className="max-w-4xl mx-auto"> {/* Adjusted max-width */}
-          {/* ... (Header remains the same) ... */}
+        <div className="max-w-4xl mx-auto">
            <div className="text-center">
             <p className="text-base font-semibold text-purple-600">Step 2 of 3</p>
             <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Delegate Registration Options</h1>
             <p className="mt-6 text-lg text-gray-600">You&apos;ve selected: <span className="font-bold text-purple-700">{displayType} Registration</span>.<br />Choose your status and optional add-ons below.</p>
-             {/* Early Bird Notice */}
              <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
                 <AlertTriangle className="w-5 h-5" />
                 <span className="font-semibold">Early Bird Registration ends 15th November! Prices will increase after this date.</span>
              </div>
           </div>
           <div className="mt-12">
-            {/* --- Added Grid Layout --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Membership Popup Integration */}
+            <div className="flex justify-center mb-8 px-4">
+                 <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black'/>
+            </div>
 
-                {/* --- Left Column: Selections --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8 h-full flex flex-col">
                     {/* Member/Non-Member Selection */}
                     <div>
@@ -563,7 +594,7 @@ function DelegateRegistrationForm({ registrationType }) {
                                         type="checkbox"
                                         checked={addOns.implant}
                                         onChange={handleAddOnChange}
-                                        className="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                                        className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" // Green color for implant
                                     />
                                     </div>
                                     <div className="ml-3 text-sm leading-6 flex-grow">
@@ -582,7 +613,7 @@ function DelegateRegistrationForm({ registrationType }) {
                                         type="checkbox"
                                         checked={addOns.banquet}
                                         onChange={handleAddOnChange}
-                                        className="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                                        className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer" // Red color for banquet
                                     />
                                     </div>
                                     <div className="ml-3 text-sm leading-6 flex-grow">
@@ -597,7 +628,7 @@ function DelegateRegistrationForm({ registrationType }) {
                     </div>
 
                     {/* Total Amount */}
-                    <div className="mt-auto pt-8 border-t border-gray-200"> {/* Added mt-auto */}
+                    <div className="mt-auto pt-8 border-t border-gray-200">
                         <div className="flex justify-between items-center">
                             <span className="text-lg font-medium text-gray-900">Total Amount:</span>
                             <span className="text-2xl font-bold text-purple-700">₹{totalAmount.toLocaleString('en-IN')}</span>
@@ -605,19 +636,35 @@ function DelegateRegistrationForm({ registrationType }) {
                     </div>
                 </div>
 
-                {/* --- Right Column: What's Included (Re-added) --- */}
+                {/* --- Right Column: What's Included --- */}
                  <div className="bg-purple-50 p-8 rounded-2xl border border-purple-200 h-full">
                     <h3 className="text-lg font-semibold text-gray-900">What&apos;s Included</h3>
                      {isMember === null ? (
                          <p className="mt-4 text-gray-500">Select Member or Non-Member status to see included features.</p>
                      ) : (
                         <ul className="mt-5 space-y-3 text-gray-700">
-                        {currentFeatures.map((feature, index) => (
+                        {currentFeatures.map((feature, index) => {
+                          // Define colors based on feature text
+                          let textColorClass = "text-gray-700"; // Default
+                          if (feature === implantFeature && addOns.implant) {
+                            textColorClass = "text-green-700 font-semibold"; // Green for implant
+                          } else if (feature === banquetFeature && addOns.banquet) {
+                            textColorClass = "text-red-700 font-semibold"; // Red for banquet
+                          }
+
+                          return (
                             <li key={index} className="flex items-start">
-                            <svg className="flex-shrink-0 w-5 h-5 text-purple-500 mr-2 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                            <span>{feature}</span>
+                              <svg className={`flex-shrink-0 w-5 h-5 ${
+                                feature === implantFeature && addOns.implant ? 'text-green-500' :
+                                feature === banquetFeature && addOns.banquet ? 'text-red-500' :
+                                'text-purple-500' // Default purple check
+                              } mr-2 mt-0.5`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              <span className={textColorClass}>{feature}</span> {/* Apply conditional text color */}
                             </li>
-                        ))}
+                          );
+                        })}
                         </ul>
                      )}
                 </div>
@@ -647,10 +694,7 @@ function DelegateRegistrationForm({ registrationType }) {
 }
 
 
-// ##################################################################
-// ##               MAIN PAGE COMPONENT (ROUTER)                   ##
-// ##################################################################
-// --- No changes needed here ---
+// --- Main Page Component (ROUTER) remains unchanged ---
 function RegistrationDetails() {
   const searchParams = useSearchParams();
   const registrationType = searchParams.get('type');
@@ -661,8 +705,8 @@ function RegistrationDetails() {
     case 'paper-poster':
       return <PaperPosterRegistrationForm />;
     case 'delegate':
-    default: // Handle delegate and any unexpected type as delegate
-      return <DelegateRegistrationForm registrationType={'delegate'} />; // Pass 'delegate' explicitly
+    default:
+      return <DelegateRegistrationForm registrationType={'delegate'} />;
   }
 }
 
