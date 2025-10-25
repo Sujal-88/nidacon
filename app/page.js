@@ -139,60 +139,153 @@ function HomePageContent() {
             </div>
             {/* ======================================================= */}
 
-            {/* ============== ENHANCED DATE BLOCKS SECTION ============== */}
-            <div className="max-w-6xl mx-auto w-full">
-              <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-xl sm:shadow-2xl">
-                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 sm:gap-8">
+            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
+              <div className="w-full max-w-7xl mx-auto">
 
-                  {/* Left Side - Heading with decorative elements */}
-                  <div className="text-center lg:text-left relative">
-                    {/* Decorative corner accent */}
-                    <div className="absolute -top-4 -left-4 w-12 sm:w-16 h-12 sm:h-16 border-t-4 border-l-4 border-purple-500/30 rounded-tl-2xl hidden lg:block"></div>
+                <div className="hidden lg:flex lg:justify-between lg:items-center lg:gap-8">
+                  <div className="flex justify-center animate-float card-3d flex-shrink-0">
+                    {/* <SpeakerCarousel /> */}
+                  </div>
 
-                    <div className="space-y-1 sm:space-y-2">
-                      <p className="text-xs sm:text-sm md:text-base font-semibold text-purple-700 uppercase tracking-wider">
-                        Mark Your Calendar
+                  <div className="text-center flex-1 px-4 align-center justify-center ">
+                    <div className="space-y-2">
+                      <h1 className="font-bold leading-tight">
+                        <span className="block text-3xl xl:text-5xl bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent animate-fade-in-up opacity-0 [--animation-delay:100ms]">
+                          Welcome to
+                        </span>
+                        <span className="block mt-1 animate-fade-in-up opacity-0 [--animation-delay:300ms]">
+                          <Image
+                            src="/NIDACON/nida_logo.png"
+                            alt="Conference Logo"
+                            width={300}  // Note: smaller size for medium screens
+                            height={300}
+                            className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
+                          />
+                        </span>
+                      </h1>
+
+                      <p className="pt-4 text-lg xl:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
+                        Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
                       </p>
-                      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
-                        Block your dates for
-                        <br className="hidden sm:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700"> NIDACON 2026</span>
-                      </h2>
+                    </div>
+
+                    <div className="pt-8 xl:pt-10 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
+                      <Link href="/register-now" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold">Register Now</span>
+                          </div>
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
                     </div>
                   </div>
 
-                  {/* Right Side - Date Cards */}
-                  <div className="flex flex-wrap justify-center lg:justify-end gap-3 sm:gap-4 md:gap-6">
-                    <div className="group relative">
-                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">
-                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-blue-200 bg-clip-text text-transparent">9<sup className='text-white text-sm sm:text-base'>th</sup></p>
-                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">January</p>
-                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">Friday</p>
-                        <div className="absolute -top-1 -right-1 w-2 sm:w-3 h-2 sm:h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                      </div>
+                  <div className="flex justify-center animate-float card-3d flex-shrink-0" style={{ animationDelay: '0.5s' }}>
+                    {/* <SponsorCarousel /> */}
+                  </div>
+                </div>
+
+                <div className="hidden md:block lg:hidden">
+                  <div className="text-center mb-12">
+                    <div className="space-y-2">
+                      <h1 className="font-bold leading-tight">
+                        <span className="block text-3xl md:text-4xl bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent animate-fade-in-up opacity-0 [--animation-delay:100ms]">
+                          Welcome to
+                        </span>
+                        <span className="block mt-1 animate-fade-in-up opacity-0 [--animation-delay:300ms]">
+                          <Image
+                            src="/NIDACON/nida_logo.png"
+                            alt="Conference Logo"
+                            width={300}
+                            height={300}
+                            className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
+                          />
+                        </span>
+                      </h1>
+
+                      <p className="pt-4 text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
+                        Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
+                      </p>
                     </div>
 
-                    <div className="group relative">
-                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">
-                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-purple-200 bg-clip-text text-transparent">10<sup className='text-white text-sm sm:text-base'>th</sup></p>
-                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">January</p>
-                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">Saturday</p>
-                        <div className="absolute -top-1 -right-1 w-2 sm:w-3 h-2 sm:h-3 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
+                    <div className="pt-8 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
+                      <Link href="/register-now" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out text-base shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold">Register Now</span>
+                          </div>
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
                     </div>
+                  </div>
 
-                    <div className="group relative">
-                      <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-500/20 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]">
-                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-br from-white to-pink-200 bg-clip-text text-transparent">11<sup className='text-white text-sm sm:text-base'>th</sup></p>
-                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">January</p>
-                        <p className="text-sm sm:text-base md:text-lg font-medium text-white mt-1 sm:mt-2">Sunday</p>
-                        <div className="absolute -top-1 -right-1 w-2 sm:w-3 h-2 sm:h-3 bg-pink-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                      </div>
+                  <div className="grid grid-cols-2 gap-6 mt-8">
+                    <div className="flex justify-center animate-float card-3d">
+                      {/* <SpeakerCarousel /> */}
+                    </div>
+                    <div className="flex justify-center animate-float card-3d" style={{ animationDelay: '0.5s' }}>
+                      {/* <SponsorCarousel /> */}
                     </div>
                   </div>
                 </div>
+
+                <div className="block md:hidden">
+                  <div className="text-center mb-10">
+                    <div className="space-y-2">
+                      <h1 className="font-bold leading-tight">
+                        <span className="block text-2xl sm:text-3xl bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent animate-fade-in-up opacity-0 [--animation-delay:100ms]">
+                          Welcome to
+                        </span>
+                        <span className="block mt-1 animate-fade-in-up opacity-0 [--animation-delay:300ms]">
+                          <Image
+                            src="/NIDACON/nida_logo.png"
+                            alt="Conference Logo"
+                            width={350}
+
+                            height={350}
+                            className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
+                          />
+                        </span>
+                      </h1>
+
+                      <p className="pt-4 text-base sm:text-lg text-gray-200 max-w-xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms] px-2">
+                        Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
+                      </p>
+                    </div>
+
+                    <div className="pt-6 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
+                      <Link href="/register-now" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3.5 rounded-full transition-all duration-300 ease-in-out text-sm shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold">Register Now</span>
+                          </div>
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="space-y-8 mt-8">
+                    <div className="flex justify-center animate-float card-3d">
+                      {/* <SpeakerCarousel /> */}
+                    </div>
+                    <div className="flex justify-center animate-float card-3d" style={{ animationDelay: '0.5s' }}>
+                      {/* <SponsorCarousel /> */}
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
+
             {/* ======================================================= */}
 
           </div>
@@ -302,7 +395,7 @@ export default function Home() {
   );
 }
 
-{/* NIDACON REGISTRATION COMPONENT */}
+{/* NIDACON REGISTRATION COMPONENT */ }
 {/* <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
             <div className="w-full max-w-7xl mx-auto">
               
