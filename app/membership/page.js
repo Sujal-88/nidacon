@@ -164,7 +164,7 @@ const MembershipPage = () => {
                                 You&apos;ve selected: <span className="text-blue-600">{selectedPlan.name}</span>
                             </h2>
 
-                            {selectedPlan.name === 'Renewal' && (
+                            {/* {selectedPlan.name === 'Renewal' && (
                                 <div className="mb-8 p-6 bg-indigo-50 rounded-lg border border-indigo-200">
                                     <label htmlFor="renewalRegNumber" className="block text-lg font-semibold text-gray-700 mb-2">Already a member? Fetch your details.</label>
                                     <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -187,7 +187,7 @@ const MembershipPage = () => {
                                     </div>
                                     {fetchError && <p className="text-red-500 mt-2 text-sm">{fetchError}</p>}
                                 </div>
-                            )}
+                            )} */}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
