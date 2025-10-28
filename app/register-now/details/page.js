@@ -613,7 +613,7 @@ function DelegateRegistrationForm({ registrationType }) {
                                         type="checkbox"
                                         checked={addOns.banquet}
                                         onChange={handleAddOnChange}
-                                        className="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer" // Red color for banquet
+                                        className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" // Red color for banquet
                                     />
                                     </div>
                                     <div className="ml-3 text-sm leading-6 flex-grow">
