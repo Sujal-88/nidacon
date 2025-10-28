@@ -86,7 +86,7 @@ export default function RegisterPage() {
              {/* Added MembershipPopup here */}
              <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black'/>
              Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
-             To get member benefits for NIDASPORTZ, please renew your membership for the next year.
+             To get member benefits for NIDACON, please renew your membership for the next year.
                 
         </div>
 
