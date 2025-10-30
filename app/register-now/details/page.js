@@ -480,7 +480,7 @@ function DelegateRegistrationForm({ registrationType }) {
 
   const calculateTotal = () => {
     if (isMember === null) return 0;
-    let basePrice = isMember ? 2000 : 3000;
+    let basePrice = isMember ? 1800 : 2800;
     if (addOns.implant) basePrice += 2200;
     if (addOns.banquet) basePrice += 2000;
     return basePrice;
@@ -566,7 +566,7 @@ function DelegateRegistrationForm({ registrationType }) {
                                 className={`p-6 border rounded-lg text-left transition-all ${isMember === true ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-300' : 'border-gray-300 hover:border-gray-400'}`}
                             >
                                 <span className="font-semibold text-gray-800">IDA Member</span>
-                                <p className="text-2xl font-bold text-purple-700 mt-1">₹2000</p>
+                                <p className="text-2xl font-bold text-purple-700 mt-1">₹1800</p>
                                 <p className="text-xs text-gray-500">(Base Price - Early Bird)</p>
                             </button>
                             <button
@@ -574,7 +574,7 @@ function DelegateRegistrationForm({ registrationType }) {
                                 className={`p-6 border rounded-lg text-left transition-all ${isMember === false ? 'bg-purple-50 border-purple-400 ring-2 ring-purple-300' : 'border-gray-300 hover:border-gray-400'}`}
                             >
                                 <span className="font-semibold text-gray-800">Non-Member</span>
-                                <p className="text-2xl font-bold text-purple-700 mt-1">₹3000</p>
+                                <p className="text-2xl font-bold text-purple-700 mt-1">₹2800</p>
                                 <p className="text-xs text-gray-500">(Base Price - Early Bird)</p>
                             </button>
                         </div>
