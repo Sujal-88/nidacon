@@ -39,15 +39,18 @@ function HomePageContent() {
           </div>
 
           {/* Main Content Container with consistent spacing */}
-          <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 pb-8 sm:pb-10 md:pb-12 space-y-8 sm:space-y-12 md:space-y-16 lg:space-y-20">
+          {/* UPDATED: flex-col lg:flex-row for side-by-side, items-stretch, and gap */}
+          <div className="flex-1 flex flex-col lg:flex-row justify-center px-4 sm:px-6 lg:px-8 pb-8 space-y-8 sm:space-y-12 md:space-y-16 lg:space-y-0 lg:gap-4 items-stretch">
 
             {/* ============== ENHANCED NIDASPORTZ SECTION ============== */}
-            <div className="max-w-6xl mx-auto w-full">
-              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
+            {/* UPDATED: lg:w-1/2 */}
+            <div className="max-w-6xl mx-auto w-full lg:w-1/2">
+              <div className="grid lg:grid-cols-1 gap-6 sm:gap-8 lg:gap-12 items-center">
 
                 {/* Left Side - Main Image */}
-                <div className="order-2 lg:order-1 flex justify-center lg:justify-end">
-                  <Link href="/sports" className="block group relative max-w-sm sm:max-w-md w-full">
+                <div className="order-2 lg:order-1 flex justify-center lg:justify-center">
+                  {/* UPDATED: Reduced max-w from max-w-sm sm:max-w-md to max-w-xs sm:max-w-sm */}
+                  <Link href="/sports" className="block group relative max-w-xs sm:max-w-sm w-full">
                     {/* Decorative sport icons - floating around the main image */}
                     <div className="absolute -left-6 sm:-left-8 top-1/4 w-12 sm:w-16 h-12 sm:h-16 opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-float hidden md:block">
                       <Image
@@ -94,17 +97,17 @@ function HomePageContent() {
                 </div>
 
                 {/* Right Side - Text and CTA */}
-                <div className="order-1 lg:order-2 text-center lg:text-left space-y-4 sm:space-y-6">
+                <div className="order-1 lg:order-2 text-center lg:text-center space-y-4 sm:space-y-6">
                   <div className="space-y-2 sm:space-y-3">
                     <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent animate-fade-in-up">
                       Unleash Your Athletic Spirit
                     </h3>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed max-w-xl mx-auto lg:mx-auto">
                       Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.
                     </p>
 
                     {/* Date Buttons */}
-                    <div className='flex flex-col flex-row xs:flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center pt-2'>
+                    <div className='flex flex-col flex-row xs:flex-row gap-3 sm:gap-4 justify-center lg:justify-center items-center pt-2'>
                       <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                         <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
@@ -126,7 +129,7 @@ function HomePageContent() {
                   </div>
 
                   {/* CTA Button */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center pt-2">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-center items-center pt-2">
                     <Link href="/sports">
                       <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-6 sm:px-8 py-3 sm:py-3.5 rounded-full transition-all duration-300 ease-in-out text-sm sm:text-base shadow-lg transform hover:scale-105 hover:-translate-y-1">
                         <span className="relative z-10">Explore Sports</span>
@@ -139,7 +142,11 @@ function HomePageContent() {
             </div>
             {/* ======================================================= */}
 
-            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8">
+            {/* ADDED: Vertical Divider for Desktop */}
+            <div className="hidden lg:block w-px bg-gray-700/50"></div>
+
+            {/* UPDATED: w-full lg:w-1/2 */}
+            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8 w-full lg:w-1/2">
               <div className="w-full max-w-7xl mx-auto">
 
                 <div className="hidden lg:flex lg:justify-between lg:items-center lg:gap-8">
@@ -157,12 +164,40 @@ function HomePageContent() {
                           <Image
                             src="/NIDACON/nida_logo.png"
                             alt="Conference Logo"
-                            width={300}  // Note: smaller size for medium screens
-                            height={300}
+                            width={400}  // UPDATED: Increased size
+                            height={400} // UPDATED: Increased size
                             className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
                           />
                         </span>
                       </h1>
+
+                      {/* ADDED: Date Buttons */}
+                      <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">9</span>
+                            <span className="text-xs sm:text-sm">January 2025</span>
+                          </span>
+                        </button>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">10</span>
+                            <span className="text-xs sm:text-sm">January 2025</span>
+                          </span>
+                        </button>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
+                            <span className="text-xs sm:text-sm">January 2025</span>
+                          </span>
+                        </button>
+                      </div>
 
                       <p className="pt-4 text-lg xl:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
                         Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
@@ -199,12 +234,32 @@ function HomePageContent() {
                           <Image
                             src="/NIDACON/nida_logo.png"
                             alt="Conference Logo"
-                            width={300}
-                            height={300}
+                            width={400}  // UPDATED: Increased size
+                            height={400} // UPDATED: Increased size
                             className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
                           />
                         </span>
                       </h1>
+
+                      {/* ADDED: Date Buttons */}
+                      <div className='flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">15</span>
+                            <span className="text-xs sm:text-sm">November 2025</span>
+                          </span>
+                        </button>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">16</span>
+                            <span className="text-xs sm:text-sm">November 2025</span>
+                          </span>
+                        </button>
+                      </div>
 
                       <p className="pt-4 text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
                         Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
@@ -246,13 +301,32 @@ function HomePageContent() {
                           <Image
                             src="/NIDACON/nida_logo.png"
                             alt="Conference Logo"
-                            width={350}
-
-                            height={350}
+                            width={400}  // UPDATED: Increased size
+                            height={400} // UPDATED: Increased size
                             className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
                           />
                         </span>
                       </h1>
+
+                      {/* ADDED: Date Buttons */}
+                      <div className='flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">15</span>
+                            <span className="text-xs sm:text-sm">November 2025</span>
+                          </span>
+                        </button>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">16</span>
+                            <span className="text-xs sm:text-sm">November 2025</span>
+                          </span>
+                        </button>
+                      </div>
 
                       <p className="pt-4 text-base sm:text-lg text-gray-200 max-w-xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms] px-2">
                         Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.

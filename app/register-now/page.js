@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'; // Import useState and useEffect
 import { UserCheck, Wrench, FileText, ArrowRight, AlertTriangle, Lock } from 'lucide-react'; // Added Lock icon
 import Link from 'next/link';
+import Image from 'next/image'; // Import Image
 import MembershipPopup from '@/components/MembershipPopup'; // Import MembershipPopup
 
 // Data for the registration cards
@@ -56,25 +57,38 @@ const registrationOptions = [
 ];
 
 export default function RegisterPage() {
-  const [isPaperPosterOpen, setIsPaperPosterOpen] = useState(false);
+  // UPDATED: Renamed state for clarity
+  const [isSpecialRegistrationOpen, setIsSpecialRegistrationOpen] = useState(false);
 
   useEffect(() => {
-    // Check if the current date is on or after November 10th, 2025
-    const openDate = new Date('2025-11-10T00:00:00');
+    // Check if the current date is on or after November 15th, 2025
+    const openDate = new Date('2025-11-15T00:00:00');
     const currentDate = new Date();
-    setIsPaperPosterOpen(currentDate >= openDate);
+    // SETTING TO TRUE FOR TESTING - REMOVE IN PRODUCTION
+    // setIsSpecialRegistrationOpen(true); 
+    
+    // PRODUCTION LOGIC
+    setIsSpecialRegistrationOpen(currentDate >= openDate);
   }, []);
 
   return (
     <main className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-6 py-24 sm:py-32">
         <div className="text-center max-w-3xl mx-auto">
+          {/* ADDED: NIDACON Logo */}
+          <Image
+            src="/NIDACON/nida_logo.png"
+            alt="NIDACON Logo"
+            width={300}
+            height={300}
+            className="mx-auto mb-6"
+          />
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
             Join NIDACON 2026
           </h1>
           <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
             <AlertTriangle className="w-5 h-5" />
-            <span className="font-semibold">Early Bird Registration ends 15th November! Prices will increase after this date.</span>
+            <span className="font-semibold">Early Bird Registration ends 25th November! Prices will increase after this date.</span>
           </div>
           <p className="mt-6 text-lg text-gray-600 leading-8">
             Choose the registration category that best suits your participation. We look forward to welcoming you to Nagpur for an unforgettable experience of learning and collaboration.
@@ -83,25 +97,26 @@ export default function RegisterPage() {
 
         {/* Membership Popup Integration */}
         <div className="flex flex-col text-center text-red-600 font-bold justify-center mt-10 mb-8 px-4">
-             {/* Added MembershipPopup here */}
-             <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black'/>
-             Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
-             To get member benefits for NIDACON, please renew your membership for the next year.
-                
+          {/* Added MembershipPopup here */}
+          <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black' />
+          Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
+          To get member benefits for NIDACON, please renew your membership for the next year.
+
         </div>
 
         {/* Registration Cards Grid */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {registrationOptions.map((option) => {
-            const isPaperPosterCard = option.id === 'paper-poster';
-            const isDisabled = isPaperPosterCard && !isPaperPosterOpen;
+            // UPDATED: Check for both workshop and paper-poster
+            const isSpecialCard = option.id === 'paper-poster' || option.id === 'workshop';
+            // UPDATED: Use new state variable for disability check
+            const isDisabled = isSpecialCard && !isSpecialRegistrationOpen;
 
             return (
               <div
                 key={option.title}
-                className={`flex flex-col rounded-2xl shadow-lg border transition-all duration-300 ${isDisabled ? 'bg-gray-100 border-gray-300 opacity-70' : 'bg-white border-gray-200 hover:-translate-y-2'} ${
-                  option.popular && !isDisabled ? 'border-purple-300' : ''
-                }`}
+                className={`flex flex-col rounded-2xl shadow-lg border transition-all duration-300 ${isDisabled ? 'bg-gray-100 border-gray-300 opacity-70' : 'bg-white border-gray-200 hover:-translate-y-2'} ${option.popular && !isDisabled ? 'border-purple-300' : ''
+                  }`}
               >
                 <div className="p-8 flex-grow">
                   <div className={`inline-block p-3 ${isDisabled ? 'bg-gray-200' : 'bg-gray-100'} rounded-lg`}>
@@ -120,8 +135,9 @@ export default function RegisterPage() {
                       </li>
                     ))}
                   </ul>
-                  {isPaperPosterCard && !isPaperPosterOpen && (
-                    <p className="mt-4 text-sm font-semibold text-orange-600">Opens on November 10th, 2025</p>
+                  {/* UPDATED: Show message for both special cards when disabled */}
+                  {isSpecialCard && !isSpecialRegistrationOpen && (
+                    <p className="mt-4 text-sm font-semibold text-orange-600">Opens on November 15th, 2025</p>
                   )}
                 </div>
                 <div className={`p-6 ${isDisabled ? 'bg-gray-200' : 'bg-gray-50'} rounded-b-2xl`}>
