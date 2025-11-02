@@ -178,7 +178,7 @@ function HomePageContent() {
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">9</span>
-                            <span className="text-xs sm:text-sm">January 2025</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -186,7 +186,7 @@ function HomePageContent() {
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">10</span>
-                            <span className="text-xs sm:text-sm">January 2025</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -194,7 +194,7 @@ function HomePageContent() {
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
-                            <span className="text-xs sm:text-sm">January 2025</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                       </div>
@@ -315,7 +315,7 @@ function HomePageContent() {
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">9</span>
-                            <span className="text-xs sm:text-sm">January 2025</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -323,7 +323,7 @@ function HomePageContent() {
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">10</span>
-                            <span className="text-xs sm:text-sm">January 2025</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -331,7 +331,7 @@ function HomePageContent() {
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
-                            <span className="text-xs sm:text-sm">January 2025</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                       </div>
