@@ -5,14 +5,14 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Image from 'next/image';
 
 const ALBUM_DATA = [
-  { id: 1, title: 'Chromatic Echoes', artist: 'Aurora Veil', cover: '/gallery/2023Pic1-0.jpg' },
-  { id: 2, title: 'Midnight Drive', artist: 'Vector Dash', cover: '/gallery/2023Pic3.jpg' },
-  { id: 3, title: 'Solaris', artist: 'Lyra', cover: '/gallery/2023Pic7.jpg' },
-  { id: 4, title: 'Neon Dreams', artist: 'Cyberwave', cover: '/gallery/2023Pic5.jpg' },
-  { id: 5, title: 'Lost Woods', artist: 'Forest Spirit', cover: '/gallery/2023Pic4.jpg' },
-  { id: 6, title: 'Quantum Leap', artist: 'Dr. Anomaly', cover: '/gallery/2023Pic1.jpg' },
-  { id: 7, title: 'Oceanic Depths', artist: 'Triton', cover: '/gallery/photo7.png' },
-  { id: 8, title: 'Desert Mirage', artist: 'Scarab', cover: '/gallery/2023Pic2.jpg' },
+  { id: 1, title: '', artist: '', cover: '/gallery/2023Pic1-0.jpg' },
+  { id: 2, title: '', artist: '', cover: '/gallery/2023Pic3.jpg' },
+  { id: 3, title: '', artist: '', cover: '/gallery/2023Pic7.jpg' },
+  { id: 4, title: '', artist: '', cover: '/gallery/2023Pic5.jpg' },
+  { id: 5, title: '', artist: '', cover: '/gallery/2023Pic4.jpg' },
+  { id: 6, title: '', artist: '', cover: '/gallery/2023Pic1.jpg' },
+  { id: 7, title: '', artist: '', cover: '/gallery/photo7.png' },
+  { id: 8, title: '', artist: '', cover: '/gallery/2023Pic2.jpg' },
 ];
 
 const Arrow = ({ direction, onClick, enabled }) => (

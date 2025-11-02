@@ -9,77 +9,41 @@ export default function UpcomingEvents() {
     const events = [
         // ... your event data remains the same
         {
-            title: 'Sustainable & Green Building Design',
-            date: 'Oct 11, 2025',
-            time: '10:00 AM - 4:00 PM',
-            location: 'VNIT Auditorium, Nagpur',
-            description: 'Explore innovative techniques in sustainable design and eco-friendly materials with leading architects and industry experts.',
-            category: 'Workshop',
+            title: 'NIDASPORTZ',
+            date: '15 Nov, 2025 - 16 Nov, 2025',
+            time: '',
+            location: 'ABDA Sports Complex, Nagpur',
+            description: 'Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.',
+            category: 'SPorts',
             attendees: '120+',
-            imageSrc: 'https://images.unsplash.com/photo-1542626991-a2f572a1e89',
+            imageSrc: '/sports/title.jpeg',
             status: 'Early Bird',
             price: '₹2,500'
         },
         {
-            title: 'Digital Transformation in Construction',
-            date: 'Oct 25, 2025',
+            title: 'NIDACON 2026',
+            date: '9 - 11 Jan, 2026',
             time: '9:30 AM - 5:00 PM',
             location: 'Hotel Radisson Blu, Nagpur',
-            description: 'Deep dive into BIM, AI and digital tools revolutionizing project management in the construction industry.',
+            description: 'Deep dive into BIM, AI and digital tools revolutionizing project management in the dental industry.',
             category: 'Conference',
-            attendees: '200+',
-            imageSrc: 'https://images.unsplash.com/photo-1542626991-a2f572a1e89',
+            attendees: '700+',
+            imageSrc: '/NIDACON/nida_logo.png',
             status: 'Filling Fast',
-            price: '₹3,500'
+            price: '₹2000'
         },
         {
-            title: 'NIDACON Annual Design Awards',
-            date: 'Nov 8, 2025',
+            title: 'NIDACON Workshop',
+            date: '9 - 11 Jan, 2026',
             time: '7:00 PM onwards',
-            location: 'Le Méridien, Nagpur',
-            description: 'Celebrating excellence in architecture and interior design from the Vidarbha region with industry leaders.',
+            location: 'Hotel Radisson Blu, Nagpur',
+            description: 'Celebrating excellence in dental practices from central India dental Experts.',
             category: 'Gala',
             attendees: '300+',
-            imageSrc: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=240&fit=crop&crop=center',
+            imageSrc: '/NIDACON/nida_logo.png',
             status: 'Premium',
             price: '₹5,000'
         },
-        {
-            title: 'Smart Cities Urban Planning',
-            date: 'Nov 22, 2025',
-            time: '11:00 AM - 6:00 PM',
-            location: 'IT Park, Nagpur',
-            description: 'Technology integration in urban development and infrastructure planning for next-generation smart cities.',
-            category: 'Conclave',
-            attendees: '150+',
-            imageSrc: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1f?w=400&h=240&fit=crop&crop=center',
-            status: 'Limited Seats',
-            price: '₹2,800'
-        },
-        {
-            title: 'Innovative Materials & Technology',
-            date: 'Dec 5, 2025',
-            time: '10:00 AM - 3:00 PM',
-            location: 'IIT Bombay, Mumbai',
-            description: 'Explore cutting-edge materials and construction technologies shaping the future of architecture.',
-            category: 'Seminar',
-            attendees: '180+',
-            imageSrc: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=240&fit=crop&crop=center',
-            status: 'New',
-            price: '₹1,800'
-        },
-        {
-            title: 'Heritage Conservation Workshop',
-            date: 'Dec 18, 2025',
-            time: '9:00 AM - 5:00 PM',
-            location: 'Archaeological Museum, Nagpur',
-            description: 'Learn traditional and modern techniques for preserving historical architecture and cultural heritage.',
-            category: 'Workshop',
-            attendees: '85+',
-            imageSrc: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=240&fit=crop&crop=center',
-            status: 'Exclusive',
-            price: '₹3,200'
-        }
     ];
 
     // ✨ CHANGE 1: Set items per slide to 2
