@@ -22,6 +22,7 @@ export default function EventCard({ event }) {
             {/* Image Section */}
             <div className="relative h-48 overflow-hidden">
                 <Image
+                    fill
                     src={event.imageSrc}
                     alt={event.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

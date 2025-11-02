@@ -194,6 +194,7 @@ export async function initiatePayment(formData) {
   const amount = formData.get('amount');
   const productinfo = formData.get('productinfo');
   const txnid = formData.get('txnid');
+  const photoUrl = formData.get('photoUrl') || '';
 
   // --- NEW: Read Add-on flags ---
   const implantAddon = formData.get('implant') === 'true';
@@ -229,13 +230,14 @@ export async function initiatePayment(formData) {
   }
   const udf5 = udf5_parts.join(',').replace(/\|/g, ""); // Join parts and ensure no pipe characters
   // --- End NEW ---
+  const udf6 = (photoUrl || '').replace(/\|/g, "");
 
 
   const successUrl = `${baseUrl}/api/payment/success`;
   const failureUrl = `${baseUrl}/api/payment/failure`;
 
   // --- Hash string includes the potentially populated udf5 ---
-  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
+  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}||||||${salt}`;
 
   console.log("--- FINAL HASH STRING FOR PAYU ---");
   console.log(hashString); // For debugging
@@ -257,6 +259,7 @@ export async function initiatePayment(formData) {
     udf3, // memberType
     udf4, // subCategory (e.g., from old delegate flow, or maybe workshop IDs)
     udf5, // NEW: Contains add-on info for delegates
+    udf6, // NEW: photoUrl for sports registrations
     hash,
   };
 

@@ -19,11 +19,16 @@ const MembershipPage = () => {
     const [isFetching, setIsFetching] = useState(false);
     const [fetchError, setFetchError] = useState('');
 
+    // --- ADDED State for pricing ---
+    const [platformFee, setPlatformFee] = useState(0);
+    const [totalPrice, setTotalPrice] = useState(0);
+    // ---
+
     const plans = [
-        { name: 'New Member', price: 1750, features: ['Full access to all events', 'Monthly newsletter', 'Voting rights'], popular: true },
-        { name: 'Renewal', price: 1450, features: ['Continue your membership', 'Access to member directory', 'Discounted event fees'] },
-        { name: 'Student Member', price: 350, features: ['Access to student workshops', 'Networking opportunities', 'Digital newsletter'] },
-    ];
+        { name: 'New Member', price: 2, features: ['Full access to all events', 'Monthly newsletter', 'Voting rights'], popular: true },
+        { name: 'Renewal', price: 3, features: ['Continue your membership', 'Access to member directory', 'Discounted event fees'] },
+        { name: 'Student Member', price: 4, features: ['Access to student workshops', 'Networking opportunities', 'Digital newsletter'] },
+    ]; //1750, 1450, 350
 
     useEffect(() => {
         if (selectedPlan) {
@@ -36,6 +41,15 @@ const MembershipPage = () => {
 
     const handlePlanSelection = (plan) => {
         setSelectedPlan(plan);
+
+        // --- ADDED CALCULATIONS ---
+        const basePrice = plan.price;
+        const fee = basePrice * 0.025; // 2.5% fee
+        const total = basePrice + fee;
+        setPlatformFee(fee);
+        setTotalPrice(total);
+        // --- END ADDED CALCULATIONS ---
+
         setFormData({ name: '', msdcRegistration: '', number: '', email: '', mobile: '', address: '' });
         setFetchError('');
         setRenewalRegNumber('');
@@ -99,7 +113,11 @@ const MembershipPage = () => {
         paymentFormData.append('email', formData.email);
         paymentFormData.append('mobile', formData.mobile);
         paymentFormData.append('address', formData.address);
-        paymentFormData.append('amount', selectedPlan.price);
+        
+        // --- UPDATED: Use total price from state ---
+        paymentFormData.append('amount', totalPrice);
+        // ---
+        
         paymentFormData.append('txnid', processingResult.txnid);
         paymentFormData.append('productinfo', `IDA Membership - ${selectedPlan.name}`);
         paymentFormData.append('registrationType', 'membership'); // Differentiator
@@ -146,6 +164,7 @@ const MembershipPage = () => {
                         <div key={plan.name} className={`relative rounded-xl shadow-2xl p-8 text-center backdrop-blur-lg bg-white/50 border border-white/30 transition-all duration-300 hover:shadow-blue-200 ${selectedPlan?.name === plan.name ? 'ring-4 ring-blue-500' : ''} ${plan.popular ? 'transform scale-105' : 'hover:scale-105'}`}>
                             {plan.popular && <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg rounded-tr-xl">Most Popular</div>}
                             <h2 className="text-3xl font-bold text-gray-900 mb-4">{plan.name}</h2>
+                            {/* This displays the BASE price */}
                             <p className="text-6xl font-black text-blue-600 mb-6">₹{plan.price}</p>
                             <ul className="text-gray-700 mb-10 space-y-4 text-left">
                                 {plan.features.map((feature, index) => (
@@ -164,30 +183,28 @@ const MembershipPage = () => {
                                 You&apos;ve selected: <span className="text-blue-600">{selectedPlan.name}</span>
                             </h2>
 
-                            {/* {selectedPlan.name === 'Renewal' && (
-                                <div className="mb-8 p-6 bg-indigo-50 rounded-lg border border-indigo-200">
-                                    <label htmlFor="renewalRegNumber" className="block text-lg font-semibold text-gray-700 mb-2">Already a member? Fetch your details.</label>
-                                    <div className="flex flex-col sm:flex-row items-center gap-4">
-                                        <input
-                                            type="text"
-                                            id="renewalRegNumber"
-                                            value={renewalRegNumber}
-                                            onChange={(e) => setRenewalRegNumber(e.target.value)}
-                                            placeholder="Enter Your Registration Number"
-                                            className="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-indigo-500"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={handleFetchDetails}
-                                            disabled={isFetching}
-                                            className="w-full sm:w-auto bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 disabled:bg-indigo-300 flex items-center justify-center whitespace-nowrap"
-                                        >
-                                            {isFetching ? 'Fetching...' : 'Fetch Details'}
-                                        </button>
+                            {/* --- ADDED PRICE BREAKDOWN --- */}
+                            <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 max-w-sm mx-auto">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Payment Summary</h3>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Base Price:</span>
+                                        <span className="font-medium text-gray-800">₹{selectedPlan.price.toFixed(2)}</span>
                                     </div>
-                                    {fetchError && <p className="text-red-500 mt-2 text-sm">{fetchError}</p>}
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Platform Fee (2.5%):</span>
+                                        <span className="font-medium text-gray-800">₹{platformFee.toFixed(2)}</span>
+                                    </div>
+                                    <div className="border-t border-dashed border-gray-300 my-2"></div>
+                                    <div className="flex justify-between text-xl font-bold text-gray-900">
+                                        <span>Total Payable:</span>
+                                        <span className="text-blue-600">₹{totalPrice.toFixed(2)}</span>
+                                    </div>
                                 </div>
-                            )} */}
+                            </div>
+                            {/* --- END PRICE BREAKDOWN --- */}
+
+                            {/* {selectedPlan.name === 'Renewal' && ( ... )} */}
 
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -207,7 +224,10 @@ const MembershipPage = () => {
                                     )}
                                 </div>
                                 <div className="text-center pt-4">
-                                    <button type="submit" className="bg-green-500 text-white font-bold py-4 px-12 rounded-lg text-xl hover:bg-green-600 transition-transform duration-300 transform hover:scale-105 shadow-lg">Pay ₹{selectedPlan.price} & Complete Registration</button>
+                                    {/* --- UPDATED BUTTON TEXT --- */}
+                                    <button type="submit" className="bg-green-500 text-white font-bold py-4 px-12 rounded-lg text-xl hover:bg-green-600 transition-transform duration-300 transform hover:scale-105 shadow-lg">
+                                        Pay ₹{totalPrice.toFixed(2)} & Complete Registration
+                                    </button>
                                 </div>
                             </form>
                         </div>

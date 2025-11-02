@@ -113,7 +113,7 @@ import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
 import { prisma } from '@/lib/prisma';
 import { generateUserId } from '@/lib/userId'; // For NIDAxxxx IDs
-import { sendRegistrationEmail, sendSportsRegistrationEmail } from '@/lib/email';
+import { sendRegistrationEmail, sendSportsRegistrationEmail, sendMembershipEmail } from '@/lib/email';
 
 export async function POST(request) {
   let txnid = 'unknown'; // Initialize txnid outside try block
@@ -150,7 +150,7 @@ export async function POST(request) {
       const memberType = payuResponse.udf3; // 'member', 'non-member' etc.
       const payuId = payuResponse.mihpayid;
       const amountPaid = parseFloat(payuResponse.amount);
-
+      const photoUrl = payuResponse.udf6 || null;
       // Prepare success URL base
       const successUrl = new URL('/payment/success', request.url);
       successUrl.searchParams.set('txnid', txnid);
@@ -217,6 +217,7 @@ export async function POST(request) {
               paymentStatus: 'success',
               payuId: payuId,
               paymentAmount: amountPaid,
+              photoUrl: photoUrl,
               // Update add-on status only if it's a delegate registration
               ...(registrationType === 'delegate' && {
                 purchasedImplantAddon: purchasedImplant,
@@ -225,7 +226,11 @@ export async function POST(request) {
             },
           });
           console.log(`User record updated successfully for ${updatedUser.email}, UserID: ${updatedUser.userId}`);
-          await sendRegistrationEmail(updatedUser, payuResponse); // Send standard NIDACON email
+          if (registrationType === 'membership') {
+            await sendMembershipEmail(updatedUser, payuResponse);
+          } else {
+            await sendRegistrationEmail(updatedUser, payuResponse); // Send standard NIDACON email
+          } // Send standard NIDACON email
 
         }
         // Scenario 2: User does NOT exist (e.g., direct delegate/workshop without prior membership step) -> Create them.
@@ -239,6 +244,7 @@ export async function POST(request) {
               email: payuResponse.email,
               mobile: payuResponse.phone,
               address: payuResponse.udf1,
+              photoUrl: photoUrl,
               registrationType: registrationType, // delegate, workshop-registered, etc.
               memberType: memberType, // member, non-member
               subCategory: payuResponse.udf4, // Store if needed
@@ -256,7 +262,11 @@ export async function POST(request) {
             },
           });
           console.log(`New User record created successfully for ${newUser.email}, UserID: ${newUser.userId}`);
-          await sendRegistrationEmail(newUser, payuResponse); // Send standard NIDACON email
+          if (registrationType === 'membership') {
+            await sendMembershipEmail(newUser, payuResponse);
+          } else {
+            await sendRegistrationEmail(newUser, payuResponse); // Send standard NIDACON email
+          }
 
         }
         // Scenario 3: User exists and is already processed (duplicate webhook/retry) -> Do nothing, just redirect.

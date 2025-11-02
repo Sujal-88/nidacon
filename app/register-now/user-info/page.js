@@ -137,6 +137,30 @@ function UserInfoForm() {
       return;
     }
 
+    let photoUrl = '';
+    if (photo) {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', photo);
+
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+        const result = await response.json();
+        if (response.ok && result.url) {
+          photoUrl = result.url;
+        } else {
+          throw new Error(result.message || 'Upload failed');
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        setErrors(prev => ({ ...prev, form: 'Error uploading image. Please try again.' }));
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     const txnid = `NIDA${Date.now()}`;
     let productinfoText = `NIDACON 2026 - ${registrationType}`;
     if (registrationType === 'delegate') {

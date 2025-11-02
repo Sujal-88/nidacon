@@ -17,6 +17,7 @@ model User {
   email            String    @unique
   mobile           String?
   address          String?
+  photoUrl         String?
   registrationType String?   // e.g., 'delegate', 'workshop', 'membership', 'paper-poster'
   memberType       String?   // e.g., 'member', 'non-member', 'student-member'
   subCategory      String?   // Specific type within registrationType if needed
