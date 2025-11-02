@@ -467,7 +467,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className='overflow-hidden'>
       {isLoading ? (
         <SplashScreen onAnimationComplete={handleAnimationComplete} />
       ) : (
