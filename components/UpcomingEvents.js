@@ -11,10 +11,10 @@ export default function UpcomingEvents() {
         {
             title: 'NIDASPORTZ',
             date: '15 Nov, 2025 - 16 Nov, 2025',
-            time: '',
+            time: '7:00 AM Onwards',
             location: 'ABDA Sports Complex, Nagpur',
             description: 'Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.',
-            category: 'SPorts',
+            category: 'Sports',
             attendees: '120+',
             imageSrc: '/sports/title.jpeg',
             status: 'Early Bird',
