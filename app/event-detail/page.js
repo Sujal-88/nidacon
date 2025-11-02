@@ -148,7 +148,7 @@ export default function NidaconLanding() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="#registration-form" 
+                  href="/register-now" 
                   className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-300 transform hover:-translate-y-0.5"
                 >
                   Register Online
