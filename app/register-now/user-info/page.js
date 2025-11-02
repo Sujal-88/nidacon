@@ -56,18 +56,38 @@ function UserInfoForm() {
     }
   };
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
   // Handler for photo upload (keep existing)
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setPhoto(file);
-      setPhotoPreview(URL.createObjectURL(file));
-      if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
-    } else {
+
+    if (!file) {
       setPhoto(null);
       setPhotoPreview('');
-      setErrors(prev => ({ ...prev, photo: 'Please select a valid image file.' }));
+      setErrors(prev => ({ ...prev, photo: null }));
+      return;
     }
+
+    // Check 1: File Size
+    if (file.size > MAX_FILE_SIZE) {
+      setErrors(prev => ({ ...prev, photo: 'Image is too large. Please upload a file under 5MB.' }));
+      setPhoto(null);
+      setPhotoPreview('');
+      return;
+    }
+
+    // Check 2: File Type
+    if (!file.type.startsWith('image/')) {
+      setErrors(prev => ({ ...prev, photo: 'Invalid file type. Please upload an image.' }));
+      setPhoto(null);
+      setPhotoPreview('');
+      return;
+    }
+
+    // Success
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
   };
 
   // Form validation (keep existing)
@@ -184,10 +204,10 @@ function UserInfoForm() {
     formDataObj.append('subCategory', subCategory);
     formDataObj.append('implant', implantAddon.toString());
     formDataObj.append('banquet', banquetAddon.toString());
-    
+
     // Append photo if it exists
     if (photo) {
-        formDataObj.append('photo', photo);
+      formDataObj.append('photo', photo);
     }
 
     const payuData = await initiatePayment(formDataObj);
@@ -293,7 +313,7 @@ function UserInfoForm() {
                 {/* Profile Photo (Optional) - Only show if not paper/poster */}
                 {searchParams.get('type') !== 'paper-poster' && (
                   <div className="sm:col-span-2">
-                    <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional - Used for delegate pass if provided)</span></label>
+                    <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional)</span></label>
                     <div className="mt-2 flex items-center gap-x-3">
                       {photoPreview ? (
                         <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
@@ -328,15 +348,15 @@ function UserInfoForm() {
                     className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isSubmitting ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Submitting...
-                        </>
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Submitting...
+                      </>
                     ) : (
-                        <>Submit Details <ArrowRight className="inline w-5 h-5 ml-2" /></>
+                      <>Submit Details <ArrowRight className="inline w-5 h-5 ml-2" /></>
                     )}
                   </button>
                 </div>

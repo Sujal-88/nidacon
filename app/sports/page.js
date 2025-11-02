@@ -67,6 +67,7 @@ export default function SportsEventPage() {
     name: '', age: '', mobile: '', gender: '', tshirtSize: '', email: ''
   });
   const [errors, setErrors] = useState({});
+  const [photoError, setPhotoError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
 
@@ -112,16 +113,41 @@ export default function SportsEventPage() {
     );
   };
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setPhoto(file);
-      setPhotoPreview(URL.createObjectURL(file));
-      if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
-    } else {
+
+    if (!file) {
       setPhoto(null);
       setPhotoPreview('');
+      setPhotoError(''); // Clear error if file is removed
+      return;
     }
+
+    // Check 1: File Size
+    if (file.size > MAX_FILE_SIZE) {
+      setPhotoError('Image is too large. Please upload a file under 5MB.');
+      setPhoto(null);
+      setPhotoPreview('');
+      return;
+    }
+
+    // Check 2: File Type
+    if (!file.type.startsWith('image/')) {
+      setPhotoError('Invalid file type. Please upload an image (JPG, PNG, etc.).');
+      setPhoto(null);
+      setPhotoPreview('');
+      return;
+    }
+
+    // Success
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setPhotoError(''); // Clear any previous errors
+
+    // This part is from your original file, keep it
+    if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
   };
 
   const handleInputChange = (e) => {
@@ -309,14 +335,14 @@ export default function SportsEventPage() {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-2">
                     {/* Links */}
                     <div className="flex items-center gap-2">
-                        <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">RENEW MEMBERSHIP</Link>
-                        <span className='text-black text-lg'>/</span>
-                        <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">JOIN MEMBERSHIP</Link>
+                      <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">RENEW MEMBERSHIP</Link>
+                      <span className='text-black text-lg'>/</span>
+                      <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">JOIN MEMBERSHIP</Link>
                     </div>
                     {/* Membership Popup (consider making text='' dynamic or removing if not needed) */}
                     <MembershipPopup text='' /> {/* Removed unnecessary text */}
                   </div>
-                   {/* Warning text */}
+                  {/* Warning text */}
                   Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
                   To get member benefits for NIDASPORTZ, please renew your membership for the next year.
                 </div>
@@ -411,6 +437,9 @@ export default function SportsEventPage() {
                         <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
                           Profile Photo
                         </label>
+                        {photoError && (
+                          <p className="text-xs text-red-600 -mt-2 sm:ml-20">{photoError}</p>
+                        )}
                         {photoPreview ? (
                           <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
                         ) : (
@@ -425,7 +454,7 @@ export default function SportsEventPage() {
                       </div>
 
                       {/* --- T-SHIRT NOTE ADDED START --- */}
-                       <div className="relative md:col-span-2">
+                      <div className="relative md:col-span-2">
                         <p className="mb-2 text-sm font-medium text-red-400">
                           *Select one size larger than your usual size for the T-shirt.
                         </p>
