@@ -7,7 +7,7 @@ const executiveBodyMembers = [
     id: 1,
     name: 'Dr. Tushar Shrirao',
     qualification: 'President',
-    description: 'A visionary leader with over 20 years of experience in architectural innovation and sustainable design practices.',
+    description: 'A senior specialist with two decades of focused expertise, dedicated to restoring foundational gum health and masterfully placing dental implants for a lasting smile.',
     image: '/committee/tusharShrirao.jpeg',
     socials: {
       linkedin: '#',
@@ -18,7 +18,7 @@ const executiveBodyMembers = [
     id: 2,
     name: 'Dr. Ketan Garg',
     qualification: 'HON.Secreatary',
-    description: 'Specializes in large-scale urban planning and smart city projects, blending technology with human-centric design.',
+    description: 'With 15 years in advanced surgical care, our oral surgeon skillfully manages complex cases, from wisdom teeth removal to precision-guided implant placement.',
     image: '/committee/ketanGarg.jpeg',
     socials: {
       linkedin: '#',
@@ -29,7 +29,7 @@ const executiveBodyMembers = [
     id: 3,
     name: 'Dr. Rohit Mude',
     qualification: 'Treasurer',
-    description: 'An expert in material science and interior design, focusing on creating functional and aesthetically pleasing spaces.',
+    description: 'An accomplished dental surgeon with 15 years of experience, providing comprehensive restorative care and cosmetic solutions to enhance your overall oral health.',
     image: '/committee/rohitMude.jpeg',
     socials: {
       linkedin: '#',
