@@ -113,7 +113,7 @@ export default function SportsEventPage() {
     );
   };
 
-  const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 5MB
+  const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5MB
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -127,7 +127,7 @@ export default function SportsEventPage() {
 
     // Check 1: File Size
     if (file.size > MAX_FILE_SIZE) {
-      setPhotoError('Image is too large. Please upload a file under 1.5MB.');
+      setPhotoError('Image is too large. Please upload a file under 1MB.');
       setPhoto(null);
       setPhotoPreview('');
       return;
