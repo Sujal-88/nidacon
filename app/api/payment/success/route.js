@@ -191,9 +191,10 @@ export async function POST(request) {
       }
       // --- Handle OTHER Registrations (Delegate, Workshop, Membership) ---
       else {
-        let user = await prisma.user.findUnique({ where: { transactionId: txnid } });
+        
+        // --- START OF FIX ---
 
-        // Parse Add-ons from udf5 (only relevant for delegates)
+        // Parse Add-ons first (you're already doing this, just move it up)
         let purchasedImplant = false;
         let purchasedBanquet = false;
         if (registrationType === 'delegate' && payuResponse.udf5) {
@@ -206,73 +207,68 @@ export async function POST(request) {
           console.log(`Parsed Addons for txnid ${txnid}: Implant=${purchasedImplant}, Banquet=${purchasedBanquet}`);
         }
 
-        // Scenario 1: User exists and is pending (e.g., from membership flow) -> Update them.
-        if (user && user.paymentStatus === 'pending') {
-          console.log(`Updating PENDING User record for txnid: ${txnid}, Email: ${user.email}`);
-          const finalUserId = user.userId.startsWith('TEMP-') ? await generateUserId() : user.userId; // Generate NIDA ID if it was temporary
-          const updatedUser = await prisma.user.update({
-            where: { transactionId: txnid },
-            data: {
-              userId: finalUserId, // Update to permanent ID if needed
-              paymentStatus: 'success',
-              payuId: payuId,
-              paymentAmount: amountPaid,
-              photoUrl: photoUrl,
-              // Update add-on status only if it's a delegate registration
-              ...(registrationType === 'delegate' && {
-                purchasedImplantAddon: purchasedImplant,
-                purchasedBanquetAddon: purchasedBanquet,
-              })
-            },
-          });
-          console.log(`User record updated successfully for ${updatedUser.email}, UserID: ${updatedUser.userId}`);
-          if (registrationType === 'membership') {
-            await sendMembershipEmail(updatedUser, payuResponse);
-          } else {
-            await sendRegistrationEmail(updatedUser, payuResponse); // Send standard NIDACON email
-          } // Send standard NIDACON email
+        // Define the complete data payload for the user
+        const userDataPayload = {
+          name: payuResponse.firstname,
+          mobile: payuResponse.phone,
+          address: payuResponse.udf1,
+          photoUrl: photoUrl, // This is udf6
+          registrationType: registrationType,
+          memberType: memberType,
+          subCategory: payuResponse.udf4,
+          transactionId: txnid, // Set or overwrite with the new successful transaction
+          paymentStatus: 'success',
+          payuId: payuId,
+          paymentAmount: amountPaid,
+          isMember: memberType === 'member',
+          ...(registrationType === 'delegate' && {
+            purchasedImplantAddon: purchasedImplant,
+            purchasedBanquetAddon: purchasedBanquet,
+          }),
+        };
 
+        // Check if user exists by email to determine their User ID
+        let existingUser = await prisma.user.findUnique({
+          where: { email: payuResponse.email }
+        });
+
+        let finalUserId;
+        if (existingUser) {
+          // User exists. Use their ID, or upgrade it from TEMP- if it was a pending membership.
+          finalUserId = existingUser.userId.startsWith('TEMP-') ? await generateUserId() : existingUser.userId;
+          console.log(`User found by email. Updating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
+        } else {
+          // User does not exist. Generate a new permanent ID.
+          finalUserId = await generateUserId();
+          console.log(`New user. Creating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
         }
-        // Scenario 2: User does NOT exist (e.g., direct delegate/workshop without prior membership step) -> Create them.
-        else if (!user) {
-          console.log(`Creating NEW User record for successful txnid: ${txnid}, Email: ${payuResponse.email}`);
-          const newUserId = await generateUserId(); // Generate NIDAxxx ID
-          const newUser = await prisma.user.create({
-            data: {
-              userId: newUserId,
-              name: payuResponse.firstname,
-              email: payuResponse.email,
-              mobile: payuResponse.phone,
-              address: payuResponse.udf1,
-              photoUrl: photoUrl,
-              registrationType: registrationType, // delegate, workshop-registered, etc.
-              memberType: memberType, // member, non-member
-              subCategory: payuResponse.udf4, // Store if needed
-              transactionId: txnid,
-              paymentStatus: 'success',
-              payuId: payuId,
-              paymentAmount: amountPaid,
-               // Set add-on status only if it's a delegate registration
-              ...(registrationType === 'delegate' && {
-                purchasedImplantAddon: purchasedImplant,
-                purchasedBanquetAddon: purchasedBanquet,
-              }),
-               // Set default for other fields if needed
-               isMember: memberType === 'member', // Infer based on selection
-            },
-          });
-          console.log(`New User record created successfully for ${newUser.email}, UserID: ${newUser.userId}`);
-          if (registrationType === 'membership') {
-            await sendMembershipEmail(newUser, payuResponse);
-          } else {
-            await sendRegistrationEmail(newUser, payuResponse); // Send standard NIDACON email
+
+        // Use Prisma's upsert to atomically create or update the user
+        // This is the core of the fix: it finds by email, then updates or creates.
+        const user = await prisma.user.upsert({
+          where: {
+            email: payuResponse.email, // Use email as the unique identifier
+          },
+          update: {
+            ...userDataPayload,
+            userId: finalUserId, // Ensure the correct userId is set
+          },
+          create: {
+            ...userDataPayload,
+            email: payuResponse.email, // Email is required on create
+            userId: finalUserId,       // Assign the new ID
           }
+        });
 
-        }
-        // Scenario 3: User exists and is already processed (duplicate webhook/retry) -> Do nothing, just redirect.
-        else {
-            console.log(`Transaction ${txnid} ALREADY processed for user ${user.email}. Status: ${user.paymentStatus}. Ignoring duplicate webhook.`);
-            // Potentially re-send email if needed, but usually just redirecting is fine.
+        console.log(`Database operation successful for ${user.email}, UserID: ${user.userId}`);
+        
+        // --- END OF FIX ---
+
+        // Send the correct email based on what was just paid for
+        if (registrationType === 'membership') {
+          await sendMembershipEmail(user, payuResponse);
+        } else {
+          await sendRegistrationEmail(user, payuResponse);
         }
       }
 
