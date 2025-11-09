@@ -237,7 +237,7 @@ export async function initiatePayment(formData) {
   const failureUrl = `${baseUrl}/api/payment/failure`;
 
   // --- Hash string includes the potentially populated udf5 ---
-  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}||||${salt}`;
+  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}|||||${salt}`;
 
   console.log("--- FINAL HASH STRING FOR PAYU ---");
   console.log(hashString); // For debugging
