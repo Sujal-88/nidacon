@@ -107,6 +107,7 @@ function UserInfoForm() {
   // Handle form submission (keep existing)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
     if (!validateForm()) {
       return;
     }
@@ -194,7 +195,7 @@ function UserInfoForm() {
       productinfoText += ` - ${memberType}`;
     }
 
-    const formElement = e.currentTarget;
+    
     const formDataObj = new FormData(formElement);
     formDataObj.append('amount', amount.toFixed(2));
     formDataObj.append('txnid', txnid);
