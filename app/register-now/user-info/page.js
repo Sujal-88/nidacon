@@ -70,7 +70,7 @@ function UserInfoForm() {
 
     // Check 1: File Size
     if (file.size > MAX_FILE_SIZE) {
-      setErrors(prev => ({ ...prev, photo: 'Image is too large. Please upload a file under 5MB.' }));
+      setErrors(prev => ({ ...prev, photo: 'Image is too large. Please upload a file under 1MB.' }));
       setPhoto(null);
       setPhotoPreview('');
       return;
