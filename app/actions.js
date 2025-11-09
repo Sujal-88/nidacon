@@ -237,7 +237,7 @@ export async function initiatePayment(formData) {
   const failureUrl = `${baseUrl}/api/payment/failure`;
 
   // --- Hash string includes the potentially populated udf5 ---
-  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}|||||${salt}`;
+  const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}||||${salt}`;
 
   console.log("--- FINAL HASH STRING FOR PAYU ---");
   console.log(hashString); // For debugging
@@ -378,6 +378,8 @@ export async function initiateSportsPayment(formData) {
     paymentFormData.append('subCategory', selectedSports.join(', ')); // List selected sports
     // udf5 is not used for sports in this setup, pass empty
     paymentFormData.append('udf5', '');
+    paymentFormData.append('photoUrl', photoUrl);
+
 
 
     // Call the generic initiatePayment function
