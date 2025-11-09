@@ -56,7 +56,7 @@ function UserInfoForm() {
     }
   };
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5MB
   // Handler for photo upload (keep existing)
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
