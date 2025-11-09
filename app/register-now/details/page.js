@@ -592,7 +592,7 @@ function DelegateRegistrationForm({ registrationType }) {
 
   const calculateTotal = () => {
     if (isMember === null) return 0;
-    let basePrice = isMember ? 20 : 3000;
+    let basePrice = isMember ? 2000 : 3000;
     if (addOns.implant) basePrice += 2200;
     if (addOns.banquet) basePrice += 2000;
     return basePrice;
