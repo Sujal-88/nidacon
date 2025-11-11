@@ -1,532 +1,564 @@
-// app/sports/page.js
+// // app/sports/page.js
 
-"use client";
+// "use client";
 
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
+// import Image from 'next/image';
+// import { Trophy, Shirt, Utensils, Info, User, Cake, Phone, VenetianMask, ArrowRight, X, ArrowLeft, Calendar, MapPin, Mail, Upload } from 'lucide-react';
+// import { initiateSportsPayment } from '@/app/actions';
+// import Link from 'next/link';
+// import MembershipPopup from '@/components/MembershipPopup';
+
+// const sports = [
+//   { id: 'cricket', name: 'Cricket', image: '/sports/cricket-svg.svg' },
+//   { id: 'badminton', name: 'Badminton', image: '/sports/badminton-svg.svg' },
+//   { id: 'football', name: 'Football', image: '/sports/football-svg.svg' },
+//   { id: 'pickleball', name: 'Pickle Ball', image: '/sports/pickleball-svg.png' },
+//   { id: 'shooting', name: 'Shooting', image: '/sports/shooting-svg.svg' },
+// ];
+
+// const tshirtSizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+
+// const SizeChartPopup = ({ isOpen, onClose }) => {
+//   if (!isOpen) return null;
+
+//   return (
+//     <div
+//       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4"
+//       onClick={onClose}
+//     >
+//       <div
+//         className="relative flex flex-col bg-white p-4 sm:p-6 rounded-lg shadow-2xl max-w-md w-full max-h-[90vh]"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <button
+//           onClick={onClose}
+//           className="absolute top-2 right-2 p-1 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors z-20"
+//           aria-label="Close size chart"
+//         >
+//           <X size={24} />
+//         </button>
+//         <h3 className="text-xl font-bold mb-4 text-center text-gray-800 flex-shrink-0">
+//           T-Shirt Size Guide
+//         </h3>
+//         <div className="overflow-y-auto">
+//           <Image
+//             src="/sports/tshirt-size-chart.png"
+//             alt="T-shirt size chart"
+//             width={641}
+//             height={1133}
+//             sizes="100vw"
+//             className="w-full h-auto rounded-md"
+//           />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default function SportsEventPage() {
+//   const [step, setStep] = useState(1);
+//   const [memberType, setMemberType] = useState('member');
+//   const [selectedSports, setSelectedSports] = useState([]);
+//   const [totalPrice, setTotalPrice] = useState(0);
+//   const [basePrice, setBasePrice] = useState(1500);
+//   const [additionalPrice, setAdditionalPrice] = useState(0);
+//   const [formData, setFormData] = useState({
+//     name: '', age: '', mobile: '', gender: '', tshirtSize: '', email: ''
+//   });
+//   const [errors, setErrors] = useState({});
+//   const [photoError, setPhotoError] = useState('');
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
+
+//   const [photo, setPhoto] = useState(null);
+//   const [photoPreview, setPhotoPreview] = useState('');
+
+//   const [subtotal, setSubtotal] = useState(0);
+//   const [platformFee, setPlatformFee] = useState(0);
+
+//   useEffect(() => {
+//     const newBasePrice = memberType === 'member' ? 1500 : 2000;
+//     const additionalSportsCount = Math.max(0, selectedSports.length - 1);
+//     const newAdditionalPrice = additionalSportsCount * 500;
+
+//     // 1. Calculate the subtotal
+//     const currentSubtotal = newBasePrice + newAdditionalPrice;
+
+//     // 2. Calculate the fee based on the subtotal
+//     const fee = currentSubtotal * 2.5 / 100;
+
+//     // 3. Calculate the final total price
+//     const currentTotalPrice = currentSubtotal + fee;
+
+//     // 4. Update all state variables
+//     setBasePrice(newBasePrice);
+//     setAdditionalPrice(newAdditionalPrice);
+//     setSubtotal(currentSubtotal);
+//     setPlatformFee(fee);
+//     setTotalPrice(currentTotalPrice);
+//   }, [memberType, selectedSports]);
+
+//   useEffect(() => {
+//     const handleKeyDown = (event) => {
+//       if (event.key === 'Escape') setIsSizeChartOpen(false);
+//     };
+//     window.addEventListener('keydown', handleKeyDown);
+//     return () => window.removeEventListener('keydown', handleKeyDown);
+//   }, []);
+
+//   const handleSportChange = (sportId) => {
+//     setSelectedSports((prev) =>
+//       prev.includes(sportId) ? prev.filter((s) => s !== sportId) : [...prev, sportId]
+//     );
+//   };
+
+//   const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5MB
+
+//   const handlePhotoChange = (e) => {
+//     const file = e.target.files[0];
+
+//     if (!file) {
+//       setPhoto(null);
+//       setPhotoPreview('');
+//       setPhotoError(''); // Clear error if file is removed
+//       return;
+//     }
+
+//     // Check 1: File Size
+//     if (file.size > MAX_FILE_SIZE) {
+//       setPhotoError('Image is too large. Please upload a file under 1MB.');
+//       setPhoto(null);
+//       setPhotoPreview('');
+//       return;
+//     }
+
+//     // Check 2: File Type
+//     if (!file.type.startsWith('image/')) {
+//       setPhotoError('Invalid file type. Please upload an image (JPG, PNG, etc.).');
+//       setPhoto(null);
+//       setPhotoPreview('');
+//       return;
+//     }
+
+//     // Success
+//     setPhoto(file);
+//     setPhotoPreview(URL.createObjectURL(file));
+//     setPhotoError(''); // Clear any previous errors
+
+//     // This part is from your original file, keep it
+//     if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
+//   };
+
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const validateStep1 = () => {
+//     if (selectedSports.length === 0) {
+//       alert('Please select at least one sport to continue.');
+//       return false;
+//     }
+//     return true;
+//   }
+
+//   const validateStep2 = () => {
+//     const newErrors = {};
+//     if (!formData.name) newErrors.name = 'Full Name is required.';
+//     if (!formData.age) newErrors.age = 'Age is required.';
+//     if (!/^\d+$/.test(formData.age) || parseInt(formData.age, 10) <= 0) newErrors.age = 'Please enter a valid age.';
+//     if (!formData.mobile) newErrors.mobile = 'Mobile Number is required.';
+//     if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
+//     if (!formData.gender) newErrors.gender = 'Please select a gender.';
+//     if (!formData.tshirtSize) newErrors.tshirtSize = 'Please select a T-shirt size.';
+//     if (!formData.email) {
+//       newErrors.email = 'Email is required.';
+//     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+//       newErrors.email = 'Email address is invalid.';
+//     }
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   const handleNextStep = () => {
+//     if (validateStep1()) {
+//       setStep(2);
+//     }
+//   }
+
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!validateStep2()) {
+//       return;
+//     }
+
+//     setIsSubmitting(true);
+//     let photoUrl = '';
+
+//     if (photo) {
+//       const uploadFormData = new FormData();
+//       uploadFormData.append('file', photo);
+
+//       try {
+//         const response = await fetch('/api/upload', {
+//           method: 'POST',
+//           body: uploadFormData,
+//         });
+
+//         const result = await response.json();
+
+//         if (response.ok && result.url) {
+//           photoUrl = result.url;
+//         } else {
+//           throw new Error(result.message || 'Upload failed');
+//         }
+//       } catch (error) {
+//         console.error('Error uploading image:', error);
+//         alert('Error uploading image. Please try again.');
+//         setIsSubmitting(false);
+//         return;
+//       }
+//     }
+
+//     const paymentFormData = new FormData();
+//     paymentFormData.append('name', formData.name);
+//     paymentFormData.append('age', formData.age);
+//     paymentFormData.append('mobile', formData.mobile);
+//     paymentFormData.append('gender', formData.gender);
+//     paymentFormData.append('email', formData.email);
+//     paymentFormData.append('tshirtSize', formData.tshirtSize);
+//     paymentFormData.append('memberType', memberType);
+//     selectedSports.forEach(sport => paymentFormData.append('selectedSports', sport));
+//     paymentFormData.append('totalPrice', totalPrice);
+//     paymentFormData.append('photoUrl', photoUrl);
+
+//     const payuData = await initiateSportsPayment(paymentFormData);
+
+//     if (payuData.error) {
+//       alert(`Error: ${payuData.error}`);
+//       setIsSubmitting(false);
+//       return;
+//     }
+
+//     const form = document.createElement('form');
+//     form.method = 'POST';
+//     form.action = 'https://secure.payu.in/_payment';
+
+//     for (const key in payuData) {
+//       const input = document.createElement('input');
+//       input.type = 'hidden';
+//       input.name = key;
+//       input.value = payuData[key];
+//       form.appendChild(input);
+//     }
+
+//     document.body.appendChild(form);
+//     form.submit();
+//   };
+
+//   const getSportName = (sportId) => {
+//     const sport = sports.find(s => s.id === sportId);
+//     return sport ? sport.name : '';
+//   }
+
+
+//   return (
+//     <main className="min-h-screen bg-gray-50 text-gray-900 font-sans relative">
+//       <div className="fixed inset-0 z-0">
+//         <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+//           <source src="/video/sports-bg.mp4" type="video/mp4" />
+//         </video>
+//         <div className="absolute inset-0 bg-white/75 backdrop-blur-sm"></div>
+//       </div>
+
+//       <SizeChartPopup isOpen={isSizeChartOpen} onClose={() => setIsSizeChartOpen(false)} />
+
+//       <div className="relative z-10 isolate overflow-hidden pt-16">
+//         <Image width={450} height={450} src="/sports/cricket.png" alt="" className="absolute top-20 -left-48 w-[250px] opacity-50 pointer-events-none lg:w-[400px] lg:-left-40" />
+//         <Image width={380} height={380} src="/sports/badminton.png" alt="" className="absolute top-52 -right-40 w-[200px] opacity-50 pointer-events-none lg:w-[350px] lg:-right-20" />
+
+//         <div className="container mx-auto px-6 py-12 sm:py-20">
+
+//           <div className="max-w-xl mx-auto mb-12">
+//             <div className="relative mb-2">
+//               <Image
+//                 src="/sports/Indian Medical Association.png"
+//                 alt="Indian Dental Association, Nagpur Branch Presents"
+//                 width={1000}
+//                 height={100}
+//                 className="w-full max-w-lg h-auto mx-auto"
+//               />
+//             </div>
+//             <Image src="/sports/title.png" alt="NIDASPORTZ 2025 SEASON-6" width={400} height={200} className="mx-auto" />
+
+//             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-800 font-semibold">
+//               <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><Calendar size={18} className="mr-2 text-purple-600" />Saturday, 15th Nov 2025 <br /> Sunday, 16th Nov 2025</div>
+//               <Link href="https://www.google.com/maps/dir//KT+Nagar,+Nagpur,+Maharashtra+440013/@21.1734469,78.9654397,24741m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bd4c1b12072bf49:0x68bb5618d03e914b!2m2!1d79.0478414!2d21.1734669?entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D" target='blank' rel="noopener noreferrer" className="space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row">
+//                 <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-5 flex items-center shadow-sm"><MapPin size={18} className="mr-2 text-purple-600" />ADBA Sports Complex, Nagpur</div>
+//               </Link>
+//             </div>
+//           </div>
+
+//           <form onSubmit={handleSubmit} noValidate>
+//             {step === 1 && (
+//               <div className="max-w-4xl mx-auto">
+//                 <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-6 shadow-xl mb-8">
+//                   <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">Registration Details</h2>
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+//                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+//                       <h3 className="font-bold text-purple-800">IDA Members</h3>
+//                       <p className="text-2xl font-bold text-gray-800 mt-1">₹1500/ for one sport</p>
+//                     </div>
+//                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+//                       <h3 className="font-bold text-blue-800">Non-Members</h3>
+//                       <p className="text-2xl font-bold text-gray-800 mt-1">₹2000/ for one sport</p>
+//                     </div>
+//                   </div>
+//                   <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+//                     <h4 className="font-bold text-center text-gray-800">Registration Fee Includes:</h4>
+//                     <ul className="mt-2 text-center text-sm text-gray-600 space-y-1">
+//                       <li><span className="font-semibold text-purple-700">✓</span> Participation in <strong>any one sport</strong></li>
+//                       <li><span className="font-semibold text-purple-700">✓</span> Official Event <strong>T-shirt</strong></li>
+//                       <li><span className="font-semibold text-purple-700">✓</span> <strong>Food & Refreshments</strong> for 2 Days</li>
+//                     </ul>
+//                     <p className="text-center font-bold text-gray-700 mt-3">
+//                       Each additional sport is just <span className="text-purple-700">₹500</span> per game.
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 {/* --- RESPONSIVENESS IMPROVEMENT START --- */}
+//                 <div className="text-center text-sm text-red-600 font-bold p-4 bg-white/90 rounded-lg border border-gray-200 mb-8">
+//                   {/* Flex container for the links and button */}
+//                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-2">
+//                     {/* Links */}
+//                     <div className="flex items-center gap-2">
+//                       <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">RENEW MEMBERSHIP</Link>
+//                       <span className='text-black text-lg'>/</span>
+//                       <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">JOIN MEMBERSHIP</Link>
+//                     </div>
+//                     {/* Membership Popup (consider making text='' dynamic or removing if not needed) */}
+//                     <MembershipPopup text='' /> {/* Removed unnecessary text */}
+//                   </div>
+//                   {/* Warning text */}
+//                   Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
+//                   To get member benefits for NIDASPORTZ, please renew your membership for the next year.
+//                 </div>
+//                 {/* --- RESPONSIVENESS IMPROVEMENT END --- */}
+
+
+//                 <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
+//                   <div className="flex flex-col items-center">
+//                     <h2 className="text-2xl font-bold mb-4 text-gray-900">1. Choose Your Registration Type</h2>
+//                     <div className="relative flex w-full max-w-sm p-1 bg-gray-100 rounded-full">
+//                       <div className="absolute top-1 bottom-1 w-1/2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 shadow-md transition-transform duration-300 ease-in-out" style={{ transform: memberType === 'member' ? 'translateX(0%)' : 'translateX(100%)' }}></div>
+//                       <button type="button" onClick={() => setMemberType('member')} className={`relative z-10 w-1/2 py-2 rounded-full text-center font-semibold transition-colors duration-300 ${memberType === 'member' ? 'text-white' : 'text-gray-800'}`}>IDA Member</button>
+//                       <button type="button" onClick={() => setMemberType('non-member')} className={`relative z-10 w-1/2 py-2 rounded-full text-center font-semibold transition-colors duration-300 ${memberType === 'non-member' ? 'text-white' : 'text-gray-800'}`}>Non IDA Member</button>
+//                     </div>
+//                   </div>
+
+//                   <div className="mt-8">
+//                     <h2 className="text-2xl font-bold mb-4 text-gray-900 text-center">2. Select Your Sports</h2>
+//                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+//                       {sports.map((sport) => (
+//                         <button
+//                           type="button"
+//                           key={sport.id}
+//                           onClick={() => handleSportChange(sport.id)}
+//                           className={`p-4 border rounded-lg transition-all duration-300 ease-in-out text-center transform hover:scale-105 ${selectedSports.includes(sport.id)
+//                             ? 'bg-purple-100 border-purple-500 text-purple-700 shadow-md'
+//                             : 'bg-white border-gray-300 text-gray-700 hover:border-purple-400  hover:bg-purple-100 hover:shadow-lg'
+//                             }`}
+//                         >
+//                           <div className="w-16 h-16 mx-auto mb-2 relative"><Image src={sport.image} alt={`${sport.name} icon`} fill sizes="64px" className="object-contain" /></div>
+//                           <span className="font-semibold">{sport.name}</span>
+//                         </button>
+//                       ))}
+//                       <div className="p-4 border rounded-lg bg-gray-50 text-left text-sm">
+//                         <h3 className="font-bold text-gray-800 mb-2">Your Selection:</h3>
+//                         {selectedSports.length === 0 ? (
+//                           <p className="text-gray-500">No sports selected yet.</p>
+//                         ) : (
+//                           <ul className="space-y-1">
+//                             {selectedSports.map(sportId => (
+//                               <li key={sportId} className="capitalize text-gray-700">{getSportName(sportId)}</li>
+//                             ))}
+//                           </ul>
+//                         )}
+//                         <div className="border-t my-2"></div>
+//                         <div className="font-bold">Total: ₹{subtotal}</div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                   <div className="mt-8 text-center">
+//                     <button type="button" onClick={handleNextStep} className="w-full max-w-xs py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 transition-colors">Next <ArrowRight className="inline w-5 h-5 ml-2" /></button>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+
+//             {step === 2 && (
+//               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+//                 <div className="lg:col-span-2 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
+//                   <h2 className="text-2xl font-bold mb-6 text-gray-900">Your Details</h2>
+//                   <div className="space-y-4">
+//                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                       <div className="relative">
+//                         <User className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+//                         <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
+//                         {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+//                       </div>
+//                       <div className="relative">
+//                         <Cake className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+//                         <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.age ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
+//                         {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age}</p>}
+//                       </div>
+//                       <div className="relative">
+//                         <Phone className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+//                         <input type="tel" name="mobile" placeholder="Mobile Number" value={formData.mobile} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
+//                         {errors.mobile && <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>}
+//                       </div>
+//                       <div className="relative">
+//                         <VenetianMask className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+//                         <select name="gender" value={formData.gender} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.gender ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 appearance-none`}>
+//                           <option value="">Select Gender</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+//                         </select>
+//                         {errors.gender && <p className="mt-1 text-xs text-red-600">{errors.gender}</p>}
+//                       </div>
+//                       <div className="relative">
+//                         <Mail className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+//                         <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
+//                         {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+//                       </div>
+
+//                       <div className="mt-2 flex items-center gap-x-3">
+//                         <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
+//                           Profile Photo
+//                         </label>
+//                         {photoError && (
+//                           <p className="text-xs text-red-600 -mt-2 sm:ml-20">{photoError}</p>
+//                         )}
+//                         {photoPreview ? (
+//                           <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
+//                         ) : (
+//                           <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
+//                             <Upload className="h-8 w-8 text-gray-400" />
+//                           </div>
+//                         )}
+//                         <label htmlFor="photo-upload" className="cursor-pointer rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+//                           <span>Upload a file</span>
+//                           <input id="photo-upload" name="photo" type="file" onChange={handlePhotoChange} className="sr-only" accept="image/*" />
+//                         </label>
+//                       </div>
+
+//                       {/* --- T-SHIRT NOTE ADDED START --- */}
+//                       <div className="relative md:col-span-2">
+//                         <p className="mb-2 text-sm font-medium text-red-400">
+//                           *Select one size larger than your usual size for the T-shirt.
+//                         </p>
+//                         <div className="flex items-center gap-2">
+//                           <div className="relative flex-grow">
+//                             <Shirt className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 z-10" />
+//                             <select name="tshirtSize" value={formData.tshirtSize} onChange={handleInputChange} className={`relative w-full p-3 pl-10 bg-white border ${errors.tshirtSize ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 appearance-none`}>
+//                               <option value="">Select T-shirt Size</option>
+//                               {tshirtSizes.map(size => <option key={size} value={size}>{size}</option>)}
+//                             </select>
+//                           </div>
+//                           <button type="button" onClick={() => setIsSizeChartOpen(true)} className="flex-shrink-0 text-sm font-semibold text-purple-600 hover:text-purple-800 transition-colors">View Size Chart</button>
+//                         </div>
+//                         {errors.tshirtSize && <p className="mt-1 text-xs text-red-600">{errors.tshirtSize}</p>}
+//                       </div>
+//                       {/* --- T-SHIRT NOTE ADDED END --- */}
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="lg:col-span-1">
+//                   <div className="sticky top-24">
+//                     <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
+//                       <h2 className="text-2xl font-bold mb-4 text-gray-900">Registration Summary</h2>
+
+//                       <div className="space-y-3 text-gray-700">
+//                         <div className="flex justify-between">
+//                           <span>Base Fee ({getSportName(selectedSports[0])}):</span>
+//                           <span className="font-semibold">₹{basePrice}</span>
+//                         </div>
+//                         {additionalPrice > 0 && (
+//                           <div className="border-t pt-3 mt-3">
+//                             <p className="font-semibold mb-2">Additional Sports:</p>
+//                             <ul className="space-y-1 pl-2">
+//                               {selectedSports.slice(1).map(sportId => (
+//                                 <li key={sportId} className="flex justify-between">
+//                                   <span className='capitalize'>{getSportName(sportId)}:</span>
+//                                   <span>₹500</span>
+//                                 </li>
+//                               ))}
+//                             </ul>
+//                           </div>
+//                         )}
+
+//                         <div className='flex justify-between'>
+//                           <p>Platform Fee (2.5%) :</p>
+//                           <p className="font-semibold">₹{platformFee}</p>
+//                         </div>
+//                       </div>
+
+//                       <div className="my-6 border-t border-gray-300"></div>
+//                       <div className="flex justify-between items-center text-2xl font-bold text-gray-900">
+//                         <p>Total:</p>
+//                         <p className="text-purple-600">₹{totalPrice}</p>
+//                       </div>
+
+//                       <button type="submit" disabled={isSubmitting} className="mt-8 relative w-full py-4 px-6 text-lg font-semibold text-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group bg-gradient-to-r from-purple-600 to-blue-600">
+//                         <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" style={{ background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent)', width: '50%' }} />
+//                         <span className="relative z-10 flex items-center justify-center"> {isSubmitting ? 'Processing...' : 'Pay & Register'} <ArrowRight className="inline w-5 h-5 ml-2" /> </span>
+//                       </button>
+
+//                       <button type="button" onClick={() => setStep(1)} className="mt-4 w-full py-3 text-sm font-semibold text-gray-700 hover:text-black">
+//                         <ArrowLeft className="inline w-4 h-4 mr-2" />Go Back
+//                       </button>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+//           </form>
+//         </div>
+//       </div>
+//     </main>
+//   );
+// }
+import React from 'react';
 import Image from 'next/image';
-import { Trophy, Shirt, Utensils, Info, User, Cake, Phone, VenetianMask, ArrowRight, X, ArrowLeft, Calendar, MapPin, Mail, Upload } from 'lucide-react';
-import { initiateSportsPayment } from '@/app/actions';
-import Link from 'next/link';
-import MembershipPopup from '@/components/MembershipPopup';
 
-const sports = [
-  { id: 'cricket', name: 'Cricket', image: '/sports/cricket-svg.svg' },
-  { id: 'badminton', name: 'Badminton', image: '/sports/badminton-svg.svg' },
-  { id: 'football', name: 'Football', image: '/sports/football-svg.svg' },
-  { id: 'pickleball', name: 'Pickle Ball', image: '/sports/pickleball-svg.png' },
-  { id: 'shooting', name: 'Shooting', image: '/sports/shooting-svg.svg' },
-];
-
-const tshirtSizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-
-const SizeChartPopup = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
+export default function FullPageImage() {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4"
-      onClick={onClose}
-    >
-      <div
-        className="relative flex flex-col bg-white p-4 sm:p-6 rounded-lg shadow-2xl max-w-md w-full max-h-[90vh]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 p-1 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors z-20"
-          aria-label="Close size chart"
-        >
-          <X size={24} />
-        </button>
-        <h3 className="text-xl font-bold mb-4 text-center text-gray-800 flex-shrink-0">
-          T-Shirt Size Guide
-        </h3>
-        <div className="overflow-y-auto">
-          <Image
-            src="/sports/tshirt-size-chart.png"
-            alt="T-shirt size chart"
-            width={641}
-            height={1133}
-            sizes="100vw"
-            className="w-full h-auto rounded-md"
-          />
+    <div className="relative w-screen h-screen overflow-hidden bg-white">
+      {/* Full page image container */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Image
+          src="/closed/close.jpg"
+          alt="Close"
+          width={400}
+          height={400}
+          className="w-full h-full object-contain"
+          style={{
+            imageRendering: 'crisp-edges',
+            filter: 'contrast(1.1) brightness(1.05)'
+          }}
+        />
+      </div>
+      
+      {/* Optional: Overlay with gradient borders for vector-like effect */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 shadow-inner" 
+             style={{
+               boxShadow: 'inset 0 0 60px rgba(0,0,0,0.3)'
+             }}>
         </div>
       </div>
     </div>
-  );
-};
-
-export default function SportsEventPage() {
-  const [step, setStep] = useState(1);
-  const [memberType, setMemberType] = useState('member');
-  const [selectedSports, setSelectedSports] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [basePrice, setBasePrice] = useState(1500);
-  const [additionalPrice, setAdditionalPrice] = useState(0);
-  const [formData, setFormData] = useState({
-    name: '', age: '', mobile: '', gender: '', tshirtSize: '', email: ''
-  });
-  const [errors, setErrors] = useState({});
-  const [photoError, setPhotoError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
-
-  const [photo, setPhoto] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState('');
-
-  const [subtotal, setSubtotal] = useState(0);
-  const [platformFee, setPlatformFee] = useState(0);
-
-  useEffect(() => {
-    const newBasePrice = memberType === 'member' ? 1500 : 2000;
-    const additionalSportsCount = Math.max(0, selectedSports.length - 1);
-    const newAdditionalPrice = additionalSportsCount * 500;
-
-    // 1. Calculate the subtotal
-    const currentSubtotal = newBasePrice + newAdditionalPrice;
-
-    // 2. Calculate the fee based on the subtotal
-    const fee = currentSubtotal * 2.5 / 100;
-
-    // 3. Calculate the final total price
-    const currentTotalPrice = currentSubtotal + fee;
-
-    // 4. Update all state variables
-    setBasePrice(newBasePrice);
-    setAdditionalPrice(newAdditionalPrice);
-    setSubtotal(currentSubtotal);
-    setPlatformFee(fee);
-    setTotalPrice(currentTotalPrice);
-  }, [memberType, selectedSports]);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setIsSizeChartOpen(false);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const handleSportChange = (sportId) => {
-    setSelectedSports((prev) =>
-      prev.includes(sportId) ? prev.filter((s) => s !== sportId) : [...prev, sportId]
-    );
-  };
-
-  const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5MB
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-
-    if (!file) {
-      setPhoto(null);
-      setPhotoPreview('');
-      setPhotoError(''); // Clear error if file is removed
-      return;
-    }
-
-    // Check 1: File Size
-    if (file.size > MAX_FILE_SIZE) {
-      setPhotoError('Image is too large. Please upload a file under 1MB.');
-      setPhoto(null);
-      setPhotoPreview('');
-      return;
-    }
-
-    // Check 2: File Type
-    if (!file.type.startsWith('image/')) {
-      setPhotoError('Invalid file type. Please upload an image (JPG, PNG, etc.).');
-      setPhoto(null);
-      setPhotoPreview('');
-      return;
-    }
-
-    // Success
-    setPhoto(file);
-    setPhotoPreview(URL.createObjectURL(file));
-    setPhotoError(''); // Clear any previous errors
-
-    // This part is from your original file, keep it
-    if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const validateStep1 = () => {
-    if (selectedSports.length === 0) {
-      alert('Please select at least one sport to continue.');
-      return false;
-    }
-    return true;
-  }
-
-  const validateStep2 = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = 'Full Name is required.';
-    if (!formData.age) newErrors.age = 'Age is required.';
-    if (!/^\d+$/.test(formData.age) || parseInt(formData.age, 10) <= 0) newErrors.age = 'Please enter a valid age.';
-    if (!formData.mobile) newErrors.mobile = 'Mobile Number is required.';
-    if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
-    if (!formData.gender) newErrors.gender = 'Please select a gender.';
-    if (!formData.tshirtSize) newErrors.tshirtSize = 'Please select a T-shirt size.';
-    if (!formData.email) {
-      newErrors.email = 'Email is required.';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email address is invalid.';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNextStep = () => {
-    if (validateStep1()) {
-      setStep(2);
-    }
-  }
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateStep2()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    let photoUrl = '';
-
-    if (photo) {
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', photo);
-
-      try {
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: uploadFormData,
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.url) {
-          photoUrl = result.url;
-        } else {
-          throw new Error(result.message || 'Upload failed');
-        }
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        alert('Error uploading image. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
-    }
-
-    const paymentFormData = new FormData();
-    paymentFormData.append('name', formData.name);
-    paymentFormData.append('age', formData.age);
-    paymentFormData.append('mobile', formData.mobile);
-    paymentFormData.append('gender', formData.gender);
-    paymentFormData.append('email', formData.email);
-    paymentFormData.append('tshirtSize', formData.tshirtSize);
-    paymentFormData.append('memberType', memberType);
-    selectedSports.forEach(sport => paymentFormData.append('selectedSports', sport));
-    paymentFormData.append('totalPrice', totalPrice);
-    paymentFormData.append('photoUrl', photoUrl);
-
-    const payuData = await initiateSportsPayment(paymentFormData);
-
-    if (payuData.error) {
-      alert(`Error: ${payuData.error}`);
-      setIsSubmitting(false);
-      return;
-    }
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://secure.payu.in/_payment';
-
-    for (const key in payuData) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = payuData[key];
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-  };
-
-  const getSportName = (sportId) => {
-    const sport = sports.find(s => s.id === sportId);
-    return sport ? sport.name : '';
-  }
-
-
-  return (
-    <main className="min-h-screen bg-gray-50 text-gray-900 font-sans relative">
-      <div className="fixed inset-0 z-0">
-        <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-          <source src="/video/sports-bg.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-white/75 backdrop-blur-sm"></div>
-      </div>
-
-      <SizeChartPopup isOpen={isSizeChartOpen} onClose={() => setIsSizeChartOpen(false)} />
-
-      <div className="relative z-10 isolate overflow-hidden pt-16">
-        <Image width={450} height={450} src="/sports/cricket.png" alt="" className="absolute top-20 -left-48 w-[250px] opacity-50 pointer-events-none lg:w-[400px] lg:-left-40" />
-        <Image width={380} height={380} src="/sports/badminton.png" alt="" className="absolute top-52 -right-40 w-[200px] opacity-50 pointer-events-none lg:w-[350px] lg:-right-20" />
-
-        <div className="container mx-auto px-6 py-12 sm:py-20">
-
-          <div className="max-w-xl mx-auto mb-12">
-            <div className="relative mb-2">
-              <Image
-                src="/sports/Indian Medical Association.png"
-                alt="Indian Dental Association, Nagpur Branch Presents"
-                width={1000}
-                height={100}
-                className="w-full max-w-lg h-auto mx-auto"
-              />
-            </div>
-            <Image src="/sports/title.png" alt="NIDASPORTZ 2025 SEASON-6" width={400} height={200} className="mx-auto" />
-
-            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-800 font-semibold">
-              <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-2 flex items-center shadow-sm"><Calendar size={18} className="mr-2 text-purple-600" />Saturday, 15th Nov 2025 <br /> Sunday, 16th Nov 2025</div>
-              <Link href="https://www.google.com/maps/dir//KT+Nagar,+Nagpur,+Maharashtra+440013/@21.1734469,78.9654397,24741m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bd4c1b12072bf49:0x68bb5618d03e914b!2m2!1d79.0478414!2d21.1734669?entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D" target='blank' rel="noopener noreferrer" className="space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row">
-                <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg px-4 py-5 flex items-center shadow-sm"><MapPin size={18} className="mr-2 text-purple-600" />ADBA Sports Complex, Nagpur</div>
-              </Link>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} noValidate>
-            {step === 1 && (
-              <div className="max-w-4xl mx-auto">
-                <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-6 shadow-xl mb-8">
-                  <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">Registration Details</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                      <h3 className="font-bold text-purple-800">IDA Members</h3>
-                      <p className="text-2xl font-bold text-gray-800 mt-1">₹1500/ for one sport</p>
-                    </div>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h3 className="font-bold text-blue-800">Non-Members</h3>
-                      <p className="text-2xl font-bold text-gray-800 mt-1">₹2000/ for one sport</p>
-                    </div>
-                  </div>
-                  <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h4 className="font-bold text-center text-gray-800">Registration Fee Includes:</h4>
-                    <ul className="mt-2 text-center text-sm text-gray-600 space-y-1">
-                      <li><span className="font-semibold text-purple-700">✓</span> Participation in <strong>any one sport</strong></li>
-                      <li><span className="font-semibold text-purple-700">✓</span> Official Event <strong>T-shirt</strong></li>
-                      <li><span className="font-semibold text-purple-700">✓</span> <strong>Food & Refreshments</strong> for 2 Days</li>
-                    </ul>
-                    <p className="text-center font-bold text-gray-700 mt-3">
-                      Each additional sport is just <span className="text-purple-700">₹500</span> per game.
-                    </p>
-                  </div>
-                </div>
-
-                {/* --- RESPONSIVENESS IMPROVEMENT START --- */}
-                <div className="text-center text-sm text-red-600 font-bold p-4 bg-white/90 rounded-lg border border-gray-200 mb-8">
-                  {/* Flex container for the links and button */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-2">
-                    {/* Links */}
-                    <div className="flex items-center gap-2">
-                      <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">RENEW MEMBERSHIP</Link>
-                      <span className='text-black text-lg'>/</span>
-                      <Link href="/membership" className="text-black font-bold underline hover:text-purple-700 transition-colors">JOIN MEMBERSHIP</Link>
-                    </div>
-                    {/* Membership Popup (consider making text='' dynamic or removing if not needed) */}
-                    <MembershipPopup text='' /> {/* Removed unnecessary text */}
-                  </div>
-                  {/* Warning text */}
-                  Even if you have a current membership, it is only valid until Dec 31st of this year. <br className="hidden sm:inline" />
-                  To get member benefits for NIDASPORTZ, please renew your membership for the next year.
-                </div>
-                {/* --- RESPONSIVENESS IMPROVEMENT END --- */}
-
-
-                <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
-                  <div className="flex flex-col items-center">
-                    <h2 className="text-2xl font-bold mb-4 text-gray-900">1. Choose Your Registration Type</h2>
-                    <div className="relative flex w-full max-w-sm p-1 bg-gray-100 rounded-full">
-                      <div className="absolute top-1 bottom-1 w-1/2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 shadow-md transition-transform duration-300 ease-in-out" style={{ transform: memberType === 'member' ? 'translateX(0%)' : 'translateX(100%)' }}></div>
-                      <button type="button" onClick={() => setMemberType('member')} className={`relative z-10 w-1/2 py-2 rounded-full text-center font-semibold transition-colors duration-300 ${memberType === 'member' ? 'text-white' : 'text-gray-800'}`}>IDA Member</button>
-                      <button type="button" onClick={() => setMemberType('non-member')} className={`relative z-10 w-1/2 py-2 rounded-full text-center font-semibold transition-colors duration-300 ${memberType === 'non-member' ? 'text-white' : 'text-gray-800'}`}>Non IDA Member</button>
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <h2 className="text-2xl font-bold mb-4 text-gray-900 text-center">2. Select Your Sports</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {sports.map((sport) => (
-                        <button
-                          type="button"
-                          key={sport.id}
-                          onClick={() => handleSportChange(sport.id)}
-                          className={`p-4 border rounded-lg transition-all duration-300 ease-in-out text-center transform hover:scale-105 ${selectedSports.includes(sport.id)
-                            ? 'bg-purple-100 border-purple-500 text-purple-700 shadow-md'
-                            : 'bg-white border-gray-300 text-gray-700 hover:border-purple-400  hover:bg-purple-100 hover:shadow-lg'
-                            }`}
-                        >
-                          <div className="w-16 h-16 mx-auto mb-2 relative"><Image src={sport.image} alt={`${sport.name} icon`} fill sizes="64px" className="object-contain" /></div>
-                          <span className="font-semibold">{sport.name}</span>
-                        </button>
-                      ))}
-                      <div className="p-4 border rounded-lg bg-gray-50 text-left text-sm">
-                        <h3 className="font-bold text-gray-800 mb-2">Your Selection:</h3>
-                        {selectedSports.length === 0 ? (
-                          <p className="text-gray-500">No sports selected yet.</p>
-                        ) : (
-                          <ul className="space-y-1">
-                            {selectedSports.map(sportId => (
-                              <li key={sportId} className="capitalize text-gray-700">{getSportName(sportId)}</li>
-                            ))}
-                          </ul>
-                        )}
-                        <div className="border-t my-2"></div>
-                        <div className="font-bold">Total: ₹{subtotal}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-8 text-center">
-                    <button type="button" onClick={handleNextStep} className="w-full max-w-xs py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 transition-colors">Next <ArrowRight className="inline w-5 h-5 ml-2" /></button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
-                  <h2 className="text-2xl font-bold mb-6 text-gray-900">Your Details</h2>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="relative">
-                        <User className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
-                        {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
-                      </div>
-                      <div className="relative">
-                        <Cake className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.age ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
-                        {errors.age && <p className="mt-1 text-xs text-red-600">{errors.age}</p>}
-                      </div>
-                      <div className="relative">
-                        <Phone className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input type="tel" name="mobile" placeholder="Mobile Number" value={formData.mobile} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
-                        {errors.mobile && <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>}
-                      </div>
-                      <div className="relative">
-                        <VenetianMask className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <select name="gender" value={formData.gender} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.gender ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 appearance-none`}>
-                          <option value="">Select Gender</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
-                        </select>
-                        {errors.gender && <p className="mt-1 text-xs text-red-600">{errors.gender}</p>}
-                      </div>
-                      <div className="relative">
-                        <Mail className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} className={`w-full p-3 pl-10 bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900`} />
-                        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
-                      </div>
-
-                      <div className="mt-2 flex items-center gap-x-3">
-                        <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
-                          Profile Photo
-                        </label>
-                        {photoError && (
-                          <p className="text-xs text-red-600 -mt-2 sm:ml-20">{photoError}</p>
-                        )}
-                        {photoPreview ? (
-                          <Image src={photoPreview} alt="Photo preview" className="h-16 w-16 rounded-full object-cover" width={64} height={64} />
-                        ) : (
-                          <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
-                            <Upload className="h-8 w-8 text-gray-400" />
-                          </div>
-                        )}
-                        <label htmlFor="photo-upload" className="cursor-pointer rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                          <span>Upload a file</span>
-                          <input id="photo-upload" name="photo" type="file" onChange={handlePhotoChange} className="sr-only" accept="image/*" />
-                        </label>
-                      </div>
-
-                      {/* --- T-SHIRT NOTE ADDED START --- */}
-                      <div className="relative md:col-span-2">
-                        <p className="mb-2 text-sm font-medium text-red-400">
-                          *Select one size larger than your usual size for the T-shirt.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="relative flex-grow">
-                            <Shirt className="w-5 h-5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 z-10" />
-                            <select name="tshirtSize" value={formData.tshirtSize} onChange={handleInputChange} className={`relative w-full p-3 pl-10 bg-white border ${errors.tshirtSize ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 appearance-none`}>
-                              <option value="">Select T-shirt Size</option>
-                              {tshirtSizes.map(size => <option key={size} value={size}>{size}</option>)}
-                            </select>
-                          </div>
-                          <button type="button" onClick={() => setIsSizeChartOpen(true)} className="flex-shrink-0 text-sm font-semibold text-purple-600 hover:text-purple-800 transition-colors">View Size Chart</button>
-                        </div>
-                        {errors.tshirtSize && <p className="mt-1 text-xs text-red-600">{errors.tshirtSize}</p>}
-                      </div>
-                      {/* --- T-SHIRT NOTE ADDED END --- */}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-1">
-                  <div className="sticky top-24">
-                    <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-8 shadow-xl">
-                      <h2 className="text-2xl font-bold mb-4 text-gray-900">Registration Summary</h2>
-
-                      <div className="space-y-3 text-gray-700">
-                        <div className="flex justify-between">
-                          <span>Base Fee ({getSportName(selectedSports[0])}):</span>
-                          <span className="font-semibold">₹{basePrice}</span>
-                        </div>
-                        {additionalPrice > 0 && (
-                          <div className="border-t pt-3 mt-3">
-                            <p className="font-semibold mb-2">Additional Sports:</p>
-                            <ul className="space-y-1 pl-2">
-                              {selectedSports.slice(1).map(sportId => (
-                                <li key={sportId} className="flex justify-between">
-                                  <span className='capitalize'>{getSportName(sportId)}:</span>
-                                  <span>₹500</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        <div className='flex justify-between'>
-                          <p>Platform Fee (2.5%) :</p>
-                          <p className="font-semibold">₹{platformFee}</p>
-                        </div>
-                      </div>
-
-                      <div className="my-6 border-t border-gray-300"></div>
-                      <div className="flex justify-between items-center text-2xl font-bold text-gray-900">
-                        <p>Total:</p>
-                        <p className="text-purple-600">₹{totalPrice}</p>
-                      </div>
-
-                      <button type="submit" disabled={isSubmitting} className="mt-8 relative w-full py-4 px-6 text-lg font-semibold text-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group bg-gradient-to-r from-purple-600 to-blue-600">
-                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" style={{ background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent)', width: '50%' }} />
-                        <span className="relative z-10 flex items-center justify-center"> {isSubmitting ? 'Processing...' : 'Pay & Register'} <ArrowRight className="inline w-5 h-5 ml-2" /> </span>
-                      </button>
-
-                      <button type="button" onClick={() => setStep(1)} className="mt-4 w-full py-3 text-sm font-semibold text-gray-700 hover:text-black">
-                        <ArrowLeft className="inline w-4 h-4 mr-2" />Go Back
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
-    </main>
   );
 }
