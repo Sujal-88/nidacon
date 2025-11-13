@@ -27,7 +27,7 @@ const MembershipPage = () => {
     const plans = [
         { name: 'New Member', price: 1750, features: ['Full access to all events', 'Monthly newsletter', 'Voting rights'], popular: true },
         { name: 'Renewal', price: 1450, features: ['Continue your membership', 'Access to member directory', 'Discounted event fees'] },
-        { name: 'Student Member', price: 350, features: ['Access to student workshops', 'Networking opportunities', 'Digital newsletter'] },
+        { name: 'Student Member', price: 8, features: ['Access to student workshops', 'Networking opportunities', 'Digital newsletter'] },
     ]; //1750, 1450, 350
 
     useEffect(() => {
