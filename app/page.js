@@ -69,7 +69,7 @@ function HomePageContent() {
                 {/* LG View (Desktop) */}
                 <div className="hidden lg:flex lg:justify-between lg:items-center lg:gap-8">
                   <div className="flex justify-center animate-float card-3d flex-shrink-0">
-                    <SpeakerCarousel />
+                    {/* <SpeakerCarousel /> */}
                   </div>
 
                   <div className="text-center flex-1 px-4 align-center justify-center ">
@@ -137,7 +137,7 @@ function HomePageContent() {
                   </div>
 
                   <div className="flex justify-center animate-float card-3d flex-shrink-0" style={{ animationDelay: '0.5s' }}>
-                    <SponsorCarousel />
+                    {/* <SponsorCarousel /> */}
                   </div>
                 </div>
 
@@ -201,10 +201,10 @@ function HomePageContent() {
 
                   <div className="grid grid-cols-2 gap-6 mt-8">
                     <div className="flex justify-center animate-float card-3d">
-                      <SpeakerCarousel />
+                      {/* <SpeakerCarousel /> */}
                     </div>
                     <div className="flex justify-center animate-float card-3d" style={{ animationDelay: '0.5s' }}>
-                      <SponsorCarousel />
+                      {/* <SponsorCarousel /> */}
                     </div>
                   </div>
                 </div>
