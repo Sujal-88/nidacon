@@ -227,49 +227,77 @@ export async function POST(request) {
           }),
         };
 
-        // Check if user exists by email to determine their User ID
-        let existingUser = await prisma.user.findUnique({
-          where: { email: payuResponse.email }
+        // CRITICAL FIX: Always search by transactionId first to prevent race conditions
+        // Check if this exact transaction was already processed
+        let existingTransaction = await prisma.user.findUnique({
+          where: { transactionId: txnid }
         });
 
-        let finalUserId;
-        if (existingUser) {
-          // User exists. Use their ID, or upgrade it from TEMP- if it was a pending membership.
-          finalUserId = existingUser.userId.startsWith('TEMP-') ? await generateUserId() : existingUser.userId;
-          console.log(`User found by email. Updating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
-        } else {
-          // User does not exist. Generate a new permanent ID.
-          finalUserId = await generateUserId();
-          console.log(`New user. Creating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
-        }
-
-        // Use Prisma's upsert to atomically create or update the user
-        // This is the core of the fix: it finds by email, then updates or creates.
-        const user = await prisma.user.upsert({
-          where: {
-            email: payuResponse.email, // Use email as the unique identifier
-          },
-          update: {
-            ...userDataPayload,
-            userId: finalUserId, // Ensure the correct userId is set
-          },
-          create: {
-            ...userDataPayload,
-            email: payuResponse.email, // Email is required on create
-            userId: finalUserId,       // Assign the new ID
+        if (existingTransaction) {
+          // Transaction already processed - this is a duplicate webhook
+          console.log(`Duplicate webhook detected for txnid: ${txnid}. User: ${existingTransaction.email}. Skipping update.`);
+          const user = existingTransaction;
+          
+          // Send email anyway (in case previous attempt failed)
+          if (registrationType === 'membership') {
+            await sendMembershipEmail(user, payuResponse);
+          } else {
+            await sendRegistrationEmail(user, payuResponse);
           }
-        });
+        } else {
+          // NEW TRANSACTION - Check if user exists by email (for pending memberships)
+          let existingUser = await prisma.user.findUnique({
+            where: { email: payuResponse.email }
+          });
 
-        console.log(`Database operation successful for ${user.email}, UserID: ${user.userId}`);
+          let finalUserId;
+          if (existingUser) {
+            // User exists (pending membership scenario). Use their ID, or upgrade from TEMP-
+            finalUserId = existingUser.userId.startsWith('TEMP-') ? await generateUserId() : existingUser.userId;
+            console.log(`Existing user found by email. Updating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
+            
+            // Update existing user with payment details
+            const user = await prisma.user.update({
+              where: { email: payuResponse.email },
+              data: {
+                ...userDataPayload,
+                userId: finalUserId,
+              }
+            });
+
+            console.log(`Database update successful for ${user.email}, UserID: ${user.userId}`);
+
+            // Send the correct email based on what was just paid for
+            if (registrationType === 'membership') {
+              await sendMembershipEmail(user, payuResponse);
+            } else {
+              await sendRegistrationEmail(user, payuResponse);
+            }
+          } else {
+            // NEW USER - Generate new ID and create record
+            finalUserId = await generateUserId();
+            console.log(`New user. Creating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
+
+            const user = await prisma.user.create({
+              data: {
+                ...userDataPayload,
+                email: payuResponse.email,
+                userId: finalUserId,
+              }
+            });
+
+            console.log(`Database create successful for ${user.email}, UserID: ${user.userId}`);
+
+            // Send the correct email based on what was just paid for
+            if (registrationType === 'membership') {
+              await sendMembershipEmail(user, payuResponse);
+            } else {
+              await sendRegistrationEmail(user, payuResponse);
+            }
+          }
+        }
         
         // --- END OF FIX ---
-
-        // Send the correct email based on what was just paid for
-        if (registrationType === 'membership') {
-          await sendMembershipEmail(user, payuResponse);
-        } else {
-          await sendRegistrationEmail(user, payuResponse);
-        }
       }
 
       // Redirect to the final success page
