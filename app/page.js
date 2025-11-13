@@ -278,10 +278,10 @@ function HomePageContent() {
                   {/* --- CHANGE 3: Uncommented Carousels for Mobile --- */}
                   <div className="space-y-8 mt-8">
                     <div className="flex justify-center animate-float card-3d">
-                      <SpeakerCarousel />
+                      {/* <SpeakerCarousel /> */}
                     </div>
                     <div className="flex justify-center animate-float card-3d" style={{ animationDelay: '0.5s' }}>
-                      <SponsorCarousel />
+                      {/* <SponsorCarousel /> */}
                     </div>
                   </div>
                   {/* -------------------------------------------------- */}
