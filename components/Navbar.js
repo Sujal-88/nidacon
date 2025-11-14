@@ -32,7 +32,7 @@ const Navbar = () => {
     const pathname = usePathname();
 
     const isHomePage = pathname === '/';
-    const isSportsPage = pathname === '/register-now';
+    const isSportsPage = pathname === '/sports';
     const displayedNavLinks = isHomePage ? mainNavLinks : eventNavLinks;
 
     let loginHref = '/login/member';

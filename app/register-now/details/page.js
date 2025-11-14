@@ -425,6 +425,11 @@ function WorkshopRegistrationForm() {
   
   // ADDED: State for workshop date check
   const [isWorkshopOpen, setIsWorkshopOpen] = useState(false);
+  
+  // ADDED: State for fetch logic (like paper-poster)
+  const [userData, setUserData] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
     // Check if the current date is on or after November 15th, 2025
@@ -436,6 +441,38 @@ function WorkshopRegistrationForm() {
     // PRODUCTION LOGIC
     setIsWorkshopOpen(currentDate >= openDate);
   }, []);
+
+  // ADDED: Fetch details logic (like paper-poster)
+  const handleFetchDetails = async () => {
+    if (!registrationId) {
+      setFetchError('Please enter a Registration ID.');
+      return;
+    }
+    setIsFetching(true);
+    setFetchError('');
+    setUserData(null); // Clear previous data
+    try {
+      // Call the API endpoint
+      const res = await fetch(`/api/members/${registrationId.trim()}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        setUserData(data);
+        setFetchError('');
+      } else if (res.status === 404) {
+        setFetchError('Registration ID not found. Please check and try again.');
+      } else if (res.status === 400) {
+        setFetchError(data.error || 'Invalid Registration ID format.');
+      } else {
+        setFetchError(data.error || 'Failed to fetch details due to a server issue.');
+      }
+    } catch (error) {
+      console.error('Fetch details error:', error);
+      setFetchError('A network error occurred while fetching details. Please check your connection.');
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
 
   const handleNoRegistration = () => {
@@ -458,6 +495,17 @@ function WorkshopRegistrationForm() {
   const workshopTypeParam = hasRegistered ? 'workshop-registered' : 'workshop-only';
   const regIdParam = hasRegistered ? `&regId=${registrationId}` : '';
   const selectedWorkshopsParam = Object.keys(selectedWorkshops).filter(k => selectedWorkshops[k]).join(',');
+
+  // ADDED: Build user data params like paper-poster
+  const getUserDataParams = () => {
+    if (!userData) return '';
+    const params = new URLSearchParams();
+    if (userData.name) params.set('name', userData.name);
+    if (userData.email) params.set('email', userData.email);
+    if (userData.mobile) params.set('mobile', userData.mobile);
+    if (userData.address) params.set('address', userData.address);
+    return params.toString() ? `&${params.toString()}` : '';
+  };
 
   // ADDED: Render message if registration is not open yet
   if (!isWorkshopOpen) {
@@ -532,12 +580,38 @@ function WorkshopRegistrationForm() {
             )}
             {/* Workshop Selection */}
             {hasRegistered === true && !redirectMessage && (
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                {/* Registration ID Input */}
+              <div className="mt-8 pt-6 border-t border-gray-200 space-y-6">
+                {/* Registration ID Input (Optional Prefill) - ADDED: Like paper-poster */}
                 <div>
-                  <label htmlFor="registration-id" className="block text-sm font-medium text-gray-800">Please enter your NIDACON 2026 Registration ID</label>
-                  <input type="text" id="registration-id" value={registrationId} onChange={(e) => setRegistrationId(e.target.value)} placeholder="e.g., NIDA101" className="mt-2 block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500" />
+                  <label htmlFor="registration-id-fetch" className="block text-sm font-medium text-gray-800">
+                    Enter your NIDACON 2026 Registration ID to pre-fill your details (Optional).
+                  </label>
+                  <div className="mt-2 flex items-center gap-2">
+                    <input
+                      type="text"
+                      id="registration-id-fetch"
+                      value={registrationId}
+                      onChange={(e) => setRegistrationId(e.target.value)}
+                      placeholder="e.g., NIDA101"
+                      className="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleFetchDetails}
+                      disabled={isFetching || !registrationId}
+                      className="whitespace-nowrap rounded-md bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600 disabled:opacity-50"
+                    >
+                      {isFetching ? 'Fetching...' : 'Fetch Details'}
+                    </button>
+                  </div>
+                  {fetchError && <p className="mt-2 text-sm text-red-500">{fetchError}</p>}
+                  {userData && (
+                    <div className="mt-4 rounded-lg border border-green-300 bg-green-50 p-4 text-sm text-green-700">
+                      <p>Details for <strong>{userData.name}</strong> fetched successfully. You can still edit them on the next page.</p>
+                    </div>
+                  )}
                 </div>
+
                 {/* Workshop Checkboxes */}
                 <fieldset className={'mt-8'} disabled={isWorkshopSelectionDisabled}>
                   <legend className={`text-sm font-medium ${isWorkshopSelectionDisabled ? 'text-gray-400' : 'text-gray-800'}`}>2. Select your desired workshop(s) {isWorkshopSelectionDisabled ? '(Enter Registration ID first)' : ''}</legend>
@@ -560,7 +634,7 @@ function WorkshopRegistrationForm() {
                   </div>
                 )}
                 <div className="mt-10">
-                  <Link href={`/register-now/user-info?type=${workshopTypeParam}${regIdParam}&workshops=${selectedWorkshopsParam}&price=${totalAmount}`} passHref>
+                  <Link href={`/register-now/user-info?type=${workshopTypeParam}${regIdParam}&workshops=${selectedWorkshopsParam}&price=${totalAmount}${getUserDataParams()}`} passHref>
                     <button type="button" disabled={isProceedButtonDisabled} className="w-full py-4 px-6 text-lg font-semibold text-white bg-purple-600 rounded-lg shadow-md transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
                       Proceed to User Info
                     </button>

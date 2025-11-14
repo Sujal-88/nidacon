@@ -312,7 +312,7 @@ function UserInfoForm() {
                 </div>
 
                 {/* Profile Photo (Optional) - Only show if not paper/poster */}
-                {searchParams.get('type') !== 'paper-poster' && (
+                {/* {searchParams.get('type') !== 'paper-poster' && (
                   <div className="sm:col-span-2">
                     <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">Profile Photo <span className="text-xs text-gray-500">(Optional)</span></label>
                     <div className="mt-2 flex items-center gap-x-3">
@@ -330,7 +330,7 @@ function UserInfoForm() {
                     </div>
                     {errors.photo && <p className="mt-1 text-xs text-red-600">{errors.photo}</p>}
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Display Form-wide Error (keep existing) */}
