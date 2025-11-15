@@ -161,21 +161,29 @@ function HomePageContent() {
                       </h1>
 
                       {/* Date Buttons */}
-                      <div className='flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
+                      <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
+                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
+                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
+                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">9</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
+                          </span>
+                        </button>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
-                            <span className="text-4xl sm:text-5xl font-bold leading-tight">15</span>
-                            <span className="text-xs sm:text-sm">November 2025</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">10</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
-                            <span className="text-4xl sm:text-5xl font-bold leading-tight">16</span>
-                            <span className="text-xs sm:text-sm">November 2025</span>
+                            <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
+                            <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
                       </div>
@@ -229,7 +237,7 @@ function HomePageContent() {
                       </h1>
 
                       {/* Date Buttons */}
-                      <div className='flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
+                      <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
                         <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
