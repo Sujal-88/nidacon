@@ -23,22 +23,24 @@ function HomePageContent() {
     <>
       {/* Hero Section */}
       <section id="home" className="relative min-h-screen text-white overflow-hidden">
-        
+
         {/* --- CHANGE 1: Swapped Background for Mobile --- */}
         {/* Desktop Video Background (md screens and up) */}
         <div className="hidden md:block">
           <BackgroundVideo />
         </div>
-        
+
         {/* Mobile Image Background (smaller than md) */}
         <div className="block md:hidden absolute inset-0 z-0">
           <Image
             src="/video/mobile_bg.jpg"
             alt="Background"
             fill
-            className="object-cover object-center opacity-70"
-            priority // Load this image quickly on mobile
+            className="object-cover object-center opacity-40"
+            priority
           />
+          {/* Blue overlay */}
+          <div className="absolute inset-0 bg-indigo-400 opacity-45"></div>
         </div>
         {/* ------------------------------------------- */}
 
@@ -107,7 +109,7 @@ function HomePageContent() {
                             <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <button className="relative bg-indigo-600 flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
@@ -117,17 +119,17 @@ function HomePageContent() {
                         </button>
                       </div>
 
-                      <p className="pt-4 text-lg xl:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
+                      <p className="pt-4 text-lg xl:text-2xl text-white max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
                         Join us for an extraordinary experience of learning, innovation, and collaboration in dental excellence.
                       </p>
                     </div>
 
-                    <div className="pt-8 xl:pt-10 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
+                    <div className="pt-8 xl:pt-10 text-white animate-fade-in-up opacity-0 [--animation-delay:700ms]">
                       <Link href="/register-now" className="inline-block">
                         <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
                           <div className="flex items-center justify-center">
                             <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
-                            <span className="font-semibold">Register Now</span>
+                            <span className="font-semibold text-white">Register Now</span>
                           </div>
                           <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
@@ -198,7 +200,7 @@ function HomePageContent() {
                         <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-10 py-4 rounded-full transition-all duration-300 ease-in-out text-base shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
                           <div className="flex items-center justify-center">
                             <Ticket className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
-                            <span className="font-semibold">Register Now</span>
+                            <span className="text-white font-semibold">Register Now</span>
                           </div>
                           <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
@@ -274,7 +276,7 @@ function HomePageContent() {
                         <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3.5 rounded-full transition-all duration-300 ease-in-out text-sm shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
                           <div className="flex items-center justify-center">
                             <Ticket className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
-                            <span className="font-semibold">Register Now</span>
+                            <span className="font-semibold text-white">Register Now</span>
                           </div>
                           <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
