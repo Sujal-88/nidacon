@@ -102,7 +102,7 @@ export default function Albums() {
                             </span>
                         </h2>
                         <p className="mt-4 text-lg text-slate-400 max-w-3xl mx-auto">
-                            Discover new soundscapes and curated collections from artists around the globe.
+                            Discover new soundscapes and curated collections from past NIDACON.
                         </p>
                     </div>
 

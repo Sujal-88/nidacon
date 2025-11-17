@@ -150,7 +150,7 @@ const Footer = () => {
           <p className="text-center sm:text-right">
             Designed with <span className="text-red-500">♥</span> by 
             <a 
-              href="https://your-portfolio.com" 
+              href="https://eighty8studio.store" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="font-semibold hover:text-purple-600 transition-colors ml-1"
