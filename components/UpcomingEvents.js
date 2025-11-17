@@ -8,18 +8,7 @@ export default function UpcomingEvents() {
 
     const events = [
         // ... your event data remains the same
-        {
-            title: 'NIDASPORTZ',
-            date: '15 Nov, 2025 - 16 Nov, 2025',
-            time: '7:00 AM Onwards',
-            location: 'ABDA Sports Complex, Nagpur',
-            description: 'Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.',
-            category: 'Sports',
-            attendees: '120+',
-            imageSrc: '/sports/title.jpeg',
-            status: 'Early Bird',
-            price: '₹2,500'
-        },
+        
         {
             title: 'NIDACON 2026',
             date: '9 - 11 Jan, 2026',
@@ -43,6 +32,19 @@ export default function UpcomingEvents() {
             imageSrc: '/NIDACON/nida_logo.png',
             status: 'Premium',
             price: '₹5,000'
+        },
+
+        {
+            title: 'NIDASPORTZ',
+            date: '15 Nov, 2025 - 16 Nov, 2025',
+            time: '7:00 AM Onwards',
+            location: 'ABDA Sports Complex, Nagpur',
+            description: 'Join NIDASPORTZ 2025 - Season 6 for an exciting season of competition, camaraderie, and celebration across multiple sports.',
+            category: 'Sports',
+            attendees: '120+',
+            imageSrc: '/sports/title.jpeg',
+            status: 'Early Bird',
+            price: '₹2,500'
         },
     ];
 
