@@ -514,6 +514,7 @@
 // app/api/payment/success/route.js
 // app/api/payment/success/route.js
 // app/api/payment/success/route.js
+// app/api/payment/success/route.js
 
 import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
@@ -533,11 +534,14 @@ export async function POST(request) {
     const formData = await request.formData();
     const payuResponse = Object.fromEntries(formData);
     txnid = payuResponse.txnid || 'unknown-txn';
+    
+    // Clean the email to prevent "Black Entry" duplicates
+    const responseEmail = (payuResponse.email || '').trim();
 
     console.log("=== PayU Success Webhook ===");
     console.log(`Txn: ${txnid}`);
-    console.log(`Type (UDF2): ${payuResponse.udf2}`); // CHECK THIS LOG IN VERCEL/TERMINAL
-    console.log(`Email: ${payuResponse.email}`);
+    console.log(`Type (UDF2): ${payuResponse.udf2}`);
+    console.log(`Email: ${responseEmail}`);
 
     // 1. Verify Salt
     const merchantSalt = process.env.PAYU_MERCHANT_SALT;
@@ -557,7 +561,10 @@ export async function POST(request) {
 
     // --- PAYMENT SUCCESSFUL ---
     
-    const registrationType = payuResponse.udf2; // MUST be 'workshop' for workshops
+    const registrationType = payuResponse.udf2; 
+    // FIX 1: Flexible check for any workshop type ('workshop', 'workshop-registered', etc.)
+    const isWorkshop = registrationType && registrationType.startsWith('workshop');
+
     const memberType = payuResponse.udf3;
     const payuId = payuResponse.mihpayid;
     const amountPaid = parseFloat(payuResponse.amount);
@@ -604,32 +611,28 @@ export async function POST(request) {
       return NextResponse.redirect(successUrl, { status: 303 });
     }
 
-    // 2. Find User (CASE INSENSITIVE FIX)
-    // We use findFirst with mode: 'insensitive' to prevent creating duplicate "Black/Blank" users
-    // just because the email casing is different (e.g. User@Test.com vs user@test.com)
+    // 2. Find User (CASE INSENSITIVE & TRIMMED FIX)
+    // Using findFirst with mode: 'insensitive' to catch "user@test.com" even if input was "User@Test.com"
     let targetUser = existingTxnUser || await prisma.user.findFirst({
       where: { 
-        email: { equals: payuResponse.email, mode: 'insensitive' } 
+        email: { equals: responseEmail, mode: 'insensitive' } 
       }
     });
 
     // --- WORKSHOP MERGING LOGIC ---
     let finalWorkshopList = [];
     
-    // Get existing workshops
+    // Get existing workshops from DB
     if (targetUser && Array.isArray(targetUser.workshops)) {
       finalWorkshopList = [...targetUser.workshops];
     }
 
-    // Add new workshops ONLY if type is 'workshop'
-    if (registrationType === 'workshop') {
+    // FIX 2: Use isWorkshop flag to correctly trigger merge logic
+    if (isWorkshop) {
        if (subCategoryData) {
-         // Split by comma, TRIM spaces, and FILTER out empty strings
          const newWorkshops = subCategoryData.split(',').map(s => s.trim()).filter(s => s.length > 0);
-         
-         // Combine and remove duplicates using Set
+         // Merge and remove duplicates
          finalWorkshopList = [...new Set([...finalWorkshopList, ...newWorkshops])];
-         
          console.log(`✓ WORKSHOP UPDATE: Adding [${newWorkshops}] to [${targetUser?.email}]`);
        } else {
          console.warn("⚠️ Workshop payment received but NO workshop names found in udf4");
@@ -643,8 +646,9 @@ export async function POST(request) {
       address: payuResponse.udf1,
       photoUrl: photoUrl,
       
-      // Only overwrite registrationType if this is NOT a workshop (preserve 'delegate' status)
-      ...(registrationType !== 'workshop' ? { registrationType: registrationType } : {}),
+      // FIX 3: Do NOT overwrite registrationType if this is a workshop.
+      // This preserves their 'delegate' status if they have it.
+      ...(!isWorkshop ? { registrationType: registrationType } : {}),
       
       memberType: memberType,
       subCategory: subCategoryData, 
@@ -679,7 +683,7 @@ export async function POST(request) {
         }
       });
     } else {
-      console.log(`Creating NEW user: ${payuResponse.email}`);
+      console.log(`Creating NEW user: ${responseEmail}`);
       
       let newUserId;
       if (registrationType === 'delegate') {
@@ -691,19 +695,18 @@ export async function POST(request) {
       finalUser = await prisma.user.create({
         data: {
           ...userDataPayload,
-          email: payuResponse.email,
+          email: responseEmail, // Use the trimmed email
           userId: newUserId,
         }
       });
     }
 
     // 3. Send Email
-    console.log(`Sending ${registrationType} email...`);
+    console.log(`Sending email for type: ${registrationType}...`);
     try {
       if (registrationType === 'membership') {
         await sendMembershipEmail(finalUser, payuResponse);
-      } else if (registrationType === 'workshop') {
-        // This line ONLY runs if udf2 is exactly 'workshop'
+      } else if (isWorkshop) { // FIX 4: Use isWorkshop flag for email check
         await sendWorkshopEmail(finalUser, payuResponse); 
       } else {
         await sendRegistrationEmail(finalUser, payuResponse);
