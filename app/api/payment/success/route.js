@@ -513,6 +513,7 @@
 
 // app/api/payment/success/route.js
 // app/api/payment/success/route.js
+// app/api/payment/success/route.js
 
 import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
@@ -522,7 +523,7 @@ import {
   sendRegistrationEmail, 
   sendSportsRegistrationEmail, 
   sendMembershipEmail,
-  sendWorkshopEmail // Import the new function
+  sendWorkshopEmail 
 } from '@/lib/email';
 
 export async function POST(request) {
@@ -534,9 +535,11 @@ export async function POST(request) {
     txnid = payuResponse.txnid || 'unknown-txn';
 
     console.log("=== PayU Success Webhook ===");
-    console.log(`Txn: ${txnid} | Type: ${payuResponse.udf2} | Email: ${payuResponse.email}`);
+    console.log(`Txn: ${txnid}`);
+    console.log(`Type (UDF2): ${payuResponse.udf2}`); // CHECK THIS LOG IN VERCEL/TERMINAL
+    console.log(`Email: ${payuResponse.email}`);
 
-    // 1. Verify Salt Configuration
+    // 1. Verify Salt
     const merchantSalt = process.env.PAYU_MERCHANT_SALT;
     if (!merchantSalt) throw new Error('PayU salt is not configured');
 
@@ -546,22 +549,22 @@ export async function POST(request) {
       return redirectWithFailure(request, txnid, 'Security hash mismatch');
     }
 
-    // 3. Handle Non-Success Status from PayU
+    // 3. Handle Failure
     if (payuResponse.status !== 'success') {
       console.log(`❌ Payment status is ${payuResponse.status}`);
       return redirectWithFailure(request, txnid, payuResponse.error_Message || 'Payment Failed');
     }
 
-    // --- PAYMENT IS VERIFIED SUCCESSFUL ---
+    // --- PAYMENT SUCCESSFUL ---
     
-    const registrationType = payuResponse.udf2; // 'delegate', 'membership', 'sports', 'workshop'
+    const registrationType = payuResponse.udf2; // MUST be 'workshop' for workshops
     const memberType = payuResponse.udf3;
     const payuId = payuResponse.mihpayid;
     const amountPaid = parseFloat(payuResponse.amount);
     const photoUrl = payuResponse.udf6 || null;
-    const subCategoryData = payuResponse.udf4 || ''; // Contains Workshop names OR Delegate Category
+    const subCategoryData = payuResponse.udf4 || ''; // Workshop Names
 
-    // Parse Add-ons for Delegates
+    // Add-ons (Delegate only)
     let purchasedImplant = false;
     let purchasedBanquet = false;
     if (registrationType === 'delegate' && payuResponse.udf5) {
@@ -573,77 +576,79 @@ export async function POST(request) {
     successUrl.searchParams.set('txnid', txnid);
     successUrl.searchParams.set('registrationType', registrationType);
 
-    // ====================================================
-    // SCENARIO A: SPORTS REGISTRATION (Completely Separate)
-    // ====================================================
+    // === A. SPORTS REGISTRATION ===
     if (registrationType === 'sports') {
       const sportReg = await prisma.sportRegistration.findUnique({ where: { transactionId: txnid } });
-      
       if (sportReg) {
         if (sportReg.paymentStatus === 'success') {
-          console.log(`⚠️ Duplicate Sports Webhook. Already success. Ignoring.`);
+          console.log(`⚠️ Duplicate Sports Webhook. Already success.`);
         } else {
-          // Update Pending -> Success
           const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
           const updated = await prisma.sportRegistration.update({
             where: { transactionId: txnid },
             data: { paymentStatus: 'success', payuId: payuId, userId: sportsUserId },
           });
           await sendSportsRegistrationEmail(updated, payuResponse);
-          console.log(`✓ Sports Updated & Email Sent.`);
         }
-      } else {
-        console.error(`❌ Critical: Sports record not found for txn ${txnid}`);
       }
       return NextResponse.redirect(successUrl, { status: 303 });
     }
 
-    // ====================================================
-    // SCENARIO B: MAIN USER (Membership / Delegate / Workshop)
-    // ====================================================
+    // === B. MAIN USER (Membership / Delegate / Workshop) ===
 
-    // 1. Check if this SPECIFIC transaction is *already* marked as success
+    // 1. Check for Duplicate Success
     const existingTxnUser = await prisma.user.findUnique({ where: { transactionId: txnid } });
 
     if (existingTxnUser && existingTxnUser.paymentStatus === 'success') {
-      console.log(`⚠️ DUPLICATE SUCCESS: Transaction ${txnid} already processed. Stopping.`);
+      console.log(`⚠️ DUPLICATE SUCCESS: Transaction ${txnid} already processed.`);
       return NextResponse.redirect(successUrl, { status: 303 });
     }
 
-    // 2. Find the user to update
-    let targetUser = existingTxnUser || await prisma.user.findUnique({ where: { email: payuResponse.email } });
+    // 2. Find User (CASE INSENSITIVE FIX)
+    // We use findFirst with mode: 'insensitive' to prevent creating duplicate "Black/Blank" users
+    // just because the email casing is different (e.g. User@Test.com vs user@test.com)
+    let targetUser = existingTxnUser || await prisma.user.findFirst({
+      where: { 
+        email: { equals: payuResponse.email, mode: 'insensitive' } 
+      }
+    });
 
-    // --- LOGIC FOR MERGING WORKSHOPS ---
-    // If this is a 'workshop' purchase, we must ADD to the list, not overwrite it.
+    // --- WORKSHOP MERGING LOGIC ---
     let finalWorkshopList = [];
     
-    // Start with existing workshops (if any)
+    // Get existing workshops
     if (targetUser && Array.isArray(targetUser.workshops)) {
       finalWorkshopList = [...targetUser.workshops];
     }
 
-    // If this transaction is for workshops, parse the new ones and add them
-    if (registrationType === 'workshop' && subCategoryData) {
-       const newWorkshops = subCategoryData.split(',').map(s => s.trim()).filter(s => s);
-       // Merge and remove duplicates
-       finalWorkshopList = [...new Set([...finalWorkshopList, ...newWorkshops])];
-       console.log(`✓ Merged Workshops: ${finalWorkshopList.join(', ')}`);
+    // Add new workshops ONLY if type is 'workshop'
+    if (registrationType === 'workshop') {
+       if (subCategoryData) {
+         // Split by comma, TRIM spaces, and FILTER out empty strings
+         const newWorkshops = subCategoryData.split(',').map(s => s.trim()).filter(s => s.length > 0);
+         
+         // Combine and remove duplicates using Set
+         finalWorkshopList = [...new Set([...finalWorkshopList, ...newWorkshops])];
+         
+         console.log(`✓ WORKSHOP UPDATE: Adding [${newWorkshops}] to [${targetUser?.email}]`);
+       } else {
+         console.warn("⚠️ Workshop payment received but NO workshop names found in udf4");
+       }
     }
 
-    // Data to update/create
+    // Prepare Data Payload
     const userDataPayload = {
       name: payuResponse.firstname,
       mobile: payuResponse.phone,
       address: payuResponse.udf1,
       photoUrl: photoUrl,
       
-      // IMPORTANT: Only overwrite registrationType if it's NOT a workshop 
-      // (We don't want a workshop purchase to remove the 'delegate' status if they have it)
+      // Only overwrite registrationType if this is NOT a workshop (preserve 'delegate' status)
       ...(registrationType !== 'workshop' ? { registrationType: registrationType } : {}),
       
       memberType: memberType,
-      subCategory: subCategoryData, // Saves the raw string from THIS transaction
-      workshops: finalWorkshopList, // Saves the ACCUMULATED list of workshops
+      subCategory: subCategoryData, 
+      workshops: finalWorkshopList, // Saves the MERGED list
       
       transactionId: txnid, 
       paymentStatus: 'success', 
@@ -659,10 +664,9 @@ export async function POST(request) {
     if (targetUser) {
       console.log(`Updating existing user: ${targetUser.email}`);
       
-      // ID LOGIC:
       let newUserId = targetUser.userId;
       
-      // Upgrade to NIDA ID only if buying Delegate pass
+      // Only upgrade ID if buying Delegate pass (Workshops do NOT change ID)
       if (registrationType === 'delegate' && targetUser.userId && targetUser.userId.startsWith('TEMP-')) {
          newUserId = await generateUserId();
       }
@@ -678,7 +682,6 @@ export async function POST(request) {
       console.log(`Creating NEW user: ${payuResponse.email}`);
       
       let newUserId;
-      // Assign NIDA ID for Delegates, TEMP for others (Workshop-only/Member-only users get TEMP until they buy Delegate pass)
       if (registrationType === 'delegate') {
         newUserId = await generateUserId();
       } else {
@@ -700,7 +703,8 @@ export async function POST(request) {
       if (registrationType === 'membership') {
         await sendMembershipEmail(finalUser, payuResponse);
       } else if (registrationType === 'workshop') {
-        await sendWorkshopEmail(finalUser, payuResponse); // NEW: Send Workshop Email
+        // This line ONLY runs if udf2 is exactly 'workshop'
+        await sendWorkshopEmail(finalUser, payuResponse); 
       } else {
         await sendRegistrationEmail(finalUser, payuResponse);
       }
@@ -716,7 +720,6 @@ export async function POST(request) {
   }
 }
 
-// Helper to redirect to failure page
 function redirectWithFailure(request, txnid, message) {
   const url = new URL('/payment/failure', request.url);
   url.searchParams.set('txnid', txnid);
