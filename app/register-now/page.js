@@ -62,10 +62,10 @@ export default function RegisterPage() {
 
   useEffect(() => {
     // Check if the current date is on or after November 15th, 2025
-    const openDate = new Date('2025-11-15T00:00:00');
+    const openDate = new Date('2025-11-25T00:00:00');
     const currentDate = new Date();
     // SETTING TO TRUE FOR TESTING - REMOVE IN PRODUCTION
-    // setIsSpecialRegistrationOpen(true); 
+    // setIsSpecialRegistrationOpen(false); 
     
     // PRODUCTION LOGIC
     setIsSpecialRegistrationOpen(currentDate >= openDate);
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                   </ul>
                   {/* UPDATED: Show message for both special cards when disabled */}
                   {isSpecialCard && !isSpecialRegistrationOpen && (
-                    <p className="mt-4 text-sm font-semibold text-orange-600">Opens on November 15th, 2025</p>
+                    <p className="mt-4 text-sm font-semibold text-orange-600">Opens on November 25th, 2025</p>
                   )}
                 </div>
                 <div className={`p-6 ${isDisabled ? 'bg-gray-200' : 'bg-gray-50'} rounded-b-2xl`}>

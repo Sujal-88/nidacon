@@ -36,7 +36,7 @@ function FileInput({ label, file, setFile, id, onFileError }) { // <-- ADD onFil
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
-    
+
     if (!selectedFile) {
       setFile(null);
       if (onFileError) onFileError(null); // Clear error
@@ -65,11 +65,11 @@ function FileInput({ label, file, setFile, id, onFileError }) { // <-- ADD onFil
           <div className="mt-2 flex text-sm leading-6 text-gray-600">
             <label htmlFor={id} className="relative cursor-pointer rounded-md bg-white font-semibold text-purple-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-600 focus-within:ring-offset-2 hover:text-purple-500">
               <span>Upload a file:</span>
-              <input 
-                id={id} 
-                name={id} 
-                type="file" 
-                className="sr-only" 
+              <input
+                id={id}
+                name={id}
+                type="file"
+                className="sr-only"
                 onChange={handleChange} // <-- Use our new handler
               />
               {file ? (
@@ -176,7 +176,7 @@ function PaperPosterRegistrationForm() {
   const handleSubmit = async () => {
     // ... (keep existing handleSubmit code)
     // Basic validation check
-    if (!isFormValid) return; 
+    if (!isFormValid) return;
 
     setIsFetching(true); // Reuse isFetching state for loading indicator
     setFetchError(''); // Clear previous errors
@@ -422,10 +422,10 @@ function WorkshopRegistrationForm() {
   const [registrationId, setRegistrationId] = useState('');
   const [selectedWorkshops, setSelectedWorkshops] = useState({});
   const [redirectMessage, setRedirectMessage] = useState('');
-  
+
   // ADDED: State for workshop date check
   const [isWorkshopOpen, setIsWorkshopOpen] = useState(false);
-  
+
   // ADDED: State for fetch logic (like paper-poster)
   const [userData, setUserData] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
@@ -437,7 +437,7 @@ function WorkshopRegistrationForm() {
     const currentDate = new Date();
     // SETTING TO TRUE FOR TESTING - REMOVE IN PRODUCTION
     // setIsWorkshopOpen(true);
-    
+
     // PRODUCTION LOGIC
     setIsWorkshopOpen(currentDate >= openDate);
   }, []);
@@ -751,7 +751,7 @@ function DelegateRegistrationForm({ registrationType }) {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
               <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8 h-full flex flex-col">
-                
+
                 {/* === UPDATED: Member/Non-Member Selection (Segmented Control) === */}
                 <div>
                   <label className="block text-base font-medium text-gray-800 mb-4 text-center">1. Select Your Status</label>
@@ -759,18 +759,16 @@ function DelegateRegistrationForm({ registrationType }) {
                     <button
                       type="button"
                       onClick={() => setIsMember(false)}
-                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${
-                        isMember === false ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'
-                      }`}
+                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${isMember === false ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'
+                        }`}
                     >
                       Non-Member
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsMember(true)}
-                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${
-                        isMember === true ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'
-                      }`}
+                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${isMember === true ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'
+                        }`}
                     >
                       IDA Member
                     </button>
@@ -792,30 +790,30 @@ function DelegateRegistrationForm({ registrationType }) {
 
 
                 {/* Add-ons Section */}
-                <div className={`pt-8 border-t border-gray-200 ${isMember === null ? 'opacity-50 pointer-events-none' : ''}`}>
+                {/* <div className={`pt-8 border-t border-gray-200 ${isMember === null ? 'opacity-50 pointer-events-none' : ''}`}>
                   <fieldset>
                     <legend className="text-base font-medium text-gray-800">2. Optional Add-ons {isMember === null ? '(Select Status First)' : ''}</legend>
                     <div className="mt-4 space-y-4">
-                      {/* Implant Checkbox (Currently Commented Out)
+
                       <div className="relative flex items-start p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                          <div className="flex h-6 items-center">
+                        <div className="flex h-6 items-center">
                           <input
-                              id="implant"
-                              name="implant"
-                              type="checkbox"
-                              checked={addOns.implant}
-                              onChange={handleAddOnChange}
-                              className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" // Green color for implant
+                            id="implant"
+                            name="implant"
+                            type="checkbox"
+                            checked={addOns.implant}
+                            onChange={handleAddOnChange}
+                            className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
                           />
-                          </div>
-                          <div className="ml-3 text-sm leading-6 flex-grow">
+                        </div>
+                        <div className="ml-3 text-sm leading-6 flex-grow">
                           <label htmlFor="implant" className="font-medium text-gray-900 cursor-pointer">
-                              WITH FREE IMPLANT
+                            WITH FREE IMPLANT
                           </label>
-                          </div>
-                          <p className="ml-4 font-semibold text-gray-800">+ ₹2200</p>
-                      </div> */}
-                      {/* Banquet Checkbox */}
+                        </div>
+                        <p className="ml-4 font-semibold text-gray-800">+ ₹2200</p>
+                      </div>
+                      // Banquet Checkout
                       <div className="relative flex items-start p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex h-6 items-center">
                           <input
@@ -836,7 +834,7 @@ function DelegateRegistrationForm({ registrationType }) {
                       </div>
                     </div>
                   </fieldset>
-                </div>
+                </div> */}
 
                 {/* Total Amount */}
                 <div className="mt-auto pt-8 border-t border-gray-200">
@@ -866,8 +864,8 @@ function DelegateRegistrationForm({ registrationType }) {
                       return (
                         <li key={index} className="flex items-start">
                           <svg className={`flex-shrink-0 w-5 h-5 ${feature === implantFeature && addOns.implant ? 'text-green-500' :
-                              feature === banquetFeature && addOns.banquet ? 'text-green-500' :
-                                'text-purple-500' // Default purple check
+                            feature === banquetFeature && addOns.banquet ? 'text-green-500' :
+                              'text-purple-500' // Default purple check
                             } mr-2 mt-0.5`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>

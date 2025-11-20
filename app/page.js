@@ -84,8 +84,8 @@ function HomePageContent() {
                           <Image
                             src="/NIDACON/nida_logo.png"
                             alt="Conference Logo"
-                            width={400}
-                            height={400}
+                            width={500}
+                            height={500}
                             className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
                           />
                         </span>
@@ -93,7 +93,7 @@ function HomePageContent() {
 
                       {/* Date Buttons */}
                       <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <button className="bg-indigo-600 relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
@@ -101,7 +101,7 @@ function HomePageContent() {
                             <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
                         </button>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <button className="relative bg-indigo-600 flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
@@ -155,8 +155,8 @@ function HomePageContent() {
                           <Image
                             src="/NIDACON/nida_logo.png"
                             alt="Conference Logo"
-                            width={400}
-                            height={400}
+                            width={500}
+                            height={500}
                             className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
                           />
                         </span>
@@ -231,8 +231,8 @@ function HomePageContent() {
                           <Image
                             src="/NIDACON/nida_logo.png"
                             alt="Conference Logo"
-                            width={400}
-                            height={400}
+                            width={700}
+                            height={700}
                             className="drop-shadow-[0_0_15px_rgba(120,120,255,0.5)] mx-auto"
                           />
                         </span>
