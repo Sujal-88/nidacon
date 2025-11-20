@@ -1,279 +1,281 @@
-// app/api/payment/success/route.js
+// // app/api/payment/success/route.js
 
-import { NextResponse } from 'next/server';
-import { verifyHash } from '@/lib/payu-utils';
-import { prisma } from '@/lib/prisma';
-import { generateUserId } from '@/lib/userId';
-import { sendRegistrationEmail, sendSportsRegistrationEmail, sendMembershipEmail } from '@/lib/email';
+// import { NextResponse } from 'next/server';
+// import { verifyHash } from '@/lib/payu-utils';
+// import { prisma } from '@/lib/prisma';
+// import { generateUserId } from '@/lib/userId';
+// import { sendRegistrationEmail, sendSportsRegistrationEmail, sendMembershipEmail } from '@/lib/email';
 
-export async function POST(request) {
-  let txnid = 'unknown';
+// export async function POST(request) {
+//   let txnid = 'unknown';
   
-  try {
-    const formData = await request.formData();
-    const payuResponse = Object.fromEntries(formData);
-    txnid = payuResponse.txnid || 'unknown-txn';
+//   try {
+//     const formData = await request.formData();
+//     const payuResponse = Object.fromEntries(formData);
+//     txnid = payuResponse.txnid || 'unknown-txn';
 
-    console.log("=== PayU Success Webhook Received ===");
-    console.log("Transaction ID:", txnid);
-    console.log("Status:", payuResponse.status);
-    console.log("Email:", payuResponse.email);
-    console.log("UDF2 (Type):", payuResponse.udf2);
-    console.log("Amount:", payuResponse.amount);
+//     console.log("=== PayU Success Webhook Received ===");
+//     console.log("Transaction ID:", txnid);
+//     console.log("Status:", payuResponse.status);
+//     console.log("Email:", payuResponse.email);
+//     console.log("UDF2 (Type):", payuResponse.udf2);
+//     console.log("Amount:", payuResponse.amount);
 
-    // Verify merchant salt is configured
-    const merchantSalt = process.env.PAYU_MERCHANT_SALT;
-    if (!merchantSalt) {
-      throw new Error('PayU salt is not configured');
-    }
+//     // Verify merchant salt is configured
+//     const merchantSalt = process.env.PAYU_MERCHANT_SALT;
+//     if (!merchantSalt) {
+//       throw new Error('PayU salt is not configured');
+//     }
 
-    // Verify hash FIRST
-    if (!verifyHash(payuResponse, merchantSalt)) {
-      console.error(`❌ Hash verification FAILED for txnid: ${txnid}`);
-      const failureUrl = new URL('/payment/failure', request.url);
-      failureUrl.searchParams.set('txnid', txnid);
-      failureUrl.searchParams.set('error_Message', 'Security hash mismatch. Please contact support.');
-      failureUrl.searchParams.set('status', 'failure');
-      return NextResponse.redirect(failureUrl, { status: 303 });
-    }
+//     // Verify hash FIRST
+//     if (!verifyHash(payuResponse, merchantSalt)) {
+//       console.error(`❌ Hash verification FAILED for txnid: ${txnid}`);
+//       const failureUrl = new URL('/payment/failure', request.url);
+//       failureUrl.searchParams.set('txnid', txnid);
+//       failureUrl.searchParams.set('error_Message', 'Security hash mismatch. Please contact support.');
+//       failureUrl.searchParams.set('status', 'failure');
+//       return NextResponse.redirect(failureUrl, { status: 303 });
+//     }
 
-    console.log(`✓ Hash verified successfully for txnid: ${txnid}`);
+//     console.log(`✓ Hash verified successfully for txnid: ${txnid}`);
 
-    // Check if payment was successful
-    if (payuResponse.status !== 'success') {
-      console.log(`❌ Payment status NOT success: ${payuResponse.status}`);
+//     // Check if payment was successful
+//     if (payuResponse.status !== 'success') {
+//       console.log(`❌ Payment status NOT success: ${payuResponse.status}`);
       
-      // Update DB to reflect failure
-      const registrationType = payuResponse.udf2;
-      try {
-        if (registrationType === 'sports') {
-          await prisma.sportRegistration.updateMany({
-            where: { transactionId: txnid, paymentStatus: 'pending' },
-            data: { paymentStatus: 'failure', payuId: payuResponse.mihpayid },
-          });
-        } else {
-          await prisma.user.updateMany({
-            where: { transactionId: txnid, paymentStatus: 'pending' },
-            data: { paymentStatus: 'failure', payuId: payuResponse.mihpayid },
-          });
-        }
-      } catch (dbError) {
-        console.error("Error updating failure status:", dbError);
-      }
+//       // Update DB to reflect failure
+//       const registrationType = payuResponse.udf2;
+//       try {
+//         if (registrationType === 'sports') {
+//           await prisma.sportRegistration.updateMany({
+//             where: { transactionId: txnid, paymentStatus: 'pending' },
+//             data: { paymentStatus: 'failure', payuId: payuResponse.mihpayid },
+//           });
+//         } else {
+//           await prisma.user.updateMany({
+//             where: { transactionId: txnid, paymentStatus: 'pending' },
+//             data: { paymentStatus: 'failure', payuId: payuResponse.mihpayid },
+//           });
+//         }
+//       } catch (dbError) {
+//         console.error("Error updating failure status:", dbError);
+//       }
 
-      const failureUrl = new URL('/payment/failure', request.url);
-      failureUrl.searchParams.set('txnid', txnid);
-      failureUrl.searchParams.set('error_Message', payuResponse.error_Message || `Payment ${payuResponse.status}`);
-      failureUrl.searchParams.set('status', payuResponse.status || 'failure');
-      return NextResponse.redirect(failureUrl, { status: 303 });
-    }
+//       const failureUrl = new URL('/payment/failure', request.url);
+//       failureUrl.searchParams.set('txnid', txnid);
+//       failureUrl.searchParams.set('error_Message', payuResponse.error_Message || `Payment ${payuResponse.status}`);
+//       failureUrl.searchParams.set('status', payuResponse.status || 'failure');
+//       return NextResponse.redirect(failureUrl, { status: 303 });
+//     }
 
-    // Payment is successful - proceed with processing
-    console.log(`✓ Payment SUCCESSFUL for txnid: ${txnid}`);
+//     // Payment is successful - proceed with processing
+//     console.log(`✓ Payment SUCCESSFUL for txnid: ${txnid}`);
 
-    const registrationType = payuResponse.udf2;
-    const memberType = payuResponse.udf3;
-    const payuId = payuResponse.mihpayid;
-    const amountPaid = parseFloat(payuResponse.amount);
-    const photoUrl = payuResponse.udf6 || null;
+//     const registrationType = payuResponse.udf2;
+//     const memberType = payuResponse.udf3;
+//     const payuId = payuResponse.mihpayid;
+//     const amountPaid = parseFloat(payuResponse.amount);
+//     const photoUrl = payuResponse.udf6 || null;
 
-    // Parse Add-ons early (for delegate registrations)
-    let purchasedImplant = false;
-    let purchasedBanquet = false;
-    if (registrationType === 'delegate' && payuResponse.udf5) {
-      const parts = payuResponse.udf5.split(',');
-      parts.forEach(part => {
-        const [key, value] = part.split(':');
-        if (key === 'implant' && value === 'true') purchasedImplant = true;
-        if (key === 'banquet' && value === 'true') purchasedBanquet = true;
-      });
-      console.log(`Parsed Add-ons: Implant=${purchasedImplant}, Banquet=${purchasedBanquet}`);
-    }
+//     // Parse Add-ons early (for delegate registrations)
+//     let purchasedImplant = false;
+//     let purchasedBanquet = false;
+//     if (registrationType === 'delegate' && payuResponse.udf5) {
+//       const parts = payuResponse.udf5.split(',');
+//       parts.forEach(part => {
+//         const [key, value] = part.split(':');
+//         if (key === 'implant' && value === 'true') purchasedImplant = true;
+//         if (key === 'banquet' && value === 'true') purchasedBanquet = true;
+//       });
+//       console.log(`Parsed Add-ons: Implant=${purchasedImplant}, Banquet=${purchasedBanquet}`);
+//     }
 
-    // Prepare success URL
-    const successUrl = new URL('/payment/success', request.url);
-    successUrl.searchParams.set('txnid', txnid);
-    successUrl.searchParams.set('registrationType', registrationType);
+//     // Prepare success URL
+//     const successUrl = new URL('/payment/success', request.url);
+//     successUrl.searchParams.set('txnid', txnid);
+//     successUrl.searchParams.set('registrationType', registrationType);
 
-    // === HANDLE SPORTS REGISTRATION ===
-    if (registrationType === 'sports') {
-      console.log("Processing SPORTS registration...");
+//     // === HANDLE SPORTS REGISTRATION ===
+//     if (registrationType === 'sports') {
+//       console.log("Processing SPORTS registration...");
       
-      try {
-        const sportRegistration = await prisma.sportRegistration.findUnique({ 
-          where: { transactionId: txnid } 
-        });
+//       try {
+//         const sportRegistration = await prisma.sportRegistration.findUnique({ 
+//           where: { transactionId: txnid } 
+//         });
 
-        if (!sportRegistration) {
-          console.error(`❌ CRITICAL: Sports registration not found for txnid: ${txnid}`);
-          const errorUrl = new URL('/payment/failure', request.url);
-          errorUrl.searchParams.set('txnid', txnid);
-          errorUrl.searchParams.set('error_Message', 'Registration record not found. Contact support.');
-          errorUrl.searchParams.set('status', 'error');
-          return NextResponse.redirect(errorUrl, { status: 303 });
-        }
+//         if (!sportRegistration) {
+//           console.error(`❌ CRITICAL: Sports registration not found for txnid: ${txnid}`);
+//           const errorUrl = new URL('/payment/failure', request.url);
+//           errorUrl.searchParams.set('txnid', txnid);
+//           errorUrl.searchParams.set('error_Message', 'Registration record not found. Contact support.');
+//           errorUrl.searchParams.set('status', 'error');
+//           return NextResponse.redirect(errorUrl, { status: 303 });
+//         }
 
-        if (sportRegistration.paymentStatus === 'success') {
-          console.log(`⚠️ Duplicate webhook: Sports registration already processed for ${sportRegistration.email}`);
-        } else if (sportRegistration.paymentStatus === 'pending') {
-          console.log(`Updating sports registration to SUCCESS...`);
-          const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
+//         if (sportRegistration.paymentStatus === 'success') {
+//           console.log(`⚠️ Duplicate webhook: Sports registration already processed for ${sportRegistration.email}`);
+//         } else if (sportRegistration.paymentStatus === 'pending') {
+//           console.log(`Updating sports registration to SUCCESS...`);
+//           const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
           
-          const updatedRegistration = await prisma.sportRegistration.update({
-            where: { transactionId: txnid },
-            data: {
-              paymentStatus: 'success',
-              payuId: payuId,
-              userId: sportsUserId,
-            },
-          });
+//           const updatedRegistration = await prisma.sportRegistration.update({
+//             where: { transactionId: txnid },
+//             data: {
+//               paymentStatus: 'success',
+//               payuId: payuId,
+//               userId: sportsUserId,
+//             },
+//           });
           
-          console.log(`✓ Sports registration updated: ${updatedRegistration.email}, UserID: ${sportsUserId}`);
-          await sendSportsRegistrationEmail(updatedRegistration, payuResponse);
-          console.log(`✓ Sports email sent to ${updatedRegistration.email}`);
-        }
-      } catch (dbError) {
-        console.error("❌ Database error in sports registration:", dbError);
-        throw dbError;
-      }
+//           console.log(`✓ Sports registration updated: ${updatedRegistration.email}, UserID: ${sportsUserId}`);
+//           await sendSportsRegistrationEmail(updatedRegistration, payuResponse);
+//           console.log(`✓ Sports email sent to ${updatedRegistration.email}`);
+//         }
+//       } catch (dbError) {
+//         console.error("❌ Database error in sports registration:", dbError);
+//         throw dbError;
+//       }
 
-      return NextResponse.redirect(successUrl, { status: 303 });
-    }
+//       return NextResponse.redirect(successUrl, { status: 303 });
+//     }
 
-    // === HANDLE OTHER REGISTRATIONS (Delegate, Workshop, Membership) ===
-    console.log(`Processing ${registrationType} registration...`);
+//     // === HANDLE OTHER REGISTRATIONS (Delegate, Workshop, Membership) ===
+//     console.log(`Processing ${registrationType} registration...`);
 
-    try {
-      // STEP 1: Check if this EXACT transaction was already processed
-      const existingTransaction = await prisma.user.findUnique({
-        where: { transactionId: txnid }
-      });
+//     try {
+//       // STEP 1: Check if this EXACT transaction was already processed
+//       const existingTransaction = await prisma.user.findUnique({
+//         where: { transactionId: txnid }
+//       });
 
-      if (existingTransaction) {
-        console.log(`⚠️ DUPLICATE webhook detected for txnid: ${txnid}`);
-        console.log(`   Existing user: ${existingTransaction.email}, Status: ${existingTransaction.paymentStatus}`);
+//       if (existingTransaction) {
+//         console.log(`⚠️ DUPLICATE webhook detected for txnid: ${txnid}`);
+//         console.log(`   Existing user: ${existingTransaction.email}, Status: ${existingTransaction.paymentStatus}`);
         
-        // Resend email if it might have failed previously
-        try {
-          if (registrationType === 'membership') {
-            await sendMembershipEmail(existingTransaction, payuResponse);
-          } else {
-            await sendRegistrationEmail(existingTransaction, payuResponse);
-          }
-          console.log(`✓ Re-sent email to ${existingTransaction.email}`);
-        } catch (emailError) {
-          console.error("Email re-send failed:", emailError);
-        }
+//         // Resend email if it might have failed previously
+//         try {
+//           if (registrationType === 'membership') {
+//             await sendMembershipEmail(existingTransaction, payuResponse);
+//           } else {
+//             await sendRegistrationEmail(existingTransaction, payuResponse);
+//           }
+//           console.log(`✓ Re-sent email to ${existingTransaction.email}`);
+//         } catch (emailError) {
+//           console.error("Email re-send failed:", emailError);
+//         }
         
-        return NextResponse.redirect(successUrl, { status: 303 });
-      }
+//         return NextResponse.redirect(successUrl, { status: 303 });
+//       }
 
-      console.log("✓ New transaction - proceeding with user creation/update");
+//       console.log("✓ New transaction - proceeding with user creation/update");
 
-      // STEP 2: Prepare complete user data payload
-      const userDataPayload = {
-        name: payuResponse.firstname,
-        mobile: payuResponse.phone,
-        address: payuResponse.udf1,
-        photoUrl: photoUrl,
-        registrationType: registrationType,
-        memberType: memberType,
-        subCategory: payuResponse.udf4,
-        transactionId: txnid,
-        paymentStatus: 'success',
-        payuId: payuId,
-        paymentAmount: amountPaid,
-        isMember: memberType === 'member',
-        ...(registrationType === 'delegate' && {
-          purchasedImplantAddon: purchasedImplant,
-          purchasedBanquetAddon: purchasedBanquet,
-        }),
-      };
+//       // STEP 2: Prepare complete user data payload
+//       const userDataPayload = {
+//         name: payuResponse.firstname,
+//         mobile: payuResponse.phone,
+//         address: payuResponse.udf1,
+//         photoUrl: photoUrl,
+//         registrationType: registrationType,
+//         memberType: memberType,
+//         subCategory: payuResponse.udf4,
+//         transactionId: txnid,
+//         paymentStatus: 'success',
+//         payuId: payuId,
+//         paymentAmount: amountPaid,
+//         isMember: memberType === 'member',
+//         ...(registrationType === 'delegate' && {
+//           purchasedImplantAddon: purchasedImplant,
+//           purchasedBanquetAddon: purchasedBanquet,
+//         }),
+//       };
 
-      // STEP 3: Check if user exists by EMAIL
-      const existingUser = await prisma.user.findUnique({
-        where: { email: payuResponse.email }
-      });
+//       // STEP 3: Check if user exists by EMAIL
+//       const existingUser = await prisma.user.findUnique({
+//         where: { email: payuResponse.email }
+//       });
 
-      let finalUser;
+//       let finalUser;
 
-      if (existingUser) {
-        // User exists - UPDATE scenario (e.g., member buying delegate pass)
-        console.log(`User exists: ${payuResponse.email}, Current UserID: ${existingUser.userId}`);
+//       if (existingUser) {
+//         // User exists - UPDATE scenario (e.g., member buying delegate pass)
+//         console.log(`User exists: ${payuResponse.email}, Current UserID: ${existingUser.userId}`);
         
-        // Determine final userId (upgrade from TEMP- if needed)
-        const finalUserId = existingUser.userId.startsWith('TEMP-') 
-          ? await generateUserId() 
-          : existingUser.userId;
+//         // Determine final userId (upgrade from TEMP- if needed)
+//         const finalUserId = existingUser.userId.startsWith('TEMP-') 
+//           ? await generateUserId() 
+//           : existingUser.userId;
 
-        console.log(`Updating existing user with new transaction...`);
+//         console.log(`Updating existing user with new transaction...`);
         
-        finalUser = await prisma.user.update({
-          where: { email: payuResponse.email },
-          data: {
-            ...userDataPayload,
-            userId: finalUserId,
-          }
-        });
+//         finalUser = await prisma.user.update({
+//           where: { email: payuResponse.email },
+//           data: {
+//             ...userDataPayload,
+//             userId: finalUserId,
+//           }
+//         });
 
-        console.log(`✓ User UPDATED successfully: ${finalUser.email}, UserID: ${finalUser.userId}`);
+//         console.log(`✓ User UPDATED successfully: ${finalUser.email}, UserID: ${finalUser.userId}`);
         
-      } else {
-        // New user - CREATE scenario
-        console.log(`New user registration for: ${payuResponse.email}`);
+//       } else {
+//         // New user - CREATE scenario
+//         console.log(`New user registration for: ${payuResponse.email}`);
         
-        const newUserId = await generateUserId();
-        console.log(`Generated new UserID: ${newUserId}`);
+//         const newUserId = await generateUserId();
+//         console.log(`Generated new UserID: ${newUserId}`);
 
-        finalUser = await prisma.user.create({
-          data: {
-            ...userDataPayload,
-            email: payuResponse.email, // Critical: email must be included in create
-            userId: newUserId,
-          }
-        });
+//         finalUser = await prisma.user.create({
+//           data: {
+//             ...userDataPayload,
+//             email: payuResponse.email, // Critical: email must be included in create
+//             userId: newUserId,
+//           }
+//         });
 
-        console.log(`✓ User CREATED successfully: ${finalUser.email}, UserID: ${finalUser.userId}`);
-      }
+//         console.log(`✓ User CREATED successfully: ${finalUser.email}, UserID: ${finalUser.userId}`);
+//       }
 
-      // STEP 4: Send appropriate email
-      console.log(`Sending ${registrationType} email to ${finalUser.email}...`);
+//       // STEP 4: Send appropriate email
+//       console.log(`Sending ${registrationType} email to ${finalUser.email}...`);
       
-      if (registrationType === 'membership') {
-        await sendMembershipEmail(finalUser, payuResponse);
-      } else {
-        await sendRegistrationEmail(finalUser, payuResponse);
-      }
+//       if (registrationType === 'membership') {
+//         await sendMembershipEmail(finalUser, payuResponse);
+//       } else {
+//         await sendRegistrationEmail(finalUser, payuResponse);
+//       }
       
-      console.log(`✓ Email sent successfully to ${finalUser.email}`);
+//       console.log(`✓ Email sent successfully to ${finalUser.email}`);
 
-    } catch (dbError) {
-      console.error("❌ Database operation FAILED:", dbError);
-      console.error("Error details:", {
-        name: dbError.name,
-        message: dbError.message,
-        code: dbError.code,
-      });
-      throw dbError; // Re-throw to be caught by outer try-catch
-    }
+//     } catch (dbError) {
+//       console.error("❌ Database operation FAILED:", dbError);
+//       console.error("Error details:", {
+//         name: dbError.name,
+//         message: dbError.message,
+//         code: dbError.code,
+//       });
+//       throw dbError; // Re-throw to be caught by outer try-catch
+//     }
 
-    console.log(`✓ Processing complete for txnid: ${txnid}. Redirecting to success page.`);
-    return NextResponse.redirect(successUrl, { status: 303 });
+//     console.log(`✓ Processing complete for txnid: ${txnid}. Redirecting to success page.`);
+//     return NextResponse.redirect(successUrl, { status: 303 });
 
-  } catch (error) {
-    console.error("=== CRITICAL ERROR in PayU Success Route ===");
-    console.error("Transaction ID:", txnid);
-    console.error("Error:", error);
-    console.error("Stack:", error.stack);
+//   } catch (error) {
+//     console.error("=== CRITICAL ERROR in PayU Success Route ===");
+//     console.error("Transaction ID:", txnid);
+//     console.error("Error:", error);
+//     console.error("Stack:", error.stack);
     
-    const errorUrl = new URL('/payment/failure', request.url);
-    errorUrl.searchParams.set('txnid', txnid);
-    errorUrl.searchParams.set('error_Message', 'Internal server error. Please contact support with transaction ID.');
-    errorUrl.searchParams.set('status', 'error');
-    return NextResponse.redirect(errorUrl, { status: 303 });
-  }
-}
+//     const errorUrl = new URL('/payment/failure', request.url);
+//     errorUrl.searchParams.set('txnid', txnid);
+//     errorUrl.searchParams.set('error_Message', 'Internal server error. Please contact support with transaction ID.');
+//     errorUrl.searchParams.set('status', 'error');
+//     return NextResponse.redirect(errorUrl, { status: 303 });
+//   }
+// }
 // app/api/payment/success/route.js
+
+//-------------------------222222222222222222222222222222222222222222222222222222222222222222222222222-------------------------
 
 // import { NextResponse } from 'next/server';
 // import { verifyHash } from '@/lib/payu-utils';
@@ -505,3 +507,220 @@ export async function POST(request) {
 //     return NextResponse.redirect(errorUrl, { status: 303 });
 //   }
 // }
+
+//------------------333333333333333333333333333333333333333333333333333333333333333333333333333---------------------------
+// app/api/payment/success/route.js
+
+// app/api/payment/success/route.js
+// app/api/payment/success/route.js
+
+import { NextResponse } from 'next/server';
+import { verifyHash } from '@/lib/payu-utils';
+import { prisma } from '@/lib/prisma';
+import { generateUserId } from '@/lib/userId';
+import { 
+  sendRegistrationEmail, 
+  sendSportsRegistrationEmail, 
+  sendMembershipEmail,
+  sendWorkshopEmail // Import the new function
+} from '@/lib/email';
+
+export async function POST(request) {
+  let txnid = 'unknown';
+  
+  try {
+    const formData = await request.formData();
+    const payuResponse = Object.fromEntries(formData);
+    txnid = payuResponse.txnid || 'unknown-txn';
+
+    console.log("=== PayU Success Webhook ===");
+    console.log(`Txn: ${txnid} | Type: ${payuResponse.udf2} | Email: ${payuResponse.email}`);
+
+    // 1. Verify Salt Configuration
+    const merchantSalt = process.env.PAYU_MERCHANT_SALT;
+    if (!merchantSalt) throw new Error('PayU salt is not configured');
+
+    // 2. Verify Hash
+    if (!verifyHash(payuResponse, merchantSalt)) {
+      console.error(`❌ Hash verification FAILED for ${txnid}`);
+      return redirectWithFailure(request, txnid, 'Security hash mismatch');
+    }
+
+    // 3. Handle Non-Success Status from PayU
+    if (payuResponse.status !== 'success') {
+      console.log(`❌ Payment status is ${payuResponse.status}`);
+      return redirectWithFailure(request, txnid, payuResponse.error_Message || 'Payment Failed');
+    }
+
+    // --- PAYMENT IS VERIFIED SUCCESSFUL ---
+    
+    const registrationType = payuResponse.udf2; // 'delegate', 'membership', 'sports', 'workshop'
+    const memberType = payuResponse.udf3;
+    const payuId = payuResponse.mihpayid;
+    const amountPaid = parseFloat(payuResponse.amount);
+    const photoUrl = payuResponse.udf6 || null;
+    const subCategoryData = payuResponse.udf4 || ''; // Contains Workshop names OR Delegate Category
+
+    // Parse Add-ons for Delegates
+    let purchasedImplant = false;
+    let purchasedBanquet = false;
+    if (registrationType === 'delegate' && payuResponse.udf5) {
+      purchasedImplant = payuResponse.udf5.includes('implant:true');
+      purchasedBanquet = payuResponse.udf5.includes('banquet:true');
+    }
+
+    const successUrl = new URL('/payment/success', request.url);
+    successUrl.searchParams.set('txnid', txnid);
+    successUrl.searchParams.set('registrationType', registrationType);
+
+    // ====================================================
+    // SCENARIO A: SPORTS REGISTRATION (Completely Separate)
+    // ====================================================
+    if (registrationType === 'sports') {
+      const sportReg = await prisma.sportRegistration.findUnique({ where: { transactionId: txnid } });
+      
+      if (sportReg) {
+        if (sportReg.paymentStatus === 'success') {
+          console.log(`⚠️ Duplicate Sports Webhook. Already success. Ignoring.`);
+        } else {
+          // Update Pending -> Success
+          const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
+          const updated = await prisma.sportRegistration.update({
+            where: { transactionId: txnid },
+            data: { paymentStatus: 'success', payuId: payuId, userId: sportsUserId },
+          });
+          await sendSportsRegistrationEmail(updated, payuResponse);
+          console.log(`✓ Sports Updated & Email Sent.`);
+        }
+      } else {
+        console.error(`❌ Critical: Sports record not found for txn ${txnid}`);
+      }
+      return NextResponse.redirect(successUrl, { status: 303 });
+    }
+
+    // ====================================================
+    // SCENARIO B: MAIN USER (Membership / Delegate / Workshop)
+    // ====================================================
+
+    // 1. Check if this SPECIFIC transaction is *already* marked as success
+    const existingTxnUser = await prisma.user.findUnique({ where: { transactionId: txnid } });
+
+    if (existingTxnUser && existingTxnUser.paymentStatus === 'success') {
+      console.log(`⚠️ DUPLICATE SUCCESS: Transaction ${txnid} already processed. Stopping.`);
+      return NextResponse.redirect(successUrl, { status: 303 });
+    }
+
+    // 2. Find the user to update
+    let targetUser = existingTxnUser || await prisma.user.findUnique({ where: { email: payuResponse.email } });
+
+    // --- LOGIC FOR MERGING WORKSHOPS ---
+    // If this is a 'workshop' purchase, we must ADD to the list, not overwrite it.
+    let finalWorkshopList = [];
+    
+    // Start with existing workshops (if any)
+    if (targetUser && Array.isArray(targetUser.workshops)) {
+      finalWorkshopList = [...targetUser.workshops];
+    }
+
+    // If this transaction is for workshops, parse the new ones and add them
+    if (registrationType === 'workshop' && subCategoryData) {
+       const newWorkshops = subCategoryData.split(',').map(s => s.trim()).filter(s => s);
+       // Merge and remove duplicates
+       finalWorkshopList = [...new Set([...finalWorkshopList, ...newWorkshops])];
+       console.log(`✓ Merged Workshops: ${finalWorkshopList.join(', ')}`);
+    }
+
+    // Data to update/create
+    const userDataPayload = {
+      name: payuResponse.firstname,
+      mobile: payuResponse.phone,
+      address: payuResponse.udf1,
+      photoUrl: photoUrl,
+      
+      // IMPORTANT: Only overwrite registrationType if it's NOT a workshop 
+      // (We don't want a workshop purchase to remove the 'delegate' status if they have it)
+      ...(registrationType !== 'workshop' ? { registrationType: registrationType } : {}),
+      
+      memberType: memberType,
+      subCategory: subCategoryData, // Saves the raw string from THIS transaction
+      workshops: finalWorkshopList, // Saves the ACCUMULATED list of workshops
+      
+      transactionId: txnid, 
+      paymentStatus: 'success', 
+      payuId: payuId,
+      paymentAmount: amountPaid,
+      
+      ...(registrationType === 'membership' ? { isMember: true } : {}),
+      ...(registrationType === 'delegate' ? { purchasedImplantAddon: purchasedImplant, purchasedBanquetAddon: purchasedBanquet } : {}),
+    };
+
+    let finalUser;
+
+    if (targetUser) {
+      console.log(`Updating existing user: ${targetUser.email}`);
+      
+      // ID LOGIC:
+      let newUserId = targetUser.userId;
+      
+      // Upgrade to NIDA ID only if buying Delegate pass
+      if (registrationType === 'delegate' && targetUser.userId && targetUser.userId.startsWith('TEMP-')) {
+         newUserId = await generateUserId();
+      }
+
+      finalUser = await prisma.user.update({
+        where: { id: targetUser.id },
+        data: {
+          ...userDataPayload,
+          userId: newUserId,
+        }
+      });
+    } else {
+      console.log(`Creating NEW user: ${payuResponse.email}`);
+      
+      let newUserId;
+      // Assign NIDA ID for Delegates, TEMP for others (Workshop-only/Member-only users get TEMP until they buy Delegate pass)
+      if (registrationType === 'delegate') {
+        newUserId = await generateUserId();
+      } else {
+        newUserId = `TEMP-${Date.now()}`;
+      }
+
+      finalUser = await prisma.user.create({
+        data: {
+          ...userDataPayload,
+          email: payuResponse.email,
+          userId: newUserId,
+        }
+      });
+    }
+
+    // 3. Send Email
+    console.log(`Sending ${registrationType} email...`);
+    try {
+      if (registrationType === 'membership') {
+        await sendMembershipEmail(finalUser, payuResponse);
+      } else if (registrationType === 'workshop') {
+        await sendWorkshopEmail(finalUser, payuResponse); // NEW: Send Workshop Email
+      } else {
+        await sendRegistrationEmail(finalUser, payuResponse);
+      }
+    } catch (e) {
+      console.error("Email sending failed:", e);
+    }
+
+    return NextResponse.redirect(successUrl, { status: 303 });
+
+  } catch (error) {
+    console.error("CRITICAL SERVER ERROR:", error);
+    return redirectWithFailure(request, txnid, 'Internal Server Error');
+  }
+}
+
+// Helper to redirect to failure page
+function redirectWithFailure(request, txnid, message) {
+  const url = new URL('/payment/failure', request.url);
+  url.searchParams.set('txnid', txnid);
+  url.searchParams.set('error_Message', message);
+  url.searchParams.set('status', 'failure');
+  return NextResponse.redirect(url, { status: 303 });
+}

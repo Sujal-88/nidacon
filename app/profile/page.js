@@ -113,8 +113,7 @@ export default async function ProfilePage() {
                                 </span>
                             </div>
 
-                            {/* Amount Paid */}
-                            <InfoItem icon={<DollarSign />} label="Amount Paid" value={user.paymentAmount ? `₹${user.paymentAmount.toFixed(2)}` : 'N/A'} />
+                            
                             
                             {/* Transaction ID */}
                             <InfoItem icon={<Hash />} label="Transaction ID" value={user.transactionId || 'N/A'} />

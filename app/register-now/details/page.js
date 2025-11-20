@@ -12,7 +12,7 @@ import MembershipPopup from '@/components/MembershipPopup'; // Import Membership
 // --- Data (workshopOptions, presentationCategories remain the same) ---
 const workshopOptions = [
   // ... (keep existing workshop options)
-  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 1500 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 1300 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1600 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
+  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 1500 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 13 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 16 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
 ];
 const presentationCategories = [
   // ... (keep existing presentation categories)
@@ -666,7 +666,7 @@ function DelegateRegistrationForm({ registrationType }) {
 
   const calculateTotal = () => {
     if (isMember === null) return 0;
-    let basePrice = isMember ? 2000 : 3000;
+    let basePrice = isMember ? 20 : 3000;
     if (addOns.implant) basePrice += 2200;
     if (addOns.banquet) basePrice += 2000;
     return basePrice;
