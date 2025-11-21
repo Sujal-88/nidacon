@@ -20,7 +20,7 @@ const presentationCategories = [
 ];
 
 // --- Features Lists ---
-const baseMemberFeatures = ["NIDA Master Class on 9th January", "Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
+const baseMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
 const baseNonMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
 const implantFeature = "WITH FREE IMPLANT"; // Define feature text
 const banquetFeature = "GALA Buffet Dinner"; // Define feature text
