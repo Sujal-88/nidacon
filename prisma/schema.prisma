@@ -10,45 +10,121 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// 1. MAIN USER (Identity + Delegate Data)
 model User {
   id               String    @id @default(cuid())
-  userId           String    @unique
+  userId           String    @unique // NIDAxxxx (Delegate ID / Login ID)
   name             String
   email            String    @unique
   mobile           String?
   address          String?
   photoUrl         String?
-  registrationType String?   // e.g., 'delegate', 'workshop', 'membership', 'paper-poster'
-  memberType       String?   // e.g., 'member', 'non-member', 'student-member'
-  subCategory      String?   // Specific type within registrationType if needed
-
-  // NEW: Add-on fields for Delegates
+  
+  // --- DELEGATE SPECIFIC FIELDS ---
+  registrationType String?   // 'delegate' (primary)
   purchasedImplantAddon Boolean? @default(false)
   purchasedBanquetAddon Boolean? @default(false)
+  
+  // Payment for Delegate
+  transactionId    String?   @unique
+  payuId           String?
+  paymentAmount    Float?
+  paymentStatus    String?   // 'pending', 'success', 'failure'
 
-  // Profile Fields (Keep existing ones)
-  workshops        String[]
-  isMember         Boolean?  @default(false)
-  memberId         String?   @unique // For IDA Membership ID
+  // --- RELATIONS ---
+  membership       Membership?
+  workshops        WorkshopRegistration[]
+  submissions      PaperPoster[]
 
-
-  paperCategory       String?
-  abstractUrl         String?
-  paperUrl            String?
-  posterCategory      String?
-  posterUrl           String?
-  hasPaperOrPoster    Boolean?  @default(false)
-
-  // Payment Details
-  transactionId String?   @unique
-  payuId        String?   @unique
-  paymentAmount Float?
-  paymentStatus String?   // e.g., 'pending', 'success', 'failure'
+  // --- LEGACY FIELDS (Keep for data migration, delete later) ---
+  memberType       String?   
+  subCategory      String?   
+  isMember         Boolean?  @default(false) 
+  memberId         String?   @unique 
+  workshops_legacy String[]  @map("workshops") 
+  hasPaperOrPoster Boolean?  @default(false)
+  paperCategory    String?   
+  abstractUrl      String?   
+  paperUrl         String?   
+  posterCategory   String?   
+  posterUrl        String?   
 
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
 
+// 2. MEMBERSHIP NODE
+model Membership {
+  id             String    @id @default(cuid())
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String    @unique // One active membership per user
+  
+  memberId       String    @unique // IDAMEM-xxxx
+  type           String    // 'new-member', 'renewal', 'student-member'
+  msdcNumber     String?   
+  
+  // Payment Details
+  transactionId  String?   @unique
+  payuId         String?
+  amount         Float
+  paymentStatus  String    @default("pending")
+  
+  startDate      DateTime  @default(now())
+  validUntil     DateTime? 
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// 3. WORKSHOP REGISTRATION NODE
+model WorkshopRegistration {
+  id             String    @id @default(cuid())
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String
+  
+  // CHANGED: Now an array to allow multiple workshops in one registration
+  workshops      String[]  
+  
+  // Payment Details
+  transactionId  String?   
+  payuId         String?
+  amount         Float
+  paymentStatus  String    @default("pending")
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// 4. PAPER/POSTER NODE (Abstract Removed, New Fields Added)
+model PaperPoster {
+  id             String    @id @default(cuid())
+  
+  // Relation to User
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String    
+  // NOTE: No @unique on userId here. This allows 1 User to have MANY PaperPoster nodes.
+
+  type           String    // 'paper' or 'poster'
+  category       String?   // Optional category if you still use it
+  
+  // NEW FIELDS REQUESTED
+  enrollName     String
+  mobile         String
+  email          String
+  collegeName    String
+  title          String    // Title of the paper or poster
+  
+  // Files
+  fullPaperUrl   String?
+  posterUrl      String?
+  
+  status         String    @default("submitted") 
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// ... Keep SportRegistration and Counters exactly as they were ...
 model SportRegistration {
   id             String    @id @default(cuid())
   name           String
@@ -57,27 +133,24 @@ model SportRegistration {
   gender         String
   email          String?
   tshirtSize     String
-  memberType     String // 'member' or 'non-member' for sports context
+  memberType     String 
   selectedSports String[]
   totalPrice     Float
   photoUrl       String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  userId         String?   @unique // Specific ID for sports login (e.g., NIDASPORTZ-101)
-
-  // Payment Details
+  userId         String?   @unique 
   transactionId  String?   @unique
   payuId         String?   @unique
   paymentStatus  String?
 }
 
-// Counters (Keep existing ones)
 model Counter {
-  id    String @id @default("user_counter") // For NIDAxxxx IDs
+  id    String @id @default("user_counter")
   value Int    @default(99)
 }
 
 model MemberCounter {
-  id    String @id @default("member_counter") // For IDAMEM-xxxx IDs
+  id    String @id @default("member_counter")
   value Int    @default(1000)
 }

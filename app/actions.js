@@ -44,16 +44,13 @@ export async function initiatePayment(formData) {
   const udf3 = (memberType || '').replace(/\|/g, "");
   const udf4 = (subCategory || '').replace(/\|/g, "");
 
-  // --- NEW: Construct udf5 with add-on info ---
-  // Store as a simple comma-separated string, e.g., "implant:true,banquet:false"
-  // Keep it concise as PayU might have length limits on UDFs
+  
   const udf5_parts = [];
   if (registrationType === 'delegate') { // Only add for delegates
       udf5_parts.push(`implant:${implantAddon}`);
       udf5_parts.push(`banquet:${banquetAddon}`);
   }
-  const udf5 = udf5_parts.join(',').replace(/\|/g, ""); // Join parts and ensure no pipe characters
-  // --- End NEW ---
+  const udf5 = udf5_parts.join(',').replace(/\|/g, "");
   const udf6 = (photoUrl || '').replace(/\|/g, "");
 
 
@@ -63,8 +60,8 @@ export async function initiatePayment(formData) {
   // --- Hash string includes the potentially populated udf5 ---
   const hashString = `${merchantKey}|${txnid}|${amountString}|${productinfo_clean}|${firstname}|${email_clean}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}|||||${salt}`;
 
-  console.log("--- FINAL HASH STRING FOR PAYU ---");
-  console.log(hashString); // For debugging
+  // console.log("--- FINAL HASH STRING FOR PAYU ---");
+  // console.log(hashString); // For debugging
 
   const hash = crypto.createHash('sha512').update(hashString).digest('hex');
 
@@ -98,7 +95,7 @@ export async function processMembership(formData) {
   const mobile = formData.get('mobile');
   const address = formData.get('address');
   const msdcRegistration = formData.get('msdcRegistration');
-  const memberType = formData.get('memberType'); // e.g., 'new-member', 'renewal', 'student-member'
+  const memberType = formData.get('memberType');
 
   try {
     const newMemberId = await generateMemberId();
@@ -107,39 +104,31 @@ export async function processMembership(formData) {
     // Use upsert to handle both new and existing users wanting membership
     const user = await prisma.user.upsert({
       where: { email: email },
-      update: { // Update existing user record
-        name: name,
-        mobile: mobile,
-        address: address,
-        isMember: true, // Mark as member
-        memberId: newMemberId, // Assign new IDA Member ID
-        transactionId: txnid, // Store transaction ID for payment linking
-        paymentStatus: 'pending', // Mark payment as pending
-         // Optionally update registrationType if relevant, e.g., 'membership-renewal'
-         registrationType: 'membership',
-         memberType: memberType, // Store specific membership type
-      },
-      create: { // Create new user record
-        email: email,
-        name: name,
-        mobile: mobile,
-        address: address,
-        userId: `TEMP-${Date.now()}`, // Temporary User ID until payment
-        isMember: true, // Mark as member
-        memberId: newMemberId, // Assign new IDA Member ID
-        transactionId: txnid, // Store transaction ID for payment linking
-        paymentStatus: 'pending', // Mark payment as pending
-        registrationType: 'membership',
-        memberType: memberType, // Store specific membership type
+      update: { name, mobile, address },
+      create: {
+        email, name, mobile, address,
+        userId: `TEMP-${Date.now()}`,
       }
     });
 
-    console.log(`Membership processed for ${email}. User ID (temp or existing): ${user.userId}, IDA Member ID: ${user.memberId}, Txn ID: ${txnid}`);
+    await prisma.membership.create({
+      data: {
+        userId: user.id, // Link to User Identity
+        memberId: newMemberId,
+        type: memberType,
+        msdcNumber: msdcRegistration,
+        transactionId: txnid,
+        amount: 0, // Will be updated by webhook
+        paymentStatus: 'pending'
+      }
+    });
+
+    // console.log(`Membership processed for ${email}. User ID (temp or existing): ${user.userId}, IDA Member ID: ${user.memberId}, Txn ID: ${txnid}`);
 
     return {
       success: true,
       txnid: txnid,
-      memberId: user.memberId, // Return the newly generated IDA Member ID
+      memberId: newMemberId,
     };
 
   } catch (error) {
@@ -218,64 +207,55 @@ export async function initiateSportsPayment(formData) {
 
 // --- NEW: Server Action to Save Paper/Poster Submission ---
 export async function saveSubmission(submissionData) {
-    console.log("Received submission data:", submissionData);
+    console.log("Saving Submission:", submissionData);
     try {
-        // Data to be saved or updated in the User table
-        const userData = {
-            name: submissionData.name,
-            email: submissionData.email,
-            mobile: submissionData.mobile,
-            address: submissionData.address,
-            registrationType: 'paper-poster',
-            hasPaperOrPoster: true,
-            paperCategory: submissionData.paperCategory || null, // Ensure null if not provided
-            abstractUrl: submissionData.abstractUrl || null,
-            paperUrl: submissionData.paperUrl || null,
-            posterCategory: submissionData.posterCategory || null,
-            posterUrl: submissionData.posterUrl || null,
-            // We don't handle payment for paper/poster here
-            paymentStatus: 'not-applicable', // Or null, depending on your preference
-        };
+        // A. Upsert User (Identity)
+        // We need a valid User to link the paper/poster to.
+        const user = await prisma.user.upsert({
+            where: { email: submissionData.email },
+            update: {
+                name: submissionData.name,
+                mobile: submissionData.mobile,
+                address: submissionData.address,
+            },
+            create: {
+                email: submissionData.email,
+                name: submissionData.name,
+                mobile: submissionData.mobile,
+                address: submissionData.address,
+                userId: await generateUserId(),
+            },
+        });
 
-        let user;
-
-        // Check if a NIDA User ID was potentially fetched earlier
-        const existingUserId = submissionData.registrationId; // Assuming you passed this if fetched
-
-        if (existingUserId && existingUserId.startsWith('NIDA')) {
-             // Try to update based on the fetched User ID
-             console.log(`Attempting to update user by userId: ${existingUserId}`);
-            user = await prisma.user.update({
-                where: { userId: existingUserId },
-                data: userData,
-            });
-             console.log(`Updated existing user: ${user.userId}`);
-        } else {
-            // If no valid existing ID, try to upsert based on email
-             console.log(`Attempting to upsert user by email: ${submissionData.email}`);
-            const newUserId = await generateUserId(); // Generate a NIDA ID for new users
-            user = await prisma.user.upsert({
-                where: { email: submissionData.email },
-                update: userData, // Update if email exists
-                create: {
-                    ...userData,
-                    userId: newUserId, // Assign new ID only on creation
-                },
-            });
-             console.log(`Upserted user: ${user.userId}`);
-        }
+        // B. Create Paper/Poster Node
+        // Using .create() ensures a new node is created every time,
+        // allowing multiple submissions per user.
+        await prisma.paperPoster.create({
+            data: {
+                userId: user.id, // Foreign Key to User
+                type: 'paper-poster',
+                category: submissionData.paperCategory || submissionData.posterCategory,
+                
+                // New Fields as requested
+                enrollName: submissionData.name,
+                mobile: submissionData.mobile,
+                email: submissionData.email,
+                collegeName: submissionData.collegeName || "Not Provided", // Ensure your frontend sends this!
+                title: submissionData.title || "Untitled", // Ensure your frontend sends this!
+                
+                // URLs
+                fullPaperUrl: submissionData.paperUrl || null,
+                posterUrl: submissionData.posterUrl || null,
+                
+                status: 'submitted',
+            }
+        });
 
         return { success: true, userId: user.userId };
 
     } catch (error) {
-        console.error("Error saving submission:", error);
-         if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-            // This case might happen if upsert logic somehow fails on concurrent requests,
-            // but Prisma upsert should handle it. Logging just in case.
-            console.warn(`Potential race condition or duplicate email during submission save: ${submissionData.email}`);
-             return { success: false, error: 'An account with this email already exists. Please contact support if you intended to update.' };
-        }
-        return { success: false, error: "Could not save your submission due to a database error." };
+        console.error("Submission Error:", error);
+        return { success: false, error: "Database error during submission save." };
     }
 }
 // --- End NEW Server Action ---
