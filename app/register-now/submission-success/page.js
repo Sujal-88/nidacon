@@ -23,7 +23,7 @@ export default function SubmissionSuccessPage() {
             Submission Successful!
           </h1>
           <p className="mt-6 text-lg text-gray-600">
-            Thank you for your submission. We have received your details for the NIDACON.
+            Thank you for your submission. We have received your details for the NIDACON PAPER/POSTER.
           </p>
           <div className="mt-10">
             <Link href="/">

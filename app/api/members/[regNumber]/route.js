@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request, { params }) {
     try {
-        const { regNumber } = params; // This should be 'regNumber' to match the filename
+        const { regNumber } = await params; // This should be 'regNumber' to match the filename
 
         if (!regNumber || typeof regNumber !== 'string') {
             return NextResponse.json({ error: 'Invalid Registration ID format.' }, { status: 400 });

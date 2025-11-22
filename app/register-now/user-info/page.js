@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight, Info, Receipt, Percent, CircleDollarSign, School, FileText } from 'lucide-react'; // Added Receipt, Percent, CircleDollarSign
+import { User, Mail, Phone, Home, ArrowRight, Receipt, Percent, CircleDollarSign, School, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { initiatePayment, saveSubmission } from '@/app/actions';
 
@@ -16,7 +16,6 @@ function UserInfoForm() {
     email: searchParams.get('email') || '',
     mobile: searchParams.get('mobile') || '',
     address: searchParams.get('address') || '',
-    // NEW FIELDS
     collegeName: '',
     title: '',
   });
@@ -24,15 +23,11 @@ function UserInfoForm() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [photo, setPhoto] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState('');
-
-  // --- State for calculated amounts ---
+  // Payment calculation states
   const [subtotal, setSubtotal] = useState(0);
   const [platformFee, setPlatformFee] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
 
-  // --- Calculate amounts ---
   useEffect(() => {
     const priceString = searchParams.get('price');
     const basePrice = parseFloat(priceString) || 0;
@@ -54,41 +49,6 @@ function UserInfoForm() {
     }
   };
 
-  const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5MB
-  // Handler for photo upload (keep existing)
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-
-    if (!file) {
-      setPhoto(null);
-      setPhotoPreview('');
-      setErrors(prev => ({ ...prev, photo: null }));
-      return;
-    }
-
-    // Check 1: File Size
-    if (file.size > MAX_FILE_SIZE) {
-      setErrors(prev => ({ ...prev, photo: 'Image is too large. Please upload a file under 1MB.' }));
-      setPhoto(null);
-      setPhotoPreview('');
-      return;
-    }
-
-    // Check 2: File Type
-    if (!file.type.startsWith('image/')) {
-      setErrors(prev => ({ ...prev, photo: 'Invalid file type. Please upload an image.' }));
-      setPhoto(null);
-      setPhotoPreview('');
-      return;
-    }
-
-    // Success
-    setPhoto(file);
-    setPhotoPreview(URL.createObjectURL(file));
-    if (errors.photo) setErrors(prev => ({ ...prev, photo: null }));
-  };
-
-  // Form validation (keep existing)
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Full Name is required.';
@@ -96,11 +56,8 @@ function UserInfoForm() {
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Email address is invalid.';
     if (!formData.mobile.trim()) newErrors.mobile = 'Mobile Number is required.';
     else if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
-    
-    // Address is required for everyone
     if (!formData.address.trim()) newErrors.address = 'Address is required.';
 
-    // NEW VALIDATION FOR PAPER/POSTER
     if (registrationType === 'paper-poster') {
         if (!formData.collegeName.trim()) newErrors.collegeName = 'College Name is required.';
         if (!formData.title.trim()) newErrors.title = 'Title of Paper/Poster is required.';
@@ -110,7 +67,6 @@ function UserInfoForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission (keep existing)
   const handleSubmit = async (e) => {
   e.preventDefault();
   const formElement = e.currentTarget;
@@ -120,97 +76,104 @@ function UserInfoForm() {
   setIsSubmitting(true);
   setErrors({});
 
-  // --- 1. PAPER/POSTER SUBMISSION FLOW ---
+  // --- 1. PAPER/POSTER SUBMISSION FLOW (FIXED) ---
   if (registrationType === 'paper-poster') {
-    // ... (This part looks fine, keep existing code)
     try {
-      // ... existing submission logic ...
+      const submissionData = {
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.mobile,
+        address: formData.address,
+        collegeName: formData.collegeName,
+        title: formData.title,
+        // Get these from URL params passed from the details page
+        paperCategory: searchParams.get('paperCat'),
+        posterCategory: searchParams.get('posterCat'),
+        paperUrl: searchParams.get('paperUrl'),
+        posterUrl: searchParams.get('posterUrl'),
+        abstractUrl: searchParams.get('abstractUrl'),
+      };
+
+      const result = await saveSubmission(submissionData);
+
+      if (result.success) {
+        // Redirect to success page
+        router.push('/register-now/submission-success');
+      } else {
+        alert('Submission failed: ' + result.error);
+        setIsSubmitting(false);
+      }
     } catch (error) {
-      // ... existing catch ...
+      console.error("Submission error:", error);
+      alert("An unexpected error occurred.");
       setIsSubmitting(false);
     }
-    return;
+    return; // Stop here so we don't run the payment logic below
   }
 
-  // --- 2. PAYMENT FLOW ---
-  
-  // FIX 1: Use 'totalAmount' instead of 'amount'
-  if (!totalAmount || totalAmount <= 0) {
-    alert("Error: Invalid registration amount. Cannot proceed with payment.");
-    setIsSubmitting(false);
-    return;
-  }
-
-  try { // FIX 2: Added try/catch block for safety
-    let photoUrl = '';
-    if (photo) {
-      // ... (keep your existing photo upload logic) ...
-    }
-
-    const txnid = `NIDA${Date.now()}`;
-    const memberType = searchParams.get('memberType');
-    const subCategory = searchParams.get('subCategory') || searchParams.get('workshops') || '';
-    const implantAddon = searchParams.get('implant') === 'true';
-    const banquetAddon = searchParams.get('banquet') === 'true';
-
-    let productinfoText = `NIDACON 2026 - ${registrationType}`;
-    if (registrationType === 'delegate') {
-      productinfoText += ` (${memberType === 'member' ? 'Member' : 'Non-Member'})`;
-    } else if (registrationType && registrationType.startsWith('workshop')) {
-      const workshops = searchParams.get('workshops');
-      if (workshops) productinfoText += ` Workshops: ${workshops}`;
-    }
-
-    const formDataObj = new FormData(formElement);
-    
-    // FIX 3: Use 'totalAmount' here as well
-    formDataObj.append('amount', totalAmount.toFixed(2)); 
-    
-    formDataObj.append('txnid', txnid);
-    formDataObj.append('productinfo', productinfoText);
-    formDataObj.append('registrationType', registrationType);
-    formDataObj.append('memberType', memberType || '');
-    formDataObj.append('subCategory', subCategory);
-    formDataObj.append('implant', implantAddon.toString());
-    formDataObj.append('banquet', banquetAddon.toString());
-    
-    // FIX 4: Ensure photoUrl is appended if you generated it
-    if (photoUrl) {
-       formDataObj.append('photoUrl', photoUrl);
-    }
-
-    // Server Action Call
-    const payuData = await initiatePayment(formDataObj);
-
-    if (payuData.error) {
-      alert(`Error initializing payment: ${payuData.error}`);
+    // --- 2. PAYMENT FLOW ---
+    if (!totalAmount || totalAmount <= 0) {
+      alert("Error: Invalid registration amount. Cannot proceed with payment.");
       setIsSubmitting(false);
       return;
     }
 
-    // Construct PayU Form
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://secure.payu.in/_payment';
+    try {
+      const txnid = `NIDA${Date.now()}`;
+      const memberType = searchParams.get('memberType');
+      // FIX: Check for 'workshops' param if 'subCategory' is empty
+      const subCategory = searchParams.get('subCategory') || searchParams.get('workshops') || ''; 
+      const implantAddon = searchParams.get('implant') === 'true';
+      const banquetAddon = searchParams.get('banquet') === 'true';
 
-    for (const key in payuData) {
-      if (payuData.hasOwnProperty(key) && payuData[key] !== null && payuData[key] !== undefined) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = payuData[key];
-        form.appendChild(input);
+      let productinfoText = `NIDACON 2026 - ${registrationType}`;
+      if (registrationType === 'delegate') {
+        productinfoText += ` (${memberType === 'member' ? 'Member' : 'Non-Member'})`;
+      } else if (registrationType && registrationType.startsWith('workshop')) {
+        if (subCategory) productinfoText += ` Workshops: ${subCategory}`;
       }
+
+      const formDataObj = new FormData(formElement);
+      formDataObj.append('amount', totalAmount.toFixed(2)); 
+      formDataObj.append('txnid', txnid);
+      formDataObj.append('productinfo', productinfoText);
+      formDataObj.append('registrationType', registrationType);
+      formDataObj.append('memberType', memberType || '');
+      formDataObj.append('subCategory', subCategory);
+      formDataObj.append('implant', implantAddon.toString());
+      formDataObj.append('banquet', banquetAddon.toString());
+      
+      const payuData = await initiatePayment(formDataObj);
+
+      if (payuData.error) {
+        alert(`Error initializing payment: ${payuData.error}`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://secure.payu.in/_payment';
+
+      for (const key in payuData) {
+        if (payuData.hasOwnProperty(key) && payuData[key] !== null && payuData[key] !== undefined) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = payuData[key];
+          form.appendChild(input);
+        }
+      }
+      document.body.appendChild(form);
+      form.submit();
+      
+    } catch (error) {
+      console.error("Critical Payment Error:", error);
+      alert("An unexpected error occurred. Please try again.");
+      setIsSubmitting(false);
     }
-    document.body.appendChild(form);
-    form.submit();
-    
-  } catch (error) {
-    console.error("Critical Payment Error:", error);
-    alert("An unexpected error occurred. Please try again.");
-    setIsSubmitting(false); // Resets button if crash occurs
-  }
-};
+  };
+
   const isPaymentFlow = registrationType !== 'paper-poster';
 
   return (
@@ -347,7 +310,6 @@ function UserInfoForm() {
   );
 }
 
-// Keep Suspense wrapper
 export default function UserInfoPage() {
   return (
     <Suspense fallback={<div className="flex justify-center items-center min-h-screen text-lg font-semibold text-gray-600">Loading form...</div>}>

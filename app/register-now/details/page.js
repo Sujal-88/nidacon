@@ -12,11 +12,61 @@ import MembershipPopup from '@/components/MembershipPopup'; // Import Membership
 // --- Data (workshopOptions, presentationCategories remain the same) ---
 const workshopOptions = [
   // ... (keep existing workshop options)
-  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 1.5 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 1.3 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1.2 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1.6 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
+  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 1500 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 1300 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1600 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
 ];
 const presentationCategories = [
   // ... (keep existing presentation categories)
   { id: 'cat1', name: 'Prosthodontics and Crown & Bridge' }, { id: 'cat2', name: 'Conservative Dentistry and Endodontics' }, { id: 'cat3', name: 'Orthodontics & Dentofacial Orthopedics' }, { id: 'cat4', name: 'Periodontology and Implantology' }, { id: 'cat5', name: 'Oral & Maxillofacial Surgery' }, { id: 'cat6', name: 'Pedodontics and Preventive Dentistry' }, { id: 'cat7', name: 'Oral Medicine and Radiology' }, { id: 'cat8', name: 'Public Health Dentistry' }, { id: 'cat9', name: 'Oral Pathology & Microbiology' },
+];
+
+const NON_MEMBER_OPTIONS = [
+  { 
+    id: 'nm_nidacon_only', 
+    label: 'Registration for NIDACON Only', 
+    price: 3000, 
+    breakdown: '₹3000' 
+  },
+  { 
+    id: 'nm_new_membership', 
+    label: 'Registration + New Membership', 
+    price: 3750, 
+    breakdown: '₹2000 + ₹1750' 
+  },
+  { 
+    id: 'nm_student_membership', 
+    label: 'Registration + Student Membership', 
+    price: 2350, 
+    breakdown: '₹2000 + ₹350',
+    note: '(Valid for UG students only. Not for PG students)' 
+  },
+];
+
+const MEMBER_OPTIONS = [
+  { 
+    id: 'm_renewal', 
+    label: 'Registration + Renewal of Membership', 
+    price: 3450, 
+    breakdown: '₹2000 + ₹1450' 
+  },
+  { 
+    id: 'm_student', 
+    label: 'Registration + Student Membership', 
+    price: 2350, 
+    breakdown: '₹2000 + ₹350',
+    note: '(Valid for UG students only. Not for PG students)' 
+  },
+  { 
+    id: 'm_life', 
+    label: 'Registration for Life Member', 
+    price: 2000, 
+    breakdown: '₹2000' 
+  },
+  { 
+    id: 'm_outside', 
+    label: 'Registration for Member Outside Nagpur', 
+    price: 2000, 
+    breakdown: '₹2000' 
+  },
 ];
 
 // --- Features Lists ---
@@ -231,7 +281,7 @@ function PaperPosterRegistrationForm() {
     router.push(`/register-now/user-info?${queryParams.toString()}`);
   };
 
-  const isPaperDataComplete = !selection.paper || (paperCategory && abstractFile && paperFile);
+  const isPaperDataComplete = !selection.paper || (paperCategory && paperFile);
   const isPosterDataComplete = !selection.poster || (posterCategory && posterFile);
   const isSelectionMade = selection.paper || selection.poster;
   // Check form validity AND if registration is open
@@ -657,18 +707,33 @@ function WorkshopRegistrationForm() {
 
 function DelegateRegistrationForm({ registrationType }) {
   const router = useRouter();
-  const [isMember, setIsMember] = useState(null); // Keep null to force selection
+  const [isMember, setIsMember] = useState(null); 
+  const [selectedOptionId, setSelectedOptionId] = useState(null); // New state for specific option
   const [addOns, setAddOns] = useState({
     implant: false,
     banquet: false,
   });
 
+  // Reset specific selection if user switches between Member/Non-Member tabs
+  useEffect(() => {
+    setSelectedOptionId(null);
+  }, [isMember]);
+
+  // Helper to get the full object of the currently selected option
+  const getSelectedOption = () => {
+    if (isMember === null || !selectedOptionId) return null;
+    const options = isMember ? MEMBER_OPTIONS : NON_MEMBER_OPTIONS;
+    return options.find(opt => opt.id === selectedOptionId);
+  };
+
   const calculateTotal = () => {
-    if (isMember === null) return 0;
-    let basePrice = isMember ? 2000 : 15;
-    if (addOns.implant) basePrice += 2200;
-    if (addOns.banquet) basePrice += 2000;
-    return basePrice;
+    const option = getSelectedOption();
+    if (!option) return 0;
+
+    let total = option.price;
+    if (addOns.implant) total += 2200;
+    if (addOns.banquet) total += 2000;
+    return total;
   };
 
   const totalAmount = calculateTotal();
@@ -679,54 +744,39 @@ function DelegateRegistrationForm({ registrationType }) {
   };
 
   const handleProceed = () => {
-    if (isMember === null) return;
+    const option = getSelectedOption();
+    if (!option) return;
+
+    // We pass the specific label as 'subCategory' so you know exactly what they bought
     const queryParams = new URLSearchParams({
       type: registrationType,
       memberType: isMember ? 'member' : 'non-member',
+      subCategory: option.label, 
       price: totalAmount.toString(),
     });
+
     if (addOns.implant) queryParams.set('implant', 'true');
     if (addOns.banquet) queryParams.set('banquet', 'true');
+    
     router.push(`/register-now/user-info?${queryParams.toString()}`);
   }
 
   const displayType = registrationType.charAt(0).toUpperCase() + registrationType.slice(1);
-  const isProceedDisabled = isMember === null; // Logic remains correct
+  const isProceedDisabled = !selectedOptionId; 
 
-  // --- Determine current features list ---
-  let currentFeatures = [];
-  if (isMember !== null) {
-    currentFeatures = isMember ? [...baseMemberFeatures] : [...baseNonMemberFeatures]; // Create copies
+  // Get current options list based on tab
+  const currentOptions = isMember === null ? [] : (isMember ? MEMBER_OPTIONS : NON_MEMBER_OPTIONS);
 
-    // Add add-on features if selected
-    if (addOns.implant) {
-      // Find index of "Registration to main event..." to insert before it, or add to start
-      const insertIndex = currentFeatures.findIndex(f => f.startsWith("Registration to main event"));
-      if (insertIndex !== -1) {
-        currentFeatures.splice(insertIndex, 0, implantFeature);
-      } else {
-        currentFeatures.unshift(implantFeature);
-      }
-    }
-    if (addOns.banquet) {
-      // Find index of "NIDA Master Class..." or "Registration to main event..."
-      const insertIndex = currentFeatures.findIndex(f => f === "NIDA Master Class on 9th January" || f.startsWith("Registration to main event"));
-      if (insertIndex !== -1) {
-        currentFeatures.splice(insertIndex, 0, banquetFeature);
-      } else {
-        currentFeatures.unshift(banquetFeature);
-      }
-    }
-  }
-  // --- End determine current features list ---
-
+  // Determine features list for display
+  let currentFeatures = isMember ? [...baseMemberFeatures] : [...baseNonMemberFeatures];
+  if (addOns.implant) currentFeatures.unshift(implantFeature);
+  if (addOns.banquet) currentFeatures.unshift(banquetFeature);
 
   return (
     <main className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-24 sm:py-32">
         <div className="max-w-4xl mx-auto">
           <div className="text-center">
-            {/* ADDED: NIDACON Logo */}
             <Image
               src="/NIDACON/nida_logo.png"
               alt="NIDACON Logo"
@@ -735,15 +785,17 @@ function DelegateRegistrationForm({ registrationType }) {
               className="mx-auto mb-6"
             />
             <p className="text-base font-semibold text-purple-600">Step 2 of 3</p>
-            <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Delegate Registration Options</h1>
-            <p className="mt-6 text-lg text-gray-600">You&apos;ve selected: <span className="font-bold text-purple-700">{displayType} Registration</span>.<br />Choose your status and optional add-ons below.</p>
+            <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Delegate Registration</h1>
+            <p className="mt-6 text-lg text-gray-600">
+              Choose your category and optional add-ons below.
+            </p>
             <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
               <AlertTriangle className="w-5 h-5" />
-              <span className="font-semibold">Early Bird Registration ends 25th November! Prices will increase after this date.</span>
+              <span className="font-semibold">Early Bird Registration ends 25th November!</span>
             </div>
           </div>
+
           <div className="mt-12">
-            {/* Membership Popup Integration */}
             <div className="flex justify-center mb-8 px-4">
               <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black' />
             </div>
@@ -751,50 +803,71 @@ function DelegateRegistrationForm({ registrationType }) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
               <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8 h-full flex flex-col">
 
-                {/* === UPDATED: Member/Non-Member Selection (Segmented Control) === */}
+                {/* 1. Member / Non-Member Toggle */}
                 <div>
                   <label className="block text-base font-medium text-gray-800 mb-4 text-center">1. Select Your Status</label>
                   <div className="relative flex w-full max-w-sm mx-auto p-1 bg-gray-200 rounded-lg">
                     <button
                       type="button"
                       onClick={() => setIsMember(false)}
-                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${isMember === false ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'
-                        }`}
+                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${isMember === false ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'}`}
                     >
                       Non-Member
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsMember(true)}
-                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${isMember === true ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'
-                        }`}
+                      className={`relative w-1/2 rounded-md py-3 text-sm font-semibold transition-colors duration-300 ${isMember === true ? 'bg-white text-purple-700 shadow-md' : 'bg-transparent text-gray-700 hover:text-gray-900'}`}
                     >
                       IDA Member
                     </button>
                   </div>
-
-                  {/* Show prices based on selection */}
-                  {isMember !== null && (
-                    <div className="text-center mt-4 animate-fade-in">
-                      <p className="text-3xl font-bold text-purple-700">
-                        {isMember ? '₹2000' : '₹3000'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {isMember ? '(Member Base Price - Early Bird)' : '(Non-Member Base Price - Early Bird)'}
-                      </p>
-                    </div>
-                  )}
                 </div>
-                {/* === END UPDATED SECTION === */}
 
+                {/* 2. Specific Registration Options */}
+                {isMember !== null && (
+                  <div className="animate-fade-in">
+                    <label className="block text-base font-medium text-gray-800 mb-4">2. Select Category</label>
+                    <div className="space-y-3">
+                      {currentOptions.map((option) => (
+                        <div 
+                          key={option.id}
+                          onClick={() => setSelectedOptionId(option.id)}
+                          className={`relative flex flex-col p-4 border rounded-xl cursor-pointer transition-all duration-200 ${
+                            selectedOptionId === option.id 
+                              ? 'border-purple-600 bg-purple-50 ring-1 ring-purple-600' 
+                              : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start w-full">
+                            <div className="flex items-center">
+                              <div className={`flex items-center justify-center w-5 h-5 rounded-full border ${selectedOptionId === option.id ? 'border-purple-600 bg-purple-600' : 'border-gray-400'}`}>
+                                {selectedOptionId === option.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                              </div>
+                              <span className={`ml-3 font-medium ${selectedOptionId === option.id ? 'text-purple-900' : 'text-gray-900'}`}>
+                                {option.label}
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <span className="block font-bold text-gray-900">₹{option.price}</span>
+                              <span className="block text-xs text-gray-500">({option.breakdown})</span>
+                            </div>
+                          </div>
+                          {option.note && (
+                            <p className="mt-1 ml-8 text-xs text-red-500 font-medium">{option.note}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                {/* Add-ons Section */}
-                {/* <div className={`pt-8 border-t border-gray-200 ${isMember === null ? 'opacity-50 pointer-events-none' : ''}`}>
+                {/* 3. Add-ons Section */}
+                {/* <div className={`pt-6 border-t border-gray-200 ${!selectedOptionId ? 'opacity-50 pointer-events-none' : ''}`}>
                   <fieldset>
-                    <legend className="text-base font-medium text-gray-800">2. Optional Add-ons {isMember === null ? '(Select Status First)' : ''}</legend>
+                    <legend className="text-base font-medium text-gray-800">3. Optional Add-ons</legend>
                     <div className="mt-4 space-y-4">
-
-                      <div className="relative flex items-start p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className={`relative flex items-start p-4 border rounded-lg transition-colors ${addOns.implant ? 'bg-green-50 border-green-500' : 'hover:bg-gray-50'}`}>
                         <div className="flex h-6 items-center">
                           <input
                             id="implant"
@@ -812,8 +885,8 @@ function DelegateRegistrationForm({ registrationType }) {
                         </div>
                         <p className="ml-4 font-semibold text-gray-800">+ ₹2200</p>
                       </div>
-                      // Banquet Checkout
-                      <div className="relative flex items-start p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+
+                      <div className={`relative flex items-start p-4 border rounded-lg transition-colors ${addOns.banquet ? 'bg-green-50 border-green-500' : 'hover:bg-gray-50'}`}>
                         <div className="flex h-6 items-center">
                           <input
                             id="banquet"
@@ -821,7 +894,7 @@ function DelegateRegistrationForm({ registrationType }) {
                             type="checkbox"
                             checked={addOns.banquet}
                             onChange={handleAddOnChange}
-                            className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" // Red color for banquet
+                            className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
                           />
                         </div>
                         <div className="ml-3 text-sm leading-6 flex-grow">
@@ -836,39 +909,32 @@ function DelegateRegistrationForm({ registrationType }) {
                 </div> */}
 
                 {/* Total Amount */}
-                <div className="mt-auto pt-8 border-t border-gray-200">
+                <div className="mt-auto pt-6 border-t border-gray-200">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-medium text-gray-900">Total Amount:</span>
-                    <span className="text-2xl font-bold text-purple-700">₹{totalAmount.toLocaleString('en-IN')}</span>
+                    <span className="text-3xl font-bold text-purple-700">₹{totalAmount.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
               </div>
 
-              {/* --- Right Column: What's Included --- */}
-              <div className="bg-purple-50 p-8 rounded-2xl border border-purple-200 h-full">
+              {/* Right Column: What's Included */}
+              <div className="bg-purple-50 p-8 rounded-2xl border border-purple-200 h-full sticky top-24">
                 <h3 className="text-lg font-semibold text-gray-900">What&apos;s Included</h3>
                 {isMember === null ? (
                   <p className="mt-4 text-gray-500">Select Member or Non-Member status to see included features.</p>
                 ) : (
                   <ul className="mt-5 space-y-3 text-gray-700">
                     {currentFeatures.map((feature, index) => {
-                      // Define colors based on feature text
-                      let textColorClass = "text-gray-700"; // Default
-                      if (feature === implantFeature && addOns.implant) {
-                        textColorClass = "text-green-700 font-semibold"; // Green for implant
-                      } else if (feature === banquetFeature && addOns.banquet) {
-                        textColorClass = "text-green-700 font-semibold"; // Red for banquet
-                      }
+                      let textColorClass = "text-gray-700";
+                      if (feature === implantFeature && addOns.implant) textColorClass = "text-green-700 font-semibold";
+                      else if (feature === banquetFeature && addOns.banquet) textColorClass = "text-green-700 font-semibold";
 
                       return (
                         <li key={index} className="flex items-start">
-                          <svg className={`flex-shrink-0 w-5 h-5 ${feature === implantFeature && addOns.implant ? 'text-green-500' :
-                            feature === banquetFeature && addOns.banquet ? 'text-green-500' :
-                              'text-purple-500' // Default purple check
-                            } mr-2 mt-0.5`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <svg className={`flex-shrink-0 w-5 h-5 ${textColorClass === 'text-gray-700' ? 'text-purple-500' : 'text-green-500'} mr-2 mt-0.5`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
-                          <span className={textColorClass}>{feature}</span> {/* Apply conditional text color */}
+                          <span className={textColorClass}>{feature}</span>
                         </li>
                       );
                     })}
@@ -889,7 +955,7 @@ function DelegateRegistrationForm({ registrationType }) {
               </button>
               {isProceedDisabled && (
                 <p className="mt-2 text-xs text-center text-gray-500">
-                  Please select Member or Non-Member status first.
+                  Please select a status and a category to proceed.
                 </p>
               )}
             </div>
