@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight, Info, Receipt, Percent, CircleDollarSign } from 'lucide-react'; // Added Receipt, Percent, CircleDollarSign
+import { User, Mail, Phone, Home, Image as ImageIcon, ArrowRight, Info, Receipt, Percent, CircleDollarSign, School, FileText } from 'lucide-react'; // Added Receipt, Percent, CircleDollarSign
 import Image from 'next/image';
 import { initiatePayment, saveSubmission } from '@/app/actions';
 

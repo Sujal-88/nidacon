@@ -8,6 +8,7 @@ import {
     Hash, Award, ShieldCheck, ClipboardList, Briefcase, Download, Utensils, GraduationCap
 } from 'lucide-react';
 import React from 'react';
+import Link from 'next/link';
 
 async function getUser() {
     const sessionId = cookies().get('session')?.value;
