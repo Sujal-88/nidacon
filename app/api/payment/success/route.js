@@ -8,7 +8,7 @@
 
 // export async function POST(request) {
 //   let txnid = 'unknown';
-  
+
 //   try {
 //     const formData = await request.formData();
 //     const payuResponse = Object.fromEntries(formData);
@@ -42,7 +42,7 @@
 //     // Check if payment was successful
 //     if (payuResponse.status !== 'success') {
 //       console.log(`❌ Payment status NOT success: ${payuResponse.status}`);
-      
+
 //       // Update DB to reflect failure
 //       const registrationType = payuResponse.udf2;
 //       try {
@@ -98,7 +98,7 @@
 //     // === HANDLE SPORTS REGISTRATION ===
 //     if (registrationType === 'sports') {
 //       console.log("Processing SPORTS registration...");
-      
+
 //       try {
 //         const sportRegistration = await prisma.sportRegistration.findUnique({ 
 //           where: { transactionId: txnid } 
@@ -118,7 +118,7 @@
 //         } else if (sportRegistration.paymentStatus === 'pending') {
 //           console.log(`Updating sports registration to SUCCESS...`);
 //           const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
-          
+
 //           const updatedRegistration = await prisma.sportRegistration.update({
 //             where: { transactionId: txnid },
 //             data: {
@@ -127,7 +127,7 @@
 //               userId: sportsUserId,
 //             },
 //           });
-          
+
 //           console.log(`✓ Sports registration updated: ${updatedRegistration.email}, UserID: ${sportsUserId}`);
 //           await sendSportsRegistrationEmail(updatedRegistration, payuResponse);
 //           console.log(`✓ Sports email sent to ${updatedRegistration.email}`);
@@ -152,7 +152,7 @@
 //       if (existingTransaction) {
 //         console.log(`⚠️ DUPLICATE webhook detected for txnid: ${txnid}`);
 //         console.log(`   Existing user: ${existingTransaction.email}, Status: ${existingTransaction.paymentStatus}`);
-        
+
 //         // Resend email if it might have failed previously
 //         try {
 //           if (registrationType === 'membership') {
@@ -164,7 +164,7 @@
 //         } catch (emailError) {
 //           console.error("Email re-send failed:", emailError);
 //         }
-        
+
 //         return NextResponse.redirect(successUrl, { status: 303 });
 //       }
 
@@ -200,14 +200,14 @@
 //       if (existingUser) {
 //         // User exists - UPDATE scenario (e.g., member buying delegate pass)
 //         console.log(`User exists: ${payuResponse.email}, Current UserID: ${existingUser.userId}`);
-        
+
 //         // Determine final userId (upgrade from TEMP- if needed)
 //         const finalUserId = existingUser.userId.startsWith('TEMP-') 
 //           ? await generateUserId() 
 //           : existingUser.userId;
 
 //         console.log(`Updating existing user with new transaction...`);
-        
+
 //         finalUser = await prisma.user.update({
 //           where: { email: payuResponse.email },
 //           data: {
@@ -217,11 +217,11 @@
 //         });
 
 //         console.log(`✓ User UPDATED successfully: ${finalUser.email}, UserID: ${finalUser.userId}`);
-        
+
 //       } else {
 //         // New user - CREATE scenario
 //         console.log(`New user registration for: ${payuResponse.email}`);
-        
+
 //         const newUserId = await generateUserId();
 //         console.log(`Generated new UserID: ${newUserId}`);
 
@@ -238,13 +238,13 @@
 
 //       // STEP 4: Send appropriate email
 //       console.log(`Sending ${registrationType} email to ${finalUser.email}...`);
-      
+
 //       if (registrationType === 'membership') {
 //         await sendMembershipEmail(finalUser, payuResponse);
 //       } else {
 //         await sendRegistrationEmail(finalUser, payuResponse);
 //       }
-      
+
 //       console.log(`✓ Email sent successfully to ${finalUser.email}`);
 
 //     } catch (dbError) {
@@ -265,7 +265,7 @@
 //     console.error("Transaction ID:", txnid);
 //     console.error("Error:", error);
 //     console.error("Stack:", error.stack);
-    
+
 //     const errorUrl = new URL('/payment/failure', request.url);
 //     errorUrl.searchParams.set('txnid', txnid);
 //     errorUrl.searchParams.set('error_Message', 'Internal server error. Please contact support with transaction ID.');
@@ -359,7 +359,7 @@
 //       }
 //       // --- Handle OTHER Registrations (Delegate, Workshop, Membership) ---
 //       else {
-        
+
 //         // --- START OF FIX ---
 
 //         // Parse Add-ons first (you're already doing this, just move it up)
@@ -405,7 +405,7 @@
 //           // Transaction already processed - this is a duplicate webhook
 //           console.log(`Duplicate webhook detected for txnid: ${txnid}. User: ${existingTransaction.email}. Skipping update.`);
 //           const user = existingTransaction;
-          
+
 //           // Send email anyway (in case previous attempt failed)
 //           if (registrationType === 'membership') {
 //             await sendMembershipEmail(user, payuResponse);
@@ -423,7 +423,7 @@
 //             // User exists (pending membership scenario). Use their ID, or upgrade from TEMP-
 //             finalUserId = existingUser.userId.startsWith('TEMP-') ? await generateUserId() : existingUser.userId;
 //             console.log(`Existing user found by email. Updating record for: ${payuResponse.email}, UserID: ${finalUserId}`);
-            
+
 //             // Update existing user with payment details
 //             const user = await prisma.user.update({
 //               where: { email: payuResponse.email },
@@ -464,7 +464,7 @@
 //             }
 //           }
 //         }
-        
+
 //         // --- END OF FIX ---
 //       }
 
@@ -520,21 +520,21 @@ import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
 import { prisma } from '@/lib/prisma';
 import { generateUserId } from '@/lib/userId';
-import { 
-  sendRegistrationEmail, 
-  sendSportsRegistrationEmail, 
+import {
+  sendRegistrationEmail,
+  sendSportsRegistrationEmail,
   sendMembershipEmail,
-  sendWorkshopEmail 
+  sendWorkshopEmail
 } from '@/lib/email';
 
 export async function POST(request) {
   let txnid = 'unknown';
-  
+
   try {
     const formData = await request.formData();
     const payuResponse = Object.fromEntries(formData);
     txnid = payuResponse.txnid || 'unknown-txn';
-    
+
     // Clean the email to prevent "Black Entry" duplicates
     const responseEmail = (payuResponse.email || '').trim();
     const registrationType = payuResponse.udf2;
@@ -567,10 +567,10 @@ export async function POST(request) {
         const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
         const updated = await prisma.sportRegistration.update({
           where: { transactionId: txnid },
-          data: { 
-            paymentStatus: 'success', 
-            payuId: payuResponse.mihpayid, 
-            userId: sportsUserId 
+          data: {
+            paymentStatus: 'success',
+            payuId: payuResponse.mihpayid,
+            userId: sportsUserId
           },
         });
         await sendSportsRegistrationEmail(updated, payuResponse);
@@ -619,7 +619,7 @@ export async function POST(request) {
             userId: user.id
           }
         });
-                
+
         await sendMembershipEmail({ ...user, memberId: membership.memberId }, payuResponse);
       } else {
         console.error("CRITICAL: Membership record not found for txnid:", txnid);
@@ -629,10 +629,11 @@ export async function POST(request) {
     // --- CASE B: WORKSHOP ---
     else if (registrationType && registrationType.startsWith('workshop')) {
       console.log("Processing Workshop Entry...");
-      
+
       // udf4 contains comma-separated workshop names (from actions.js)
-      const workshopNames = payuResponse.udf4 ? payuResponse.udf4.split(',').map(s => s.trim()) : [];
-      
+      const rawWorkshops = payuResponse.udf4 || '';
+      const workshopNames = rawWorkshops ? rawWorkshops.split(',').map(s => s.trim()).filter(s => s !== '') : [];
+
       // Create a NEW WorkshopRegistration entry
       await prisma.workshopRegistration.create({
         data: {
@@ -651,7 +652,7 @@ export async function POST(request) {
     // --- CASE C: DELEGATE (Legacy / Main Conference) ---
     else if (registrationType === 'delegate') {
       console.log("Processing Delegate Registration...");
-      
+
       // Upgrade User ID from TEMP to NIDAxxxx
       let finalUserId = user.userId;
       if (user.userId.startsWith('TEMP')) {

@@ -149,7 +149,7 @@ function UserInfoForm() {
 
     const txnid = `NIDA${Date.now()}`;
     const memberType = searchParams.get('memberType');
-    const subCategory = searchParams.get('subCategory') || '';
+    const subCategory = searchParams.get('subCategory') || searchParams.get('workshops') || '';
     const implantAddon = searchParams.get('implant') === 'true';
     const banquetAddon = searchParams.get('banquet') === 'true';
 
