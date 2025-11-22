@@ -65,10 +65,10 @@ export default function RegisterPage() {
     const openDate = new Date('2025-11-25T00:00:00');
     const currentDate = new Date();
     // SETTING TO TRUE FOR TESTING - REMOVE IN PRODUCTION
-    setIsSpecialRegistrationOpen(true); 
+    // setIsSpecialRegistrationOpen(true); 
     
     // PRODUCTION LOGIC
-    // setIsSpecialRegistrationOpen(currentDate >= openDate);
+    setIsSpecialRegistrationOpen(currentDate >= openDate);
   }, []);
 
   return (
