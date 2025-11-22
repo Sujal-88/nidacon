@@ -364,7 +364,6 @@ function PaperPosterRegistrationForm() {
                   </div>
                 </fieldset>
                 {/* File Inputs */}
-                <FileInput label="Upload your abstract" file={abstractFile} setFile={setAbstractFile} id="abstract-file" onFileError={setFetchError} />
                 <FileInput label="Upload your full paper" file={paperFile} setFile={setPaperFile} id="paper-file" onFileError={setFetchError} />
               </div>
             )}
