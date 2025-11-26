@@ -42,6 +42,13 @@ const NON_MEMBER_OPTIONS = [
 ];
 
 const MEMBER_OPTIONS = [
+  
+  { 
+    id: 'm_new_membership', 
+    label: 'Registration + New Membership', 
+    price: 3750, 
+    breakdown: '₹2000 + ₹1750' 
+  },
   { 
     id: 'm_renewal', 
     label: 'Registration + Renewal of Membership', 
