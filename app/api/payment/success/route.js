@@ -212,9 +212,11 @@ export async function POST(request) {
     const formData = await request.formData();
     const payuResponse = Object.fromEntries(formData);
     txnid = payuResponse.txnid || 'unknown-txn';
+    const registrationType = payuResponse.udf2;
+    const subCategory = payuResponse.udf4 || '';
 
     console.log(`\n=== 🔔 PayU Webhook: ${txnid} ===`);
-    console.log(`Type: ${payuResponse.udf2} | Email: ${payuResponse.email}`);
+    console.log(`Type: ${registrationType} | Status: ${payuResponse.status}`);
 
     // STEP 1: Security Check
     const merchantSalt = process.env.PAYU_MERCHANT_SALT;
@@ -225,34 +227,31 @@ export async function POST(request) {
 
     // STEP 2: Status Check
     if (payuResponse.status !== 'success') {
-      console.log(`❌ [${txnid}] Status: ${payuResponse.status}`);
       await updatePaymentFailure(txnid, payuResponse);
       return redirectWithFailure(request, txnid, payuResponse.error_Message || 'Payment Failed');
     }
 
-    // STEP 3: Smart Idempotency Check (Optimized)
-    // Only check the table relevant to the registration type
-    const isDuplicate = await checkDuplicateSmart(txnid, payuResponse.udf2);
-    if (isDuplicate) {
-      console.log(`⚠️ [${txnid}] Already processed. Skipping.`);
-      return redirectToSuccess(request, txnid, payuResponse.udf2);
-    }
-
-    // STEP 4: Route Processing
-    const registrationType = payuResponse.udf2;
-    const subCategory = payuResponse.udf4 || '';
-
-    // --- SPORTS ---
+    // STEP 3: Route Processing based on Type
+    
+    // --- A. SPORTS REGISTRATION ---
     if (registrationType === 'sports') {
       await processSportsRegistration(txnid, payuResponse);
       return redirectToSuccess(request, txnid, registrationType);
     }
 
-    // --- USER IDENTITY (Delegate/Member/Workshop) ---
-    // This "Safety Net" fixes the missing name issue by creating a user if missing
-    const user = await getOrCreateUser(payuResponse);
-    
-    // --- SPECIFIC TYPES ---
+    // --- B. MAIN EVENT / MEMBERSHIP / WORKSHOP ---
+    // 1. FIND USER: Try by Transaction ID first (The Golden Key)
+    let user = await prisma.user.findUnique({
+      where: { transactionId: txnid }
+    });
+
+    // 2. FALLBACK: If not found by TxnID (e.g., Membership/Workshop might store txn elsewhere), try Email
+    if (!user) {
+        console.log(`⚠️ [${txnid}] User not found by TxnID, falling back to Email...`);
+        user = await getOrCreateUser(payuResponse);
+    }
+
+    // 3. Process Specific Logic
     if (registrationType === 'membership') {
       await processMembershipRegistration(txnid, payuResponse, user, subCategory);
     } 
@@ -260,6 +259,7 @@ export async function POST(request) {
       await processWorkshopRegistration(txnid, payuResponse, user, subCategory);
     } 
     else if (registrationType === 'delegate') {
+      // For delegates, the User table IS the registration table
       await processDelegateRegistration(txnid, payuResponse, user, subCategory);
     }
 
@@ -273,93 +273,89 @@ export async function POST(request) {
 }
 
 // ============================================
-// OPTIMIZED HELPERS
+// HELPER FUNCTIONS
 // ============================================
 
-/**
- * Smart check that only queries the relevant table
- */
-async function checkDuplicateSmart(txnid, type) {
-  if (type === 'sports') {
-    const txn = await prisma.sportRegistration.findUnique({ where: { transactionId: txnid } });
-    return txn && txn.paymentStatus === 'success';
+async function processDelegateRegistration(txnid, payuResponse, user, subCategory) {
+  // 1. Upgrade ID: If user still has a TEMP id, generate a real NIDACON ID
+  let finalUserId = user.userId;
+  if (user.userId.startsWith('TEMP')) {
+    finalUserId = await generateUserId();
   }
-  if (type === 'membership') {
-    const txn = await prisma.membership.findUnique({ where: { transactionId: txnid } });
-    return txn && txn.paymentStatus === 'success';
-  }
-  if (type && type.startsWith('workshop')) {
-    // Workshops might rely on User table or their own table depending on implementation
-    // Checking both to be safe, but optimizing order
-    const wsTxn = await prisma.workshopRegistration.findFirst({ where: { transactionId: txnid } });
-    return wsTxn && wsTxn.paymentStatus === 'success';
-  }
-  // Default Delegate (User Table)
-  const userTxn = await prisma.user.findUnique({ where: { transactionId: txnid } });
-  return userTxn && userTxn.paymentStatus === 'success';
+
+  // 2. Parse Add-ons
+  const purchasedImplant = payuResponse.udf5?.includes('implant:true') || false;
+  const purchasedBanquet = payuResponse.udf5?.includes('banquet:true') || false;
+
+  // 3. UPDATE User Record (The critical fix)
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      userId: finalUserId,
+      registrationType: 'delegate',
+      transactionId: txnid, // Ensure this is set
+      payuId: payuResponse.mihpayid,
+      paymentAmount: parseFloat(payuResponse.amount),
+      paymentStatus: 'success',
+      memberType: payuResponse.udf3, // 'member' or 'non-member'
+      subCategory: subCategory,
+      purchasedImplantAddon: purchasedImplant,
+      purchasedBanquetAddon: purchasedBanquet,
+      // Update contact info from PayU to be sure
+      name: payuResponse.firstname, 
+      mobile: payuResponse.phone,
+      address: payuResponse.udf1
+    }
+  });
+
+  // 4. Send Email
+  await sendRegistrationEmail(updatedUser, {
+    txnid: txnid,
+    amount: payuResponse.amount,
+    status: 'success'
+  });
 }
 
-/**
- * Robust User Retrieval/Creation
- * Handles race conditions using try/catch on create
- */
+// Robust User Retrieval (Email Fallback)
 async function getOrCreateUser(payuResponse) {
-  const email = payuResponse.email.trim().toLowerCase();
+  const email = (payuResponse.email || '').trim().toLowerCase();
   
-  // 1. Try to find existing
+  // Try find existing
   let user = await prisma.user.findFirst({
     where: { email: { equals: email, mode: 'insensitive' } }
   });
 
   if (user) return user;
 
-  // 2. If not found, try to create (Safety Net)
-  console.log(`📝 Creating missing user from Webhook data: ${email}`);
-  const tempId = `TEMP-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-
-  try {
-    user = await prisma.user.create({
-      data: {
-        email: email,
-        name: payuResponse.firstname || 'Unknown',
-        mobile: payuResponse.phone || '',
-        address: payuResponse.udf1 || '',
-        userId: tempId,
-        paymentStatus: 'pending'
-      }
-    });
-  } catch (error) {
-    // If create fails (likely race condition where user was created ms ago), find it again
-    console.log(`⚠️ User creation race condition, fetching...`);
-    user = await prisma.user.findFirst({
-      where: { email: { equals: email, mode: 'insensitive' } }
-    });
-  }
-
-  if (!user) throw new Error("Failed to get or create user identity");
-  return user;
+  // Create new if absolutely nothing exists (Safety Net)
+  console.log(`📝 Creating NEW user from Webhook: ${email}`);
+  return await prisma.user.create({
+    data: {
+      email: email,
+      name: payuResponse.firstname || 'Unknown',
+      mobile: payuResponse.phone || '',
+      address: payuResponse.udf1 || '',
+      userId: `TEMP-${Date.now()}`, // Temp ID until confirmed
+      paymentStatus: 'pending'
+    }
+  });
 }
 
+// ... (Keep your existing helper functions for Sports, Membership, Workshop, and Redirects) ...
+// COPY THESE FROM YOUR PREVIOUS FILE IF NEEDED:
+// processSportsRegistration, processMembershipRegistration, processWorkshopRegistration
+// updatePaymentFailure, redirectToSuccess, redirectWithFailure
+
 async function processSportsRegistration(txnid, payuResponse) {
-  const sportReg = await prisma.sportRegistration.findUnique({ 
-    where: { transactionId: txnid } 
-  });
-
-  if (!sportReg) {
-    // If sports record is missing, we cannot easily reconstruct it due to missing fields (age, etc)
-    console.error(`❌ Sports Record Missing for ${txnid}`);
-    return; 
-  }
-
-  if (sportReg.paymentStatus !== 'success') {
-    const sportsUserId = `NIDASPORTZ-${String(Date.now()).slice(-6)}`;
+  const sportReg = await prisma.sportRegistration.findUnique({ where: { transactionId: txnid } });
+  if (sportReg && sportReg.paymentStatus !== 'success') {
     const updated = await prisma.sportRegistration.update({
       where: { transactionId: txnid },
       data: {
         paymentStatus: 'success',
         payuId: payuResponse.mihpayid,
-        userId: sportsUserId,
-        email: payuResponse.email.trim().toLowerCase()
+        userId: `NIDASPORTZ-${String(Date.now()).slice(-6)}`,
+        email: payuResponse.email
       }
     });
     await sendSportsRegistrationEmail(updated, payuResponse);
@@ -367,38 +363,23 @@ async function processSportsRegistration(txnid, payuResponse) {
 }
 
 async function processMembershipRegistration(txnid, payuResponse, user, subCategory) {
-  const membership = await prisma.membership.findUnique({ 
-    where: { transactionId: txnid } 
-  });
-
-  if (membership && membership.paymentStatus !== 'success') {
+  const membership = await prisma.membership.findUnique({ where: { transactionId: txnid } });
+  if (membership) {
     await prisma.membership.update({
       where: { transactionId: txnid },
-      data: {
-        paymentStatus: 'success',
-        payuId: payuResponse.mihpayid,
-        amount: parseFloat(payuResponse.amount),
-        userId: user.id
-      }
+      data: { paymentStatus: 'success', payuId: payuResponse.mihpayid, amount: parseFloat(payuResponse.amount), userId: user.id }
     });
-
+    // Update User Flag
     await prisma.user.update({
       where: { id: user.id },
-      data: {
-        isMember: true,
-        memberId: membership.memberId,
-        subCategory: subCategory
-      }
+      data: { isMember: true, memberId: membership.memberId }
     });
-    
     await sendMembershipEmail({ ...user, memberId: membership.memberId }, payuResponse);
   }
 }
 
 async function processWorkshopRegistration(txnid, payuResponse, user, subCategory) {
   const workshopNames = subCategory ? subCategory.split(',').map(s => s.trim()).filter(Boolean) : [];
-  
-  // Create the registration record
   await prisma.workshopRegistration.create({
     data: {
       userId: user.id,
@@ -409,60 +390,15 @@ async function processWorkshopRegistration(txnid, payuResponse, user, subCategor
       paymentStatus: 'success'
     }
   });
-  
   await sendWorkshopEmail(user, payuResponse);
 }
 
-async function processDelegateRegistration(txnid, payuResponse, user, subCategory) {
-  // Upgrade ID if needed
-  let finalUserId = user.userId;
-  if (user.userId.startsWith('TEMP')) {
-    finalUserId = await generateUserId();
-  }
-
-  let purchasedImplant = false;
-  let purchasedBanquet = false;
-  if (payuResponse.udf5) {
-    purchasedImplant = payuResponse.udf5.includes('implant:true');
-    purchasedBanquet = payuResponse.udf5.includes('banquet:true');
-  }
-
-  // Force update user details from PayU to ensure accuracy
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      userId: finalUserId,
-      name: payuResponse.firstname || user.name,
-      mobile: payuResponse.phone || user.mobile,
-      address: payuResponse.udf1 || user.address,
-      photoUrl: payuResponse.udf6 || user.photoUrl,
-      registrationType: 'delegate',
-      subCategory: subCategory, 
-      transactionId: txnid,
-      payuId: payuResponse.mihpayid,
-      paymentAmount: parseFloat(payuResponse.amount),
-      paymentStatus: 'success',
-      purchasedImplantAddon: purchasedImplant,
-      purchasedBanquetAddon: purchasedBanquet,
-      memberType: payuResponse.udf3
-    }
-  });
-
-  await sendRegistrationEmail(updatedUser, payuResponse);
-}
-
 async function updatePaymentFailure(txnid, payuResponse) {
-  // Helper to update status to failure based on type
   const type = payuResponse.udf2;
   const data = { paymentStatus: 'failure', payuId: payuResponse.mihpayid };
-  
-  if (type === 'sports') {
-    await prisma.sportRegistration.updateMany({ where: { transactionId: txnid }, data });
-  } else if (type === 'membership') {
-    await prisma.membership.updateMany({ where: { transactionId: txnid }, data });
-  } else {
-    await prisma.user.updateMany({ where: { transactionId: txnid }, data });
-  }
+  if (type === 'sports') await prisma.sportRegistration.updateMany({ where: { transactionId: txnid }, data });
+  else if (type === 'membership') await prisma.membership.updateMany({ where: { transactionId: txnid }, data });
+  else await prisma.user.updateMany({ where: { transactionId: txnid }, data });
 }
 
 function redirectToSuccess(request, txnid, type) {
