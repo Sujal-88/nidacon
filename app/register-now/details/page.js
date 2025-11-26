@@ -12,7 +12,7 @@ import MembershipPopup from '@/components/MembershipPopup'; // Import Membership
 // --- Data (workshopOptions, presentationCategories remain the same) ---
 const workshopOptions = [
   // ... (keep existing workshop options)
-  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 1500 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 1300 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1600 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
+  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 15 }, { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 13 }, { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200 }, { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1600 }, { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100 }, { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400 },
 ];
 const presentationCategories = [
   // ... (keep existing presentation categories)
@@ -23,19 +23,19 @@ const NON_MEMBER_OPTIONS = [
   { 
     id: 'nm_nidacon_only', 
     label: 'Registration for NIDACON Only', 
-    price: 3000, 
+    price: 30, 
     breakdown: '₹3000' 
   },
   { 
     id: 'nm_new_membership', 
     label: 'Registration + New Membership', 
-    price: 3750, 
+    price: 10, 
     breakdown: '₹2000 + ₹1750' 
   },
   { 
     id: 'nm_student_membership', 
     label: 'Registration + Student Membership', 
-    price: 2350, 
+    price: 10, 
     breakdown: '₹2000 + ₹350',
     note: '(Valid for UG students only. Not for PG students)' 
   },
@@ -52,7 +52,7 @@ const MEMBER_OPTIONS = [
   { 
     id: 'm_renewal', 
     label: 'Registration + Renewal of Membership', 
-    price: 3450, 
+    price: 10, 
     breakdown: '₹2000 + ₹1450' 
   },
   { 
