@@ -269,21 +269,19 @@ import { generateUserId } from '@/lib/userId';
 
 export async function initiatePayment(formData) {
   const name = formData.get('name');
-  // FIX: Ensure email is clean for DB lookup
   const rawEmail = formData.get('email');
-  const email = rawEmail ? rawEmail.trim().toLowerCase() : ''; 
-  
+  const email = rawEmail ? rawEmail.trim().toLowerCase() : '';
   const mobile = formData.get('mobile');
   const address = formData.get('address');
   const registrationType = formData.get('registrationType');
   const memberType = formData.get('memberType');
-  const subCategory = formData.get('subCategory');
+  const subCategory = formData.get('subCategory'); // Contains workshop names for workshop flow
   const amount = formData.get('amount');
   const productinfo = formData.get('productinfo');
+  // Generate TXN ID here if not provided
   const txnid = formData.get('txnid') || `NIDA${Date.now()}${Math.floor(Math.random() * 1000)}`;
   const photoUrl = formData.get('photoUrl') || '';
-  
-  // Flags
+
   const implantAddon = formData.get('implant') === 'true';
   const banquetAddon = formData.get('banquet') === 'true';
 
@@ -295,64 +293,87 @@ export async function initiatePayment(formData) {
     return { error: "Payment gateway config missing." };
   }
 
-  // ============================================================
-  // 🛡️ UNIVERSAL SAFETY SAVE (With Overwrite Protection)
-  // ============================================================
+  // --- LOGIC SPLIT START ---
+
+  // 1. CHECK COMPULSORY REGISTRATION (For Workshop)
+  if (registrationType && registrationType.startsWith('workshop')) {
+    // Find the user first
+    const existingUser = await prisma.user.findUnique({
+      where: { email: email }
+    });
+
+    // Enforce NIDACON Registration
+    if (!existingUser || existingUser.paymentStatus !== 'success' || existingUser.registrationType !== 'delegate') {
+      return { error: "NIDACON Conference Registration is compulsory before booking workshops. Please register as a Delegate first." };
+    }
+
+    // CREATE PENDING WORKSHOP RECORD
+    // We do NOT update the User table's paymentStatus here to avoid the "pending" overwrite bug
+    const workshopNames = subCategory ? subCategory.split(',').map(s => s.trim()).filter(Boolean) : [];
+    
+    await prisma.workshopRegistration.create({
+      data: {
+        userId: existingUser.id, // Link to existing user
+        workshops: workshopNames,
+        transactionId: txnid,
+        amount: parseFloat(amount),
+        paymentStatus: 'pending', // Pending status on Workshop table, NOT User table
+        payuId: '', // Will be filled by webhook
+      }
+    });
+  } 
   
-  // 1. Define what we ALWAYS update (Contact info & Payment status)
-  const baseUpdateData = {
-    name,
-    mobile,
-    address,
-    transactionId: txnid,
-    paymentAmount: parseFloat(amount),
-    paymentStatus: 'pending', // Mark as pending immediately
-  };
-
-  // 2. Define what we update ONLY for Delegates
-  // This prevents overwriting a Delegate's status if they later buy a Workshop/Sport
-  if (registrationType === 'delegate') {
-    baseUpdateData.registrationType = registrationType;
-    baseUpdateData.memberType = memberType;
-    baseUpdateData.subCategory = subCategory; // Only update subCategory for Delegates
-    baseUpdateData.purchasedImplantAddon = implantAddon;
-    baseUpdateData.purchasedBanquetAddon = banquetAddon;
-    if (photoUrl) baseUpdateData.photoUrl = photoUrl;
-  }
-
-  try {
+  // 2. DELEGATE / NEW USER FLOW
+  else if (registrationType === 'delegate') {
+    // Only for delegates do we touch the main User payment status
     await prisma.user.upsert({
       where: { email: email },
-      update: baseUpdateData, // Use the safe object constructed above
+      update: {
+        name,
+        mobile,
+        address,
+        transactionId: txnid, // Update txn for tracking
+        paymentAmount: parseFloat(amount),
+        paymentStatus: 'pending', // Set to pending
+        registrationType: 'delegate',
+        memberType: memberType,
+        subCategory: subCategory,
+        purchasedImplantAddon: implantAddon,
+        purchasedBanquetAddon: banquetAddon,
+        ...(photoUrl && { photoUrl }),
+      },
       create: {
         email,
         name,
         mobile,
         address,
-        // For NEW users, we save everything regardless of type
-        registrationType: registrationType,
+        userId: `TEMP-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        registrationType: 'delegate',
         memberType: memberType,
         subCategory: subCategory,
         transactionId: txnid,
         paymentAmount: parseFloat(amount),
         paymentStatus: 'pending',
-        userId: `TEMP-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         purchasedImplantAddon: implantAddon,
         purchasedBanquetAddon: banquetAddon,
         photoUrl: photoUrl
       }
     });
-  } catch (e) {
-    console.error("Failed to save pending record:", e);
-    // Fail-open: Continue to payment even if DB save fails
   }
-  // ============================================================
-
-  const amountString = parseFloat(amount).toFixed(2);
   
-  // Sanitize fields for PayU Hash
+  // 3. SPORTS FLOW (Existing logic preserved)
+  else if (registrationType === 'sports') {
+     // Sports logic is usually handled in initiateSportsPayment wrapper, 
+     // but if it reaches here, we ensure we don't break generic logic.
+     // Assuming SportRegistration is created in the wrapper function.
+  }
+
+  // --- LOGIC SPLIT END ---
+
+  // Prepare PayU Hash
+  const amountString = parseFloat(amount).toFixed(2);
   const firstname = (name || '').replace(/\|/g, "");
-  const email_clean = (email || '').replace(/\|/g, ""); 
+  const email_clean = (email || '').replace(/\|/g, "");
   const productinfo_clean = (productinfo || '').replace(/\|/g, "");
   const udf1 = (address || '').replace(/(\r\n|\n|\r)/gm, " ").replace(/\|/g, "").trim();
   const udf2 = (registrationType || '').replace(/\|/g, "");
@@ -361,8 +382,8 @@ export async function initiatePayment(formData) {
 
   const udf5_parts = [];
   if (registrationType === 'delegate') {
-      udf5_parts.push(`implant:${implantAddon}`);
-      udf5_parts.push(`banquet:${banquetAddon}`);
+    udf5_parts.push(`implant:${implantAddon}`);
+    udf5_parts.push(`banquet:${banquetAddon}`);
   }
   const udf5 = udf5_parts.join(',').replace(/\|/g, "");
   const udf6 = (photoUrl || '').replace(/\|/g, "");
@@ -385,7 +406,46 @@ export async function initiatePayment(formData) {
   };
 }
 
-// ... (Rest of the file remains unchanged: processMembership, initiateSportsPayment, saveSubmission)
+// --- SUBMISSION LOGIC (Compulsory Check Added) ---
+export async function saveSubmission(submissionData) {
+  try {
+    const email = submissionData.email.trim().toLowerCase();
+
+    // 1. Find User
+    const user = await prisma.user.findUnique({
+      where: { email: email }
+    });
+
+    // 2. Check Compulsory Registration
+    if (!user || user.paymentStatus !== 'success' || user.registrationType !== 'delegate') {
+      return { success: false, error: "NIDACON Conference Registration is compulsory. Please register as a Delegate before submitting papers/posters." };
+    }
+
+    // 3. Create Submission
+    await prisma.paperPoster.create({
+      data: {
+        userId: user.id,
+        type: 'paper-poster',
+        category: submissionData.paperCategory || submissionData.posterCategory,
+        enrollName: submissionData.name,
+        mobile: submissionData.mobile,
+        email: email,
+        collegeName: submissionData.collegeName || "Not Provided",
+        title: submissionData.title || "Untitled",
+        fullPaperUrl: submissionData.paperUrl || null,
+        posterUrl: submissionData.posterUrl || null,
+        status: 'submitted',
+      }
+    });
+
+    return { success: true, userId: user.userId };
+  } catch (error) {
+    console.error("Submission Error:", error);
+    return { success: false, error: "Database error." };
+  }
+}
+
+// ... (Rest of initiateSportsPayment and processMembership can remain as they were)
 export async function processMembership(formData) {
    const name = formData.get('name');
    const email = formData.get('email').trim().toLowerCase();
@@ -471,47 +531,4 @@ export async function initiateSportsPayment(formData) {
     console.error("Error initiating sports payment:", error);
     return { error: "Server error processing sports registration." };
   }
-}
-
-export async function saveSubmission(submissionData) {
-    try {
-        const email = submissionData.email.trim().toLowerCase();
-        
-        const user = await prisma.user.upsert({
-            where: { email: email },
-            update: {
-                name: submissionData.name,
-                mobile: submissionData.mobile,
-                address: submissionData.address,
-            },
-            create: {
-                email: email,
-                name: submissionData.name,
-                mobile: submissionData.mobile,
-                address: submissionData.address,
-                userId: await generateUserId(),
-            },
-        });
-
-        await prisma.paperPoster.create({
-            data: {
-                userId: user.id,
-                type: 'paper-poster',
-                category: submissionData.paperCategory || submissionData.posterCategory,
-                enrollName: submissionData.name,
-                mobile: submissionData.mobile,
-                email: email,
-                collegeName: submissionData.collegeName || "Not Provided",
-                title: submissionData.title || "Untitled",
-                fullPaperUrl: submissionData.paperUrl || null,
-                posterUrl: submissionData.posterUrl || null,
-                status: 'submitted',
-            }
-        });
-
-        return { success: true, userId: user.userId };
-    } catch (error) {
-        console.error("Submission Error:", error);
-        return { success: false, error: "Database error." };
-    }
 }
