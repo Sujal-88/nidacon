@@ -23,19 +23,19 @@ const NON_MEMBER_OPTIONS = [
   { 
     id: 'nm_nidacon_only', 
     label: 'Registration for NIDACON Only', 
-    price: 10, 
+    price: 3000, 
     breakdown: '₹3000' 
   },
   { 
     id: 'nm_new_membership', 
     label: 'Registration + New Membership', 
-    price: 10, 
+    price: 3750, 
     breakdown: '₹2000 + ₹1750' 
   },
   { 
     id: 'nm_student_membership', 
     label: 'Registration + Student Membership', 
-    price: 10, 
+    price: 2350, 
     breakdown: '₹2000 + ₹350',
     note: '(Valid for UG students only. Not for PG students)' 
   },
@@ -46,13 +46,13 @@ const MEMBER_OPTIONS = [
   { 
     id: 'm_new_membership', 
     label: 'Registration + New Membership', 
-    price: 10, 
+    price: 3750, 
     breakdown: '₹2000 + ₹1750' 
   },
   { 
     id: 'm_renewal', 
     label: 'Registration + Renewal of Membership', 
-    price: 10, 
+    price: 3450, 
     breakdown: '₹2000 + ₹1450' 
   },
   { 
