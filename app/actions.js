@@ -425,7 +425,7 @@ export async function processMembership(formData) {
     return { success: true, txnid: txnid, memberId: newMemberId };
 
   } catch (error) {
-    return { success: false, error: `Database error. ${error.message}` };
+    return { success: false, error: `Database error.` };
   }
 }
 
