@@ -17,6 +17,8 @@ import MembershipPopup from '@/components/MembershipPopup';
 import SpeakerCarousel from '@/components/SpeakerCarousel';
 import SponsorCarousel from '@/components/SponsorCarousel';
 import ExecutiveBody from '@/components/ExecutiveBody';
+import AnimatedArrow from '@/components/AnimatedArrowComponent';
+import RetroButtons from '@/components/RetroButtons';
 
 function HomePageContent() {
   return (
@@ -55,7 +57,35 @@ function HomePageContent() {
         <div className="relative z-[3] flex flex-col min-h-screen">
           {/* Membership Button with improved spacing */}
           <div className="flex justify-center pt-16 sm:pt-20 md:pt-24 pb-6 sm:pb-8 md:pb-10 px-4">
-            <MembershipPopup text='BECOME A IDA NAGPUR MEMBER' />
+
+            {/* 1. We create a RELATIVE container so the arrow can sit absolutely inside it */}
+            <div className="relative inline-block">
+
+              <MembershipPopup text='enroll for new IDA Membership / Renew Membership for year 2026' />
+
+              {/* 2. The Arrow Component with Responsive Classes */}
+              <AnimatedArrow
+                className="
+                  absolute 
+                  
+                  /* Mobile Layout (Default) */
+                  w-24 h-24
+                  top-3 left-4
+                  rotate-[10deg]
+
+                  /* Tablet Layout (md) */
+                  md:w-40 md:h-40
+                  md:top-2 md:left-148
+                  md:rotate-[-10deg]
+
+                  /* Desktop Layout (lg/xl) */
+                  lg:w-60 lg:h-60
+                  lg:top-0 lg:left-150
+                  lg:rotate-[-20deg]
+                "
+              />
+            </div>
+
           </div>
 
           {/* --- CHANGE 2: Removed NIDASPORTZ & Vertical Divider ---
@@ -93,7 +123,7 @@ function HomePageContent() {
 
                       {/* Date Buttons */}
                       <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
-                        <button className="bg-indigo-600 relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        {/* <button className="bg-indigo-600 relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
@@ -116,7 +146,8 @@ function HomePageContent() {
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
                             <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
-                        </button>
+                        </button> */}
+                        <RetroButtons />
                       </div>
 
                       <p className="pt-4 text-lg xl:text-2xl text-white max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
@@ -164,7 +195,7 @@ function HomePageContent() {
 
                       {/* Date Buttons */}
                       <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        {/* <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                           <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
                           <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
                             <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
@@ -187,7 +218,8 @@ function HomePageContent() {
                             <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
                             <span className="text-xs sm:text-sm">January 2026</span>
                           </span>
-                        </button>
+                        </button> */}
+                        <RetroButtons />
                       </div>
 
                       <p className="pt-4 text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms]">
@@ -240,30 +272,7 @@ function HomePageContent() {
 
                       {/* Date Buttons */}
                       <div className='flex flex-row xs:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-up opacity-0 [--animation-delay:400ms]'>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
-                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
-                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Friday</span>
-                            <span className="text-4xl sm:text-5xl font-bold leading-tight">9</span>
-                            <span className="text-xs sm:text-sm">January 2026</span>
-                          </span>
-                        </button>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
-                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
-                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Saturday</span>
-                            <span className="text-4xl sm:text-5xl font-bold leading-tight">10</span>
-                            <span className="text-xs sm:text-sm">January 2026</span>
-                          </span>
-                        </button>
-                        <button className="relative flex flex-col items-center justify-center h-24 sm:h-28 w-32 sm:w-40 overflow-hidden border border-indigo-600 text-white rounded-lg shadow-lg transition-all duration-300 ease-out group focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                          <span className="absolute top-0 left-0 w-full h-full bg-indigo-600 transition-all duration-300 ease-out transform scale-0 group-hover:scale-100 group-focus:scale-100 opacity-90"></span>
-                          <span className="relative z-10 flex flex-col items-center transition-colors duration-300 group-hover:text-white group-focus:text-white">
-                            <span className="text-xs font-semibold tracking-wider uppercase opacity-80">Sunday</span>
-                            <span className="text-4xl sm:text-5xl font-bold leading-tight">11</span>
-                            <span className="text-xs sm:text-sm">January 2026</span>
-                          </span>
-                        </button>
+                        <RetroButtons />
                       </div>
 
                       <p className="pt-4 text-base sm:text-lg text-gray-200 max-w-xl mx-auto leading-relaxed font-light animate-fade-in-up opacity-0 [--animation-delay:500ms] px-2">
