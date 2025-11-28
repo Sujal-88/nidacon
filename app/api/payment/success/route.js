@@ -1,3 +1,4 @@
+// app/api/payment/success/route.js
 import { NextResponse } from 'next/server';
 import { verifyHash } from '@/lib/payu-utils';
 import { prisma } from '@/lib/prisma';

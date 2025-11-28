@@ -44,7 +44,6 @@
 //   const udf3 = (memberType || '').replace(/\|/g, "");
 //   const udf4 = (subCategory || '').replace(/\|/g, "");
 
-
 //   const udf5_parts = [];
 //   if (registrationType === 'delegate') { // Only add for delegates
 //       udf5_parts.push(`implant:${implantAddon}`);
@@ -235,7 +234,6 @@
 //                 userId: user.id, // Foreign Key to User
 //                 type: 'paper-poster',
 //                 category: submissionData.paperCategory || submissionData.posterCategory,
-
 //                 // New Fields as requested
 //                 enrollName: submissionData.name,
 //                 mobile: submissionData.mobile,
@@ -276,7 +274,7 @@ export async function initiatePayment(formData) {
   const email = rawEmail ? rawEmail.trim().toLowerCase() : '';
   const mobile = formData.get('mobile');
   const address = formData.get('address');
-  const registrationType = formData.get('registrationType');
+  const registrationType = formData.get('registrationType'); // 'delegate', 'workshop', 'paper-poster', 'sports'
   const memberType = formData.get('memberType');
   const subCategory = formData.get('subCategory');
   const amount = formData.get('amount');
@@ -363,7 +361,7 @@ export async function initiatePayment(formData) {
   const udf1 = (address || '').replace(/(\r\n|\n|\r)/gm, " ").replace(/\|/g, "").trim();
   const udf2 = (registrationType || '').replace(/\|/g, "");
   const udf3 = (memberType || '').replace(/\|/g, "");
-  const udf4 = (subCategory || '').replace(/\|/g, "");
+  const udf4 = (subCategory || '').replace(/\|/g, ""); 
 
   const udf5_parts = [];
   if (registrationType === 'delegate') {
