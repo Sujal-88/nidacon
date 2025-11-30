@@ -5,16 +5,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import './membership-popup.css';
 
-export default function MembershipPopup({ 
-  text = 'Become an IDA Nagpur Member', 
-  textColor = 'white' 
+export default function MembershipPopup({
+  text = 'Become an IDA Nagpur Member',
+  textColor = 'white'
 }) {
   return (
     // FIX: Removed legacyBehavior prop and the inner <a> tag.
     // Props from the old <a> tag (like className) are now on the Link component itself.
     <Link href="/membership" className="cta-container group" aria-label={text}>
       <div className="cta-gradient-bg"></div>
-      
+
       <div className="static-text">
         <span style={{ color: textColor }}>
           {text}

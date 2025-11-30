@@ -345,7 +345,7 @@ function PaperPosterRegistrationForm() {
           <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 space-y-8">
             {/* Membership Popup Integration */}
             <div className="flex justify-center -mt-2 mb-6 px-4">
-              <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black' />
+              <MembershipPopup text='To Become an IDA Nagpur Member / Renew Membership' textColor='black' />
             </div>
 
             {/* Registration ID Input (Optional Prefill) */}
@@ -614,7 +614,7 @@ function WorkshopRegistrationForm() {
           <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
             {/* Membership Popup Integration */}
             <div className="flex justify-center -mt-2 mb-6 px-4">
-              <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black' />
+              <MembershipPopup text='To Become an IDA Nagpur Member / Renew Membership' textColor='black' />
             </div>
 
             {/* NIDACON Registration Check */}
@@ -804,7 +804,7 @@ function DelegateRegistrationForm({ registrationType }) {
 
           <div className="mt-12">
             <div className="flex justify-center mb-8 px-4">
-              <MembershipPopup text='Become an IDA Nagpur Member / Renew Membership' textColor='black' />
+              <MembershipPopup text='To Become an IDA Nagpur Member / Renew Membership' textColor='black' />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">

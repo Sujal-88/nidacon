@@ -19,6 +19,7 @@ import SponsorCarousel from '@/components/SponsorCarousel';
 import ExecutiveBody from '@/components/ExecutiveBody';
 import AnimatedArrow from '@/components/AnimatedArrowComponent';
 import RetroButtons from '@/components/RetroButtons';
+import Button from '@/components/ClickHere';
 
 function HomePageContent() {
   return (
@@ -61,38 +62,39 @@ function HomePageContent() {
             {/* 1. We create a RELATIVE container so the arrow can sit absolutely inside it */}
             <div className="relative inline-block">
 
-              <MembershipPopup text='enroll for new IDA Membership / Renew Membership for year 2026' />
+              <MembershipPopup text='To enroll for new IDA Membership / Renew Membership for year 2026' />
 
               {/* 2. The Arrow Component with Responsive Classes */}
-              <AnimatedArrow
-                className="
-                  absolute 
+              {/* <AnimatedArrow
+                className="absolute 
                   
-                  /* Mobile Layout (Default) */
                   w-24 h-24
                   top-3 left-4
                   rotate-[10deg]
 
-                  /* Tablet Layout (md) */
+                  
                   md:w-40 md:h-40
                   md:top-2 md:left-148
                   md:rotate-[-10deg]
 
-                  /* Desktop Layout (lg/xl) */
+                  
                   lg:w-60 lg:h-60
                   lg:top-0 lg:left-150
                   lg:rotate-[-20deg]
                 "
-              />
+              /> */}
+              <Button />
             </div>
 
           </div>
+
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50 my-6"></div>
 
           {/* --- CHANGE 2: Removed NIDASPORTZ & Vertical Divider ---
             The outer flex container is simplified as NIDASPORTZ is gone.
             The main content (NIDACON) now takes up the full width.
           */}
-          <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="flex-1 flex flex-col justify-center px-2 sm:px-6 lg:px-8 pb-8">
 
             {/* Main NIDACON Content Block */}
             <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 pb-8 w-full">
