@@ -398,9 +398,9 @@ export async function processMembership(formData) {
   const memberType = formData.get('memberType');
 
   try {
-    const newMemberId = await generateMemberId();
     const txnid = `NIDAMEM-${Date.now()}`;
 
+    // 1. Create or Update the User (Identity)
     const user = await prisma.user.upsert({
       where: { email: email },
       update: { name, mobile, address },
@@ -410,22 +410,54 @@ export async function processMembership(formData) {
       }
     });
 
-    await prisma.membership.create({
-      data: {
-        userId: user.id,
-        memberId: newMemberId,
-        type: memberType,
-        msdcNumber: msdcRegistration,
-        transactionId: txnid,
-        amount: 0,
-        paymentStatus: 'pending'
-      }
+    // 2. Check if a Membership record already exists for this user
+    const existingMembership = await prisma.membership.findUnique({
+      where: { userId: user.id }
     });
 
-    return { success: true, txnid: txnid, memberId: newMemberId };
+    let memberIdToUse;
+
+    if (existingMembership) {
+      // SCENARIO: User is retrying. Update the existing record.
+      memberIdToUse = existingMembership.memberId;
+
+      await prisma.membership.update({
+        where: { id: existingMembership.id },
+        data: {
+          type: memberType,
+          msdcNumber: msdcRegistration,
+          transactionId: txnid, // Update with new Transaction ID for this attempt
+          paymentStatus: 'pending', // Reset status to pending
+          updatedAt: new Date()
+        }
+      });
+    } else {
+      // SCENARIO: First time attempt. Generate ID and Create record.
+      memberIdToUse = await generateMemberId();
+
+      await prisma.membership.create({
+        data: {
+          userId: user.id,
+          memberId: memberIdToUse,
+          type: memberType,
+          msdcNumber: msdcRegistration,
+          transactionId: txnid,
+          amount: 0,
+          paymentStatus: 'pending'
+        }
+      });
+    }
+
+    return { success: true, txnid: txnid, memberId: memberIdToUse };
 
   } catch (error) {
-    return { success: false, error: `Database error.` };
+    console.error("Error processing membership:", error);
+    // Return the actual error message in development for easier debugging
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? `Database error: ${error.message}` 
+      : "Database error. Please contact support.";
+      
+    return { success: false, error: errorMessage };
   }
 }
 
