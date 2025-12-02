@@ -11,8 +11,19 @@ function UserInfoForm() {
   const searchParams = useSearchParams();
   const registrationType = searchParams.get('type');
 
+  const getInitialName = () => {
+    const paramName = searchParams.get('name');
+    if (!paramName) return 'Dr. '; // Default if empty
+    
+    // Check if it already starts with "Dr." or "Dr " (case insensitive)
+    if (paramName.trim().match(/^dr\.?\s/i)) {
+      return paramName;
+    }
+    return `Dr. ${paramName}`;
+  };
+
   const [formData, setFormData] = useState({
-    name: searchParams.get('name') || '',
+    name: getInitialName(),
     email: searchParams.get('email') || '',
     mobile: searchParams.get('mobile') || '',
     address: searchParams.get('address') || '',

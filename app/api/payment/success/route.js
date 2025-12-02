@@ -147,7 +147,7 @@ async function processMembershipRegistration(txnid, payuResponse, user, subCateg
           data: { isMember: true, memberId: membership.memberId }
         });
         
-        await sendMembershipEmail({ ...user, memberId: membership.memberId }, payuResponse);
+        await sendMembershipEmail({ ...user, memberId: membership.memberId, memberType: membership.type }, payuResponse);
     }
   } else {
       console.error(`❌ Membership Record NOT FOUND for txnid: ${txnid}`);
