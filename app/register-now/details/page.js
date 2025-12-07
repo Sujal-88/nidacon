@@ -6,22 +6,22 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { AlertTriangle, Lock } from 'lucide-react';
+import { AlertTriangle, Lock, X, BadgeInfo } from 'lucide-react';
 import MembershipPopup from '@/components/MembershipPopup';
 
 // --- Data Updated with Dates for Workshops ---
 const workshopOptions = [
   // 9th January Workshops
-  { id: 'ws1', name: 'Hands-on: Advanced Implantology', price: 15, date: '9th January', speaker: 'Dr. ABC' },
-  { id: 'ws2', name: 'Hands-on: Digital Smile Design', price: 13, date: '9th January', speaker: 'Dr. ABC' },
+  { id: 'ws1', name: `Implants Made Easy: A GP's Guide from Placement to Impression`, price: 2700, date: '9th January', speaker: 'Dr. Dhawal Pandya', image: '/workshops/P1.jpeg' },
+  { id: 'ws2', name: 'Back to Basics: Core Endodontic Skills Every Clinician Must Master', price: 2800, date: '9th January', speaker: 'Dr. Rohit Khatavkar', image: '/workshops/P2.jpeg' },
 
   // 10th January Workshops
-  { id: 'ws3', name: 'Hands-on: Rotary Endodontics', price: 1200, date: '10th January', speaker: 'Dr. ABC' },
-  { id: 'ws4', name: 'Hands-on: Laser Dentistry', price: 1600, date: '10th January', speaker: 'Dr. ABC' },
+  { id: 'ws3', name: 'Hands-on: Smile Sculpting: The Art of Anterior Composites', price: 3100, date: '10th January', speaker: 'Dr. Niranjan Vatkar', image: '/workshops/H1.jpeg' },
+  { id: 'ws4', name: 'Hands-on: Instant Space Maintainers in Pediatric Dentistry', price: 900, date: '10th January', speaker: 'Dr. Yusuf Chunawala', image: '/workshops/H2.jpeg' },
+  { id: 'ws5', name: 'Hands-on: Rebuilding Strength: Post & Core Simplified', price: 1900, date: '10th January', speaker: 'Dr. Uma Mahajan', image: '/workshops/H3.jpeg' },
 
   // 11th January Workshops
-  { id: 'ws5', name: 'Hands-on: Composite Artistry', price: 1100, date: '11th January', speaker: 'Dr. ABC' },
-  { id: 'ws6', name: 'Hands-on: Periodontal Flap Surgery', price: 1400, date: '11th January', speaker: 'Dr. ABC' },
+  { id: 'ws6', name: 'Hands-on: Gateway to Instagram: Unveiling the Secrets of the Instagram Algorithm', price: 600, date: '11th January', speaker: 'Dr. Prathmesh Kshatriya', image: '/workshops/H4.jpeg' },
 ];
 
 const presentationCategories = [
@@ -224,7 +224,7 @@ function PaperPosterRegistrationForm() {
   // 2. If UG/PP: Need (File only)
   const isPaperDataComplete = !selection.paper || ((!isPg || paperCategory) && paperFile);
   const isPosterDataComplete = !selection.poster || ((!isPg || posterCategory) && posterFile);
-  
+
   const isSelectionMade = selection.paper || selection.poster;
 
   const isFormValid = isPaperPosterOpen && applicantType && isSelectionMade && isPaperDataComplete && isPosterDataComplete;
@@ -308,7 +308,7 @@ function PaperPosterRegistrationForm() {
             {/* Form Content - Shown for ALL applicant types, but fields vary */}
             {applicantType && (
               <div className="animate-fade-in space-y-8">
-                
+
                 {/* Submission Type Selection */}
                 <div className="pt-8 border-t border-gray-200">
                   <label className="block text-base font-medium text-gray-800">Select submission type(s)</label>
@@ -332,7 +332,7 @@ function PaperPosterRegistrationForm() {
                 {selection.paper && (
                   <div className="pt-8 border-t border-gray-200 space-y-6">
                     <h3 className="text-lg font-semibold text-purple-800">Paper Details</h3>
-                    
+
                     {/* Only Show Category Selection if PG */}
                     {isPg && (
                       <fieldset>
@@ -356,7 +356,7 @@ function PaperPosterRegistrationForm() {
                 {selection.poster && (
                   <div className="pt-8 border-t border-gray-200 space-y-6">
                     <h3 className="text-lg font-semibold text-purple-800">Poster Details</h3>
-                    
+
                     {/* Only Show Category Selection if PG */}
                     {isPg && (
                       <fieldset>
@@ -390,8 +390,8 @@ function PaperPosterRegistrationForm() {
               </button>
               {!isFormValid && (
                 <p className="mt-2 text-xs text-center text-gray-500">
-                  {!applicantType 
-                    ? "Please select an applicant category." 
+                  {!applicantType
+                    ? "Please select an applicant category."
                     : "Please select a submission type and complete the required uploads."}
                 </p>
               )}
@@ -402,6 +402,46 @@ function PaperPosterRegistrationForm() {
     </main>
   );
 }
+
+function WorkshopImagePopup({ isOpen, onClose, imageSrc, title }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-opacity" onClick={onClose}>
+      <div
+        className="relative bg-white rounded-xl overflow-hidden shadow-2xl max-w-lg w-full animate-fade-in"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b">
+          <h3 className="text-sm font-bold text-gray-800 line-clamp-1 pr-4">{title}</h3>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Image Container */}
+        <div className="relative w-full h-[65vh] sm:h-[500px] bg-gray-100 flex items-center justify-center">
+          {/* Fallback if no image is provided */}
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              className="object-contain" // Keeps aspect ratio
+            />
+          ) : (
+            <p className="text-gray-500">No details available</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function WorkshopRegistrationForm() {
   const router = useRouter();
   const [hasRegistered, setHasRegistered] = useState(null);
@@ -412,12 +452,22 @@ function WorkshopRegistrationForm() {
   const [userData, setUserData] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   const [fetchError, setFetchError] = useState('');
+  const [popupData, setPopupData] = useState({ isOpen: false, img: '', title: '' });
 
   useEffect(() => {
     const openDate = new Date('2025-11-15T00:00:00');
     const currentDate = new Date();
     setIsWorkshopOpen(currentDate >= openDate);
   }, []);
+
+  const handleKnowMore = (e, workshop) => {
+    e.stopPropagation(); // CRITICAL: This prevents the row from being selected/deselected when clicking 'Know More'
+    setPopupData({
+      isOpen: true,
+      img: workshop.image, // Ensure this exists in your data
+      title: workshop.name
+    });
+  };
 
   const handleFetchDetails = async () => {
     if (!registrationId) {
@@ -499,7 +549,7 @@ function WorkshopRegistrationForm() {
           </h4>
           <div className="h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent flex-grow"></div>
         </div>
-        
+
         <div className={`grid gap-4 ${isWorkshopSelectionDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
           {workshopsForDate.map((workshop) => {
             const isSelected = !!selectedWorkshops[workshop.id];
@@ -507,11 +557,10 @@ function WorkshopRegistrationForm() {
               <div
                 key={workshop.id}
                 onClick={() => !isWorkshopSelectionDisabled && handleWorkshopChange(workshop)}
-                className={`relative cursor-pointer rounded-xl border-2 transition-all duration-300 ${
-                  isSelected
-                    ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-white shadow-lg scale-[1.02]'
-                    : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                }`}
+                className={`relative cursor-pointer rounded-xl border-2 transition-all duration-300 ${isSelected
+                  ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-white shadow-lg scale-[1.02]'
+                  : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                  }`}
               >
                 {/* Selected indicator badge */}
                 {isSelected && (
@@ -527,11 +576,10 @@ function WorkshopRegistrationForm() {
                     {/* Custom checkbox */}
                     <div className="flex-shrink-0 mt-1">
                       <div
-                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
-                          isSelected
-                            ? 'bg-purple-600 border-purple-600'
-                            : 'bg-white border-gray-300'
-                        }`}
+                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${isSelected
+                          ? 'bg-purple-600 border-purple-600'
+                          : 'bg-white border-gray-300'
+                          }`}
                       >
                         {isSelected && (
                           <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -543,12 +591,11 @@ function WorkshopRegistrationForm() {
 
                     {/* Workshop content */}
                     <div className="flex-grow min-w-0">
-                      <h5 className={`text-lg font-bold mb-2 transition-colors ${
-                        isSelected ? 'text-purple-900' : 'text-gray-900'
-                      }`}>
+                      <h5 className={`text-lg font-bold mb-2 transition-colors ${isSelected ? 'text-purple-900' : 'text-gray-900'
+                        }`}>
                         {workshop.name}
                       </h5>
-                      
+
                       <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
                         <svg className="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -556,17 +603,27 @@ function WorkshopRegistrationForm() {
                         <span className="font-medium">{workshop.speaker}</span>
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
-                          isSelected 
-                            ? 'bg-purple-600 text-white' 
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
+                      <div className="flex items-center justify-between gap-1.5">
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${isSelected
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                          }`}>
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                           ₹{workshop.price.toLocaleString('en-IN')}
                         </div>
+                        <button
+                          type="button"
+                          onClick={(e) => handleKnowMore(e, workshop)}
+                          className={`z-20 flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full border transition-colors ${isSelected
+                              ? 'bg-white text-purple-600 border-purple-200 hover:bg-purple-50'
+                              : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300 hover:text-purple-600'
+                            }`}
+                        >
+                          <BadgeInfo size={14} />
+                          Know More
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -584,11 +641,9 @@ function WorkshopRegistrationForm() {
       <div className="container mx-auto px-4 py-24 sm:py-32">
         <div className="max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="w-48 h-48 bg-purple-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-              <span className="text-4xl font-bold text-purple-600">NIDACON</span>
-            </div>
+            <Image src="/NIDACON/nida_logo.png" alt="NIDACON Logo" width={300} height={300} className="mx-auto mb-6" />
             <p className="text-base font-semibold text-purple-600">Workshop Registration</p>
-            <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Hands-On Workshops</h1>
+            <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">Pre Conference & Hands On</h1>
           </div>
 
           <div className="mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
@@ -670,6 +725,15 @@ function WorkshopRegistrationForm() {
           </div>
         </div>
       </div>
+
+      {/* Pop Up */}
+      <WorkshopImagePopup
+        isOpen={popupData.isOpen}
+        onClose={() => setPopupData({ ...popupData, isOpen: false })}
+        imageSrc={popupData.img}
+        title={popupData.title}
+      />
+
     </main>
   );
 }
@@ -803,8 +867,8 @@ function DelegateRegistrationForm({ registrationType }) {
                           key={option.id}
                           onClick={() => setSelectedOptionId(option.id)}
                           className={`relative flex flex-col p-4 border rounded-xl cursor-pointer transition-all duration-200 ${selectedOptionId === option.id
-                              ? 'border-purple-600 bg-purple-50 ring-1 ring-purple-600'
-                              : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                            ? 'border-purple-600 bg-purple-50 ring-1 ring-purple-600'
+                            : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
                             }`}
                         >
                           <div className="flex justify-between items-start w-full">

@@ -26,7 +26,7 @@ const registrationOptions = [
   },
   {
     icon: <Wrench className="w-10 h-10 text-blue-600" />,
-    title: 'Hands-on Workshop',
+    title: 'Pre-Conference and Hands-On Workshops',
     price: '',
     description: 'Limited-seat workshops for practical, in-depth skill development. *Conference registration required.',
     features: [
