@@ -12,8 +12,8 @@ import MembershipPopup from '@/components/MembershipPopup';
 // --- Data Updated with Dates for Workshops ---
 const workshopOptions = [
   // 9th January Workshops
-  { id: 'ws1', name: `Implants Made Easy: A GP's Guide from Placement to Impression`, price: 2700, date: '9th January', speaker: 'Dr. Dhawal Pandya', image: '/workshops/P1.jpeg' },
-  { id: 'ws2', name: 'Back to Basics: Core Endodontic Skills Every Clinician Must Master', price: 2800, date: '9th January', speaker: 'Dr. Rohit Khatavkar', image: '/workshops/P2.jpeg' },
+  { id: 'ws1', name: `Implants Made Easy: A GP's Guide from Placement to Impression`, price: 2870, date: '9th January', speaker: 'Dr. Dhawal Pandya', image: '/workshops/P2.jpeg' },
+  { id: 'ws2', name: 'Back to Basics: Core Endodontic Skills Every Clinician Must Master', price: 2800, date: '9th January', speaker: 'Dr. Rohit Khatavkar', image: '/workshops/P1.jpeg' },
 
   // 10th January Workshops
   { id: 'ws3', name: 'Hands-on: Smile Sculpting: The Art of Anterior Composites', price: 3100, date: '10th January', speaker: 'Dr. Niranjan Vatkar', image: '/workshops/H1.jpeg' },
