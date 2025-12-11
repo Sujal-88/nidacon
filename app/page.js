@@ -157,17 +157,40 @@ function HomePageContent() {
                       </p>
                     </div>
 
-                    <div className="pt-8 xl:pt-10 text-white animate-fade-in-up opacity-0 [--animation-delay:700ms]">
-                      <Link href="/register-now" className="inline-block">
+                    <div className="pt-8 xl:pt-10 flex justify-center items-center gap-3 text-white animate-fade-in-up opacity-0 [--animation-delay:700ms]">
+                      <Link href="/register-now#delegate" className="inline-block">
                         <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
                           <div className="flex items-center justify-center">
                             <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
-                            <span className="font-semibold text-white">Register Now</span>
+                            <span className="font-semibold text-white">Delegate</span>
                           </div>
                           <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
                         </button>
                       </Link>
+
+                      <Link href="/register-now#workshop" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold text-white">Pre Conference & Masterclass</span>
+                          </div>
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
+
+                      <Link href="/register-now#paper-poster" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold text-white">Paper & Poster</span>
+                          </div>
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
+
                     </div>
                   </div>
 
@@ -282,13 +305,40 @@ function HomePageContent() {
                       </p>
                     </div>
 
-                    <div className="pt-6 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
-                      <Link href="/register-now" className="inline-block">
-                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-3.5 rounded-full transition-all duration-300 ease-in-out text-sm shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                    <div className="pt-6 flex justify-center items-center flex-col gap-3 animate-fade-in-up opacity-0 [--animation-delay:700ms]">
+                      <Link href="/register-now#delegate" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
                           <div className="flex items-center justify-center">
-                            <Ticket className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" />
-                            <span className="font-semibold text-white">Register Now</span>
+                            <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold text-white">Delegate</span>
                           </div>
+                          {/* Glow Effects */}
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
+
+                      {/* Workshop Button */}
+                      <Link href="/register-now#workshop" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold text-white">Pre Conference & Masterclass</span>
+                          </div>
+                          {/* Glow Effects */}
+                          <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                        </button>
+                      </Link>
+
+                      {/* Paper & Poster Button */}
+                      <Link href="/register-now#paper-poster" className="inline-block">
+                        <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-12 xl:px-14 py-4 xl:py-5 rounded-full transition-all duration-300 ease-in-out text-base xl:text-lg shadow-2xl transform hover:scale-105 hover:-translate-y-1 animate-pulse-button">
+                          <div className="flex items-center justify-center">
+                            <Ticket className="w-5 h-5 xl:w-6 xl:h-6 mr-2 xl:mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="font-semibold text-white">Paper & Poster</span>
+                          </div>
+                          {/* Glow Effects */}
                           <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
                         </button>

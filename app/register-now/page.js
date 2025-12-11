@@ -47,10 +47,9 @@ const registrationOptions = [
     features: [
       'Dedicated presentation slot',
       'Entry into "Best Paper" awards',
-      'Abstract published in proceedings',
-      'Includes delegate registration',
+      'Delegate registration required',
     ],
-    buttonText: 'Register as Presenter',
+    buttonText: 'Paper/Poster Submission',
     href: '/register-now/details?type=paper-poster',
     id: 'paper-poster' // Added id
   },
@@ -61,12 +60,55 @@ export default function RegisterPage() {
   const [isSpecialRegistrationOpen, setIsSpecialRegistrationOpen] = useState(false);
 
   useEffect(() => {
+    // 1. Get the hash (e.g., #delegate)
+    const hash = window.location.hash;
+
+    if (hash) {
+      const id = hash.replace('#', '');
+      console.log("Attempting to scroll to:", id); // <--- Check Console for this
+
+      // 2. Function to find and scroll
+      const scrollToElement = () => {
+        const element = document.getElementById(id);
+        if (element) {
+          console.log("Found target!", id); // <--- Check Console for this
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight effect
+          element.classList.add('ring-4', 'ring-purple-500', 'ring-offset-4');
+          setTimeout(() => element.classList.remove('ring-4', 'ring-purple-500', 'ring-offset-4'), 2000);
+          return true;
+        }
+        console.log("Target not found yet...", id);
+        return false;
+      };
+
+      // 3. Retry logic (fixes race conditions)
+      // Try immediately
+      if (!scrollToElement()) {
+        // Retry every 100ms for 2 seconds
+        const interval = setInterval(() => {
+          if (scrollToElement()) {
+            clearInterval(interval);
+          }
+        }, 100);
+
+        // Stop retrying after 2 seconds
+        setTimeout(() => clearInterval(interval), 2000);
+      }
+    }
+
+    // Date logic (keep your existing logic)
+    const openDate = new Date('2025-11-25T00:00:00');
+    setIsSpecialRegistrationOpen(new Date() >= openDate);
+  }, []);
+
+  useEffect(() => {
     // Check if the current date is on or after November 15th, 2025
     const openDate = new Date('2025-11-25T00:00:00');
     const currentDate = new Date();
     // SETTING TO TRUE FOR TESTING - REMOVE IN PRODUCTION
     // setIsSpecialRegistrationOpen(true); 
-    
+
     // PRODUCTION LOGIC
     setIsSpecialRegistrationOpen(currentDate >= openDate);
   }, []);
@@ -114,6 +156,7 @@ export default function RegisterPage() {
 
             return (
               <div
+                id={option.id}
                 key={option.title}
                 className={`flex flex-col rounded-2xl shadow-lg border transition-all duration-300 ${isDisabled ? 'bg-gray-100 border-gray-300 opacity-70' : 'bg-white border-gray-200 hover:-translate-y-2'} ${option.popular && !isDisabled ? 'border-purple-300' : ''
                   }`}

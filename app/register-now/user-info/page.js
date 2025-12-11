@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { User, Mail, Phone, Home, ArrowRight, Receipt, Percent, CircleDollarSign, School, FileText } from 'lucide-react';
+import { User, Mail, Phone, Home, ArrowRight, Receipt, Percent, CircleDollarSign, School, FileText, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { initiatePayment, saveSubmission } from '@/app/actions';
 
@@ -190,6 +190,13 @@ function UserInfoForm() {
   return (
     <main className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-6 py-24 sm:py-32">
+        <button
+          onClick={() => router.back()}
+          className="absolute flex items-center top-20 text-gray-600 hover:text-purple-600 transition-colors font-medium"
+        >
+          <ArrowLeft className="w-5 h-5 mr-1" />
+          Back
+        </button>
         <div className="max-w-4xl mx-auto">
           <div className="text-center">
             <Image src="/NIDACON/nida_logo.png" alt="NIDACON Logo" width={300} height={300} className="mx-auto mb-6" />
