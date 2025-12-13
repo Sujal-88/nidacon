@@ -18,7 +18,8 @@ const workshopOptions = [
     date: '9th January',
     speaker: 'Dr. Dhawal Pandya',
     image: '/workshops/P2.jpeg',
-    description: "This comprehensive workshop is designed for General Practitioners to master implant dentistry. It covers the entire workflow from surgical placement to final impression, ensuring predictable and successful outcomes."
+    description: "This comprehensive workshop is designed for General Practitioners to master implant dentistry. It covers the entire workflow from surgical placement to final impression, ensuring predictable and successful outcomes.",
+    coordinators: "Dr. Anuj Jain: 8055251111, Dr. Geetika Soni: 9822977950"
   },
   {
     id: 'ws2',
@@ -27,7 +28,8 @@ const workshopOptions = [
     date: '9th January',
     speaker: 'Dr. Rohit Khatavkar',
     image: '/workshops/P1.jpeg',
-    description: "Refine your endodontic techniques with a focus on core skills. This session covers access opening, canal location, biomechanical preparation, and obturation to help you handle complex cases with confidence."
+    description: "Refine your endodontic techniques with a focus on core skills. This session covers access opening, canal location, biomechanical preparation, and obturation to help you handle complex cases with confidence.",
+    coordinators: "Dr. Snehal Sonarkar: 9967111642, Dr. Himani Kakade: 9511752780"
   },
 
   // 10th January Workshops
@@ -38,7 +40,8 @@ const workshopOptions = [
     date: '10th January',
     speaker: 'Dr. Niranjan Vatkar',
     image: '/workshops/H1.jpeg',
-    description: "Master the art of smile design using direct anterior composites. Learn layering protocols, shade selection, finishing, and polishing to create lifelike restorations."
+    description: "Master the art of smile design using direct anterior composites. Learn layering protocols, shade selection, finishing, and polishing to create lifelike restorations.",
+    coordinators: "Dr. Snehal Sonarkar: 9967111642, Dr. Himani Kakade: 9511752780"
   },
   {
     id: 'ws4',
@@ -47,7 +50,8 @@ const workshopOptions = [
     date: '10th January',
     speaker: 'Dr. Yusuf Chunawala',
     image: '/workshops/H2.jpeg',
-    description: "A practical guide to space management in pediatric dentistry. Learn quick and effective techniques for fabricating and placing space maintainers chairside."
+    description: "A practical guide to space management in pediatric dentistry. Learn quick and effective techniques for fabricating and placing space maintainers chairside.",
+    coordinators: "Dr. Bhavik Jain: 8806611009"
   },
   {
     id: 'ws5',
@@ -56,7 +60,8 @@ const workshopOptions = [
     date: '10th January',
     speaker: 'Dr. Uma Mahajan',
     image: '/workshops/H3.jpeg',
-    description: "Demystifying the post and core procedure. This workshop focuses on the selection of posts, bonding protocols, and core build-up techniques to salvage badly broken-down teeth."
+    description: "Demystifying the post and core procedure. This workshop focuses on the selection of posts, bonding protocols, and core build-up techniques to salvage badly broken-down teeth.",
+    coordinators: "Dr. Rashmi Tonage: 9960134606"
   },
 
   // 11th January Workshops
@@ -67,7 +72,8 @@ const workshopOptions = [
     date: '11th January',
     speaker: 'Dr. Prathmesh Kshatriya',
     image: '/workshops/H4.jpeg',
-    description: "Unlock the power of social media for your dental practice. Understand the Instagram algorithm, content creation strategies, and how to build a personal brand to attract patients."
+    description: "Unlock the power of social media for your dental practice. Understand the Instagram algorithm, content creation strategies, and how to build a personal brand to attract patients.",
+    coordinators: "Dr. Geetika Soni: 9822977950"
   },
 ];
 
@@ -478,7 +484,7 @@ function PaperPosterRegistrationForm() {
               </button>
               {fetchError && <p className="mt-2 text-sm text-red-500">{fetchError}</p>}
               {userData && !isAlreadySubmitted && (
-                <p className="mt-2 text-md text-green-700">Details fetched for {userData.name}. please confirm before proceeding</p>
+                <span className="mt-2 font-bold text-md text-green-700">Details fetched for {userData.name}. <p className='text-red-500'>please confirm before proceeding</p></span>
               )}
             </div>
 
@@ -692,8 +698,12 @@ function TimeBadge({ time }) {
 function Highlight({ text }) {
   return (
     <div className="flex justify-center -mt-2 mb-5">
-      <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 border border-purple-100 rounded-md text-xs font-medium text-purple-800">
+      <div className="inline-flex flex-col items-center gap-1.5 px-3 py-1 bg-purple-50 border border-purple-100 rounded-md text-xs font-medium text-purple-800">
+        <div className='flex justify-around gap-1 items-center'>
+
         <PaperclipIcon className="w-3 h-3" />
+        <span className="font-bold">Inclusions:</span>
+        </div>
         <span>{text}</span>
       </div>
     </div>
@@ -836,7 +846,7 @@ function WorkshopRegistrationForm() {
           <TimeBadge time={dateTitle.includes("9th") ? "10:30 AM to 4 PM" : "4 PM to 7 PM"} />
         </div>
         <div>
-          {dateTitle.includes("9th") && <Highlight text="General Material required for a hands on, lunch, tea, certificate," />}
+          {dateTitle.includes("9th") && <Highlight text="General Material required for a hands on, lunch, tea, certificate" />}
         </div>
 
         <div className={`grid gap-4 ${isWorkshopSelectionDisabled ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -930,6 +940,8 @@ function WorkshopRegistrationForm() {
                       <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 leading-relaxed border border-gray-100">
                         <p className="font-semibold text-gray-900 mb-1">About this workshop:</p>
                         <p>{workshop.description}</p>
+                        <p className='font-bold text-gray-600' >Course Coordinators: <br /> </p>
+                        <p className='font-bold text-black text-xs'>{workshop.coordinators}</p>
                       </div>
                     </div>
                   </div>
@@ -1057,7 +1069,7 @@ function WorkshopRegistrationForm() {
                     Need Help?
                   </button>
                   {fetchError && <p className="mt-2 text-sm text-red-500">{fetchError}</p>}
-                  {userData && <div className="mt-4 text-md text-green-700">Details for {userData.name} fetched. Please confirm the details before proceeding.</div>}
+                  {userData && <span className="mt-2 font-bold text-md text-green-700">Details fetched for {userData.name}. <p className='text-red-500'>please confirm before proceeding</p></span>}
                 </div>
 
                 <fieldset className={'mt-8'} disabled={isWorkshopSelectionDisabled}>

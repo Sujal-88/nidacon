@@ -53,9 +53,9 @@ export default function NidaconLanding() {
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { number: "10+", label: "Expert Speakers", icon: <Mic className="w-6 h-6" /> },
-              { number: "12+", label: "Hands-on Workshops", icon: <Beaker className="w-6 h-6" /> },
-              { number: "800+", label: "Professional Attendees", icon: <Users className="w-6 h-6" /> }
+              { number: "16+", label: "Expert Speakers", icon: <Mic className="w-6 h-6" /> },
+              { number: "10+", label: "Hands-on Workshops", icon: <Beaker className="w-6 h-6" /> },
+              { number: "600+", label: "Professional Attendees", icon: <Users className="w-6 h-6" /> }
             ].map((stat, index) => (
               <div 
                 key={index}
