@@ -5,7 +5,7 @@ const DownloadGuidelines = () => {
   return (
     <div className="mt-6 mb-8">
       <a 
-        href="/submission-guidelines.pdf" // <--- REPLACE with your actual file path
+        href="/paper/GUIDELINES.pdf" // <--- REPLACE with your actual file path
         download="NIDACON_Submission_Guidelines.pdf"
         target="_blank"
         rel="noopener noreferrer"
