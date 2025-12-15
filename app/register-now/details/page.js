@@ -110,7 +110,7 @@ const banquetFeature = "GALA Buffet Dinner";
 
 // --- FileInput Component (Unchanged) ---
 function FileInput({ label, file, setFile, id, onFileError, type }) {
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 10MB
 
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -118,7 +118,7 @@ function FileInput({ label, file, setFile, id, onFileError, type }) {
 
     // 1. Size Validation
     if (selectedFile.size > MAX_FILE_SIZE) {
-      if (onFileError) onFileError(`File is too large (Max 10MB).`);
+      if (onFileError) onFileError(`File is too large (Max 2MB).`);
       setFile(null);
       e.target.value = null;
       return;
@@ -218,7 +218,7 @@ function FileInput({ label, file, setFile, id, onFileError, type }) {
 
           {!file && (
             <p className="text-xs leading-5 text-gray-600 mt-1">
-              {type === 'paper' ? 'PDF only, up to 10MB' : 'JPEG/JPG only, up to 10MB'}
+              {type === 'paper' ? 'PDF only, up to 2MB' : 'JPEG/JPG only, up to 2MB'}
             </p>
           )}
         </div>
