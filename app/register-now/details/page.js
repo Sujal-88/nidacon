@@ -339,7 +339,7 @@ function PaperPosterRegistrationForm() {
     if (!uploadSuccess) return;
 
     const queryParams = new URLSearchParams({
-      type: 'paper-poster',
+      type: submissionType,
       applicantType: applicantType,
       // CHANGED: Conditional params based on submissionType
       ...(submissionType === 'paper' && { paperCat: paperCategory }),
