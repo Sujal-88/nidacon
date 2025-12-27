@@ -90,7 +90,7 @@ const presentationCategories = [
 ];
 
 const NON_MEMBER_OPTIONS = [
-  { id: 'nm_nidacon_only', label: 'Registration for NIDACON Only', price: 3000, breakdown: '₹3000' },
+  { id: 'nm_nidacon_only', label: 'Registration for NIDACON Only', price: 4000, breakdown: '₹4000' },
   { id: 'nm_new_membership', label: 'Registration + New Membership', price: 3750, breakdown: '₹2000 + ₹1750' },
   { id: 'nm_student_membership', label: 'Registration + Student Membership', price: 2050, breakdown: '₹2050', note: '(Valid for UG students only. Not for PG students)' },
 ];
@@ -99,8 +99,8 @@ const MEMBER_OPTIONS = [
   { id: 'm_new_membership', label: 'Registration + New Membership', price: 3750, breakdown: '₹2000 + ₹1750' },
   { id: 'm_renewal', label: 'Registration + Renewal of Membership', price: 3450, breakdown: '₹2000 + ₹1450' },
   { id: 'm_student', label: 'Registration + Student Membership', price: 2350, breakdown: '₹2000 + ₹350', note: '(Valid for UG students only. Not for PG students)' },
-  { id: 'm_life', label: 'Registration for Life Member', price: 2000, breakdown: '₹2000' },
-  { id: 'm_outside', label: 'Registration for Member Outside Nagpur', price: 2000, breakdown: '₹2000' },
+  { id: 'm_life', label: 'Registration for Life Member', price: 3000, breakdown: '₹3000' },
+  { id: 'm_outside', label: 'Registration for Member Outside Nagpur', price: 3000, breakdown: '₹3000' },
 ];
 
 const baseMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
