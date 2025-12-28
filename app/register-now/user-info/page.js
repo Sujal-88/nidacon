@@ -69,7 +69,7 @@ function UserInfoForm() {
     else if (!/^\d{10}$/.test(formData.mobile)) newErrors.mobile = 'Mobile number must be 10 digits.';
     if (!formData.address.trim()) newErrors.address = 'Address is required.';
 
-    if (registrationType === 'paper-poster') {
+    if (registrationType === 'paper-poster' || registrationType === 'paper' || registrationType === 'poster') {
         if (!formData.collegeName.trim()) newErrors.collegeName = 'College Name is required.';
         if (!formData.title.trim()) newErrors.title = 'Title of Paper/Poster is required.';
     }
@@ -88,9 +88,10 @@ function UserInfoForm() {
   setErrors({});
 
   // --- 1. PAPER/POSTER SUBMISSION FLOW (FIXED) ---
-  if (registrationType === 'paper-poster') {
+  if (registrationType === 'paper-poster' || registrationType === 'paper' || registrationType === 'poster') {
     try {
       const submissionData = {
+        type: registrationType,
         name: formData.name,
         email: formData.email,
         mobile: formData.mobile,
@@ -185,7 +186,7 @@ function UserInfoForm() {
     }
   };
 
-  const isPaymentFlow = registrationType !== 'paper-poster';
+  const isPaymentFlow = registrationType !== 'paper' && registrationType !== 'poster';
 
   return (
     <main className="bg-gray-50 min-h-screen">
