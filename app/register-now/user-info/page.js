@@ -186,7 +186,7 @@ function UserInfoForm() {
     }
   };
 
-  const isPaymentFlow = registrationType !== 'paper' && registrationType !== 'poster';
+  const isPaymentFlow = registrationType !== 'paper-poster' && registrationType !== 'paper' && registrationType !== 'poster';
 
   return (
     <main className="bg-gray-50 min-h-screen">
