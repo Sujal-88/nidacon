@@ -17,7 +17,6 @@ const registrationOptions = [
       'Entry to the trade exhibition',
       'Conference lunch & high tea',
       'Delegate kit & certificate',
-      '',
     ],
     buttonText: 'Register as Delegate',
     href: '/register-now/details?type=delegate',
