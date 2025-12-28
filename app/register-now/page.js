@@ -10,14 +10,14 @@ const registrationOptions = [
   {
     icon: <UserCheck className="w-10 h-10 text-purple-600" />,
     title: 'Delegate Registration',
-    price: 'From ₹2000*',
+    price: '',
     description: 'For all students, faculty, and practicing dentists attending the main conference.',
     features: [
       'Access to all keynote lectures',
       'Entry to the trade exhibition',
       'Conference lunch & high tea',
       'Delegate kit & certificate',
-      '*Early bird pricing for Members. Add-ons available.',
+      '',
     ],
     buttonText: 'Register as Delegate',
     href: '/register-now/details?type=delegate',
@@ -128,10 +128,10 @@ export default function RegisterPage() {
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900">
             Join NIDACON 2026
           </h1>
-          <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
-            <AlertTriangle className="w-5 h-5" />
-            <span className="font-semibold">Early Bird Registration ends 25th November! Prices will increase after this date.</span>
-          </div>
+          // <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
+          //   <AlertTriangle className="w-5 h-5" />
+          //   <span className="font-semibold">Early Bird Registration ends 25th November! Prices will increase after this date.</span>
+          // </div>
           <p className="mt-6 text-lg text-gray-600 leading-8">
             Choose the registration category that best suits your participation. We look forward to welcoming you to Nagpur for an unforgettable experience of learning and collaboration.
           </p>
