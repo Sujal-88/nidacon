@@ -7,7 +7,7 @@ const executiveBodyMembers = [
     id: 1,
     name: 'Dr. Mrs. Poonam V Hudiya',
     qualification: 'President',
-    description: 'A senior specialist with two decades of focused expertise, dedicated to restoring foundational gum health and masterfully placing dental implants for a lasting smile.',
+    description: 'Practicing since 25 years and owner of A Care Dental Clinic, Ambedkar Square, Nagpur. MBA in Healthcare Science and Services,  Currently serving as Head of Department for three units at Navratra Hospital and Research Centre, brings extensive clinical and healthcare management expertise.',
     image: '/committee/poonamHudiya.jpeg',
     socials: {
       instagram: 'https://www.instagram.com/poonamhudiya/',
@@ -19,7 +19,7 @@ const executiveBodyMembers = [
     name: 'Dr. Anshul Mahajan',
     qualification: 'HON.Secreatary',
     description: '',
-    image: '/committee/anshulMahajan.jpeg',
+    image: '/committee/anshulMahajan.png',
     socials: {
       linkedin: '#',
       twitter: '#',
