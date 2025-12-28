@@ -256,7 +256,7 @@ function UserInfoForm() {
                 </div>
 
                 {/* --- NEW FIELDS ONLY FOR PAPER/POSTER --- */}
-                {registrationType === 'paper-poster' && (
+                {registrationType === 'paper-poster'|| registrationType === 'paper' || registrationType === 'poster') && (
                   <>
                     <div className="sm:col-span-2 border-t pt-6 mt-2">
                       <h3 className="text-lg font-semibold text-purple-800 mb-4">Academic Details</h3>
