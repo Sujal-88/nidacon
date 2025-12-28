@@ -1,25 +1,25 @@
 import Image from 'next/image';
-import { Linkedin, Twitter } from 'lucide-react';
+import { Linkedin, Twitter, Instagram } from 'lucide-react';
 
 // Sample data with added 'socials' for demonstration
 const executiveBodyMembers = [
   {
     id: 1,
-    name: 'Dr. Tushar Shrirao',
+    name: 'Dr. Mrs. Poonam V Hudiya',
     qualification: 'President',
     description: 'A senior specialist with two decades of focused expertise, dedicated to restoring foundational gum health and masterfully placing dental implants for a lasting smile.',
-    image: '/committee/tusharShrirao.jpeg',
+    image: '/committee/poonamHudiya.jpeg',
     socials: {
-      linkedin: '#',
+      instagram: '#',
       twitter: '#',
     }
   },
   {
     id: 2,
-    name: 'Dr. Ketan Garg',
+    name: 'Dr. Anshul Mahajan',
     qualification: 'HON.Secreatary',
-    description: 'With 15 years in advanced surgical care, our oral surgeon skillfully manages complex cases, from wisdom teeth removal to precision-guided implant placement.',
-    image: '/committee/ketanGarg.jpeg',
+    description: '',
+    image: '/committee/anshulMahajan.jpeg',
     socials: {
       linkedin: '#',
       twitter: '#',
@@ -27,10 +27,10 @@ const executiveBodyMembers = [
   },
   {
     id: 3,
-    name: 'Dr. Rohit Mude',
+    name: 'Dr. Mitul Mishra',
     qualification: 'Treasurer',
-    description: 'An accomplished dental surgeon with 15 years of experience, providing comprehensive restorative care and cosmetic solutions to enhance your overall oral health.',
-    image: '/committee/rohitMude.jpeg',
+    description: '',
+    image: '/committee/mitulMishra.jpeg',
     socials: {
       linkedin: '#',
       twitter: null, // Example of a missing social link
