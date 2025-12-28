@@ -10,7 +10,7 @@ const executiveBodyMembers = [
     description: 'A senior specialist with two decades of focused expertise, dedicated to restoring foundational gum health and masterfully placing dental implants for a lasting smile.',
     image: '/committee/poonamHudiya.jpeg',
     socials: {
-      instagram: '#',
+      instagram: 'https://www.instagram.com/poonamhudiya/',
       twitter: '#',
     }
   },
