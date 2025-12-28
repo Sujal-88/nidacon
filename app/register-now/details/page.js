@@ -1207,10 +1207,7 @@ function DelegateRegistrationForm({ registrationType }) {
             <p className="mt-6 text-lg text-gray-600">
               Choose your category and optional add-ons below.
             </p>
-            <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg inline-flex items-center gap-2 text-yellow-800">
-              <AlertTriangle className="w-5 h-5" />
-              <span className="font-semibold">Early Bird Registration ends 25th November!</span>
-            </div>
+            
           </div>
 
           <div className="mt-12">
