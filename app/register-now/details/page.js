@@ -1158,12 +1158,7 @@ function DelegateRegistrationForm({ registrationType }) {
     return NON_MEMBER_OPTIONS;
   };
   const currentOptions = getDisplayOptions();
-  const getSelectedOption = () => {
-    if (isMember === null || !selectedOptionId) return null;
-    return currentOptions.find(opt => opt.id === selectedOptionId);
-  };
-
-  // Helper to get the full object of the currently selected option
+  
   const getSelectedOption = () => {
     if (isMember === null || !selectedOptionId) return null;
     return currentOptions.find(opt => opt.id === selectedOptionId);
@@ -1208,8 +1203,6 @@ function DelegateRegistrationForm({ registrationType }) {
   const displayType = registrationType.charAt(0).toUpperCase() + registrationType.slice(1);
   const isProceedDisabled = !selectedOptionId;
 
-  // Get current options list based on tab
-  const currentOptions = isMember === null ? [] : (isMember ? MEMBER_OPTIONS : NON_MEMBER_OPTIONS);
 
   // Determine features list for display
   let currentFeatures = isMember ? [...baseMemberFeatures] : [...baseNonMemberFeatures];
