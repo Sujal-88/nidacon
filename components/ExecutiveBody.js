@@ -36,6 +36,17 @@ const executiveBodyMembers = [
       twitter: null, // Example of a missing social link
     }
   },
+  {
+    id: 4,
+    name: 'Dr. Girish Bhutada',
+    qualification: 'Chief Coordinator NIDACON',
+    description: '',
+    image: '/committee/girishBhutada.jpeg',
+    socials: {
+      linkedin: '#',
+      twitter: null, // Example of a missing social link
+    }
+  },
 ];
 
 
@@ -96,6 +107,12 @@ export default function ExecutiveBody() {
                       <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-indigo-600 transition-colors">
                         <Twitter className="w-5 h-5" />
                         <span className="sr-only">Twitter</span>
+                      </a>
+                    )}
+                    {member.socials.instagram && (
+                      <a href={member.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-indigo-600 transition-colors">
+                        <Instagram className="w-5 h-5" />
+                        <span className="sr-only">Instagram</span>
                       </a>
                     )}
                   </div>
