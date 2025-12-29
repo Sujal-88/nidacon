@@ -13,17 +13,7 @@ const workshopOptions = [
   // 9th January Workshops
   {
     id: 'ws1',
-    name: `Implants Made Easy: A GP's Guide from Placement to Impression`,
-    price: 2700,
-    date: '9th January',
-    speaker: 'Dr. Dhawal Pandya',
-    image: '/workshops/P2.jpeg',
-    description: "This comprehensive workshop is designed for General Practitioners to master implant dentistry. It covers the entire workflow from surgical placement to final impression, ensuring predictable and successful outcomes.",
-    coordinators: "Dr. Anuj Jain: 8055251111, Dr. Geetika Soni: 9822977950"
-  },
-  {
-    id: 'ws2',
-    name: 'Back to Basics: Core Endodontic Skills Every Clinician Must Master',
+    name: '(P1) Back to Basics: Core Endodontic Skills Every Clinician Must Master ',
     price: 2800,
     date: '9th January',
     speaker: 'Dr. Rohit Khatavkar',
@@ -31,11 +21,21 @@ const workshopOptions = [
     description: "Refine your endodontic techniques with a focus on core skills. This session covers access opening, canal location, biomechanical preparation, and obturation to help you handle complex cases with confidence.",
     coordinators: "Dr. Snehal Sonarkar: 9967111642, Dr. Himani Kakade: 9511752780"
   },
+  {
+    id: 'ws2',
+    name: `(P2) Implants Made Easy: A GP's Guide from Placement to Impression`,
+    price: 2700,
+    date: '9th January',
+    speaker: 'Dr. Dhawal Pandya',
+    image: '/workshops/P2.jpeg',
+    description: "This comprehensive workshop is designed for General Practitioners to master implant dentistry. It covers the entire workflow from surgical placement to final impression, ensuring predictable and successful outcomes.",
+    coordinators: "Dr. Anuj Jain: 8055251111, Dr. Geetika Soni: 9822977950"
+  },
 
   // 10th January Workshops
   {
     id: 'ws3',
-    name: 'Hands-on: Smile Sculpting: The Art of Anterior Composites',
+    name: '(H1) Hands-on: Smile Sculpting: The Art of Anterior Composites',
     price: 3100,
     date: '10th January',
     speaker: 'Dr. Niranjan Vatkar',
@@ -45,7 +45,7 @@ const workshopOptions = [
   },
   {
     id: 'ws4',
-    name: 'Hands-on: Instant Space Maintainers in Pediatric Dentistry',
+    name: '(H2) Hands-on: Instant Space Maintainers in Pediatric Dentistry',
     price: 900,
     date: '10th January',
     speaker: 'Dr. Yusuf Chunawala',
@@ -53,26 +53,37 @@ const workshopOptions = [
     description: "A practical guide to space management in pediatric dentistry. Learn quick and effective techniques for fabricating and placing space maintainers chairside.",
     coordinators: "Dr. Bhavik Jain: 8806611009"
   },
-  {
-    id: 'ws5',
-    name: 'Hands-on: Rebuilding Strength: Post & Core Simplified',
-    price: 1900,
-    date: '10th January',
-    speaker: 'Dr. Uma Mahajan',
-    image: '/workshops/H3.jpeg',
-    description: "Demystifying the post and core procedure. This workshop focuses on the selection of posts, bonding protocols, and core build-up techniques to salvage badly broken-down teeth.",
-    coordinators: "Dr. Rashmi Tonage: 9960134606"
-  },
+ 
 
   // 11th January Workshops
   {
-    id: 'ws6',
-    name: 'Hands-on: Gateway to Instagram: Unveiling the Secrets of the Instagram Algorithm',
+    id: 'ws5',
+    name: '(H4) Hands-on: Gateway to Instagram: Unveiling the Secrets of the Instagram Algorithm',
     price: 600,
     date: '11th January',
     speaker: 'Dr. Prathmesh Kshatriya',
     image: '/workshops/H4.jpeg',
     description: "Unlock the power of social media for your dental practice. Understand the Instagram algorithm, content creation strategies, and how to build a personal brand to attract patients.",
+    coordinators: "Dr. Geetika Soni: 9822977950"
+  },
+  {
+    id: 'ws6',
+    name: '(H5) Hands-on: The FMR Blueprint: Articulation, Facebow & Temporization',
+    price: 1800,
+    date: '11th January',
+    speaker: 'Dr. Manish Agrawal',
+    image: '/workshops/H4.jpeg',
+    description: "Master the essential techniques of full mouth rehabilitation through practical training in jaw relationship recording, facebow transfers, and creating functional provisional restorations.",
+    coordinators: "Dr. Ganesh Bajaj: 9823786663"
+  },
+  {
+    id: 'ws7',
+    name: '(H6) Hands-on: From Planning to Placement: A Practical Guide to Invisalign',
+    price: 800,
+    date: '11th January',
+    speaker: 'Dr. Rohan Bhatt',
+    image: '/workshops/H4.jpeg',
+    description: "Learn the complete Invisalign workflow from case selection and digital treatment planning to attachment placement and achieving predictable clear aligner results.",
     coordinators: "Dr. Geetika Soni: 9822977950"
   },
 ];
