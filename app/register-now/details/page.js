@@ -84,7 +84,7 @@ const workshopOptions = [
     speaker: 'Dr. Rohan Bhatt',
     image: '/workshops/H4.jpeg',
     description: "Learn the complete Invisalign workflow from case selection and digital treatment planning to attachment placement and achieving predictable clear aligner results.",
-    coordinators: "Dr. Geetika Soni: 9822977950"
+    coordinators: "Dr. Bhavik Jain: 8806611009"
   },
 ];
 
