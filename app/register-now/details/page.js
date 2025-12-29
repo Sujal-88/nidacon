@@ -103,6 +103,14 @@ const MEMBER_OPTIONS = [
   { id: 'm_outside', label: 'Registration for Member Outside Nagpur', price: 2500, breakdown: '₹2500' },
 ];
 
+const SPECIAL_QR_OPTION = { 
+  id: 'm_special_qr', 
+  label: 'NIDACON Delegate', 
+  price: 2000, 
+  breakdown: '₹2000', 
+  note: '✨ Special QR Code Offer' 
+};
+
 const baseMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
 const baseNonMemberFeatures = ["Registration to main event on 10th and 11th", "Registration Kit & Certificate", "Entry to Trade fair", "2 Lunches"];
 const implantFeature = "WITH FREE IMPLANT";
@@ -1118,6 +1126,9 @@ function WorkshopRegistrationForm() {
 
 function DelegateRegistrationForm({ registrationType }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const hasQrAccess = searchParams.get('access') === 'qr';
+  
   const [isMember, setIsMember] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null); // New state for specific option
   const [addOns, setAddOns] = useState({
@@ -1125,16 +1136,37 @@ function DelegateRegistrationForm({ registrationType }) {
     banquet: false,
   });
 
-  // Reset specific selection if user switches between Member/Non-Member tabs
+  useEffect(() => {
+    if (hasQrAccess && isMember === null) {
+      setIsMember(true);
+    }
+  }, [hasQrAccess, isMember]);
+
   useEffect(() => {
     setSelectedOptionId(null);
   }, [isMember]);
 
+  // 4. Dynamic Options Logic
+  const getDisplayOptions = () => {
+    if (isMember === null) return [];
+    
+    if (isMember) {
+      // If QR access is true, prepend the special option
+      return hasQrAccess ? [SPECIAL_QR_OPTION, ...MEMBER_OPTIONS] : MEMBER_OPTIONS;
+    }
+    
+    return NON_MEMBER_OPTIONS;
+  };
+  const currentOptions = getDisplayOptions();
+  const getSelectedOption = () => {
+    if (isMember === null || !selectedOptionId) return null;
+    return currentOptions.find(opt => opt.id === selectedOptionId);
+  };
+
   // Helper to get the full object of the currently selected option
   const getSelectedOption = () => {
     if (isMember === null || !selectedOptionId) return null;
-    const options = isMember ? MEMBER_OPTIONS : NON_MEMBER_OPTIONS;
-    return options.find(opt => opt.id === selectedOptionId);
+    return currentOptions.find(opt => opt.id === selectedOptionId);
   };
 
   const calculateTotal = () => {
@@ -1166,6 +1198,7 @@ function DelegateRegistrationForm({ registrationType }) {
       price: totalAmount.toString(),
     });
 
+    if (hasQrAccess) queryParams.set('access', 'qr');
     if (addOns.implant) queryParams.set('implant', 'true');
     if (addOns.banquet) queryParams.set('banquet', 'true');
 
@@ -1180,6 +1213,7 @@ function DelegateRegistrationForm({ registrationType }) {
 
   // Determine features list for display
   let currentFeatures = isMember ? [...baseMemberFeatures] : [...baseNonMemberFeatures];
+  
   if (addOns.implant) currentFeatures.unshift(implantFeature);
   if (addOns.banquet) currentFeatures.unshift(banquetFeature);
 
@@ -1268,8 +1302,10 @@ function DelegateRegistrationForm({ registrationType }) {
                             </div>
                           </div>
                           {option.note && (
-                            <p className="mt-1 ml-8 text-xs text-red-500 font-medium">{option.note}</p>
-                          )}
+                        <p className={`mt-1 ml-8 text-xs font-medium ${option.id === 'm_special_qr' ? 'text-purple-600 font-bold' : 'text-red-500'}`}>
+                          {option.note}
+                        </p>
+                      )}
                         </div>
                       ))}
                     </div>
