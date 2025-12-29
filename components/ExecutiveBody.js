@@ -41,7 +41,7 @@ const executiveBodyMembers = [
     name: 'Dr. Girish Bhutada',
     qualification: 'Chief Coordinator NIDACON',
     description: '',
-    image: '/committee/girishBhutada.jpeg',
+    image: '/committee/girishBhutada.jpg',
     socials: {
       linkedin: '#',
       twitter: null, // Example of a missing social link
