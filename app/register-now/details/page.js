@@ -12,7 +12,7 @@ import DownloadGuidelines from '@/components/DownloadGuidelines';
 const workshopOptions = [
   // 9th January Workshops
   {
-    id: 'ws1',
+    id: 'p1',
     name: '(P1) Back to Basics: Core Endodontic Skills Every Clinician Must Master ',
     price: 2800,
     date: '9th January',
@@ -22,7 +22,7 @@ const workshopOptions = [
     coordinators: "Dr. Snehal Sonarkar: 9967111642, Dr. Himani Kakade: 9511752780"
   },
   {
-    id: 'ws2',
+    id: 'p2',
     name: `(P2) Implants Made Easy: A GP's Guide from Placement to Impression`,
     price: 2700,
     date: '9th January',
@@ -34,7 +34,7 @@ const workshopOptions = [
 
   // 10th January Workshops
   {
-    id: 'ws3',
+    id: 'ws1',
     name: '(H1) Hands-on: Smile Sculpting: The Art of Anterior Composites',
     price: 3100,
     date: '10th January',
@@ -44,7 +44,7 @@ const workshopOptions = [
     coordinators: "Dr. Snehal Sonarkar: 9967111642, Dr. Himani Kakade: 9511752780"
   },
   {
-    id: 'ws4',
+    id: 'ws2',
     name: '(H2) Hands-on: Instant Space Maintainers in Pediatric Dentistry',
     price: 900,
     date: '10th January',
@@ -57,7 +57,7 @@ const workshopOptions = [
 
   // 11th January Workshops
   {
-    id: 'ws5',
+    id: 'ws4',
     name: '(H4) Hands-on: Gateway to Instagram: Unveiling the Secrets of the Instagram Algorithm',
     price: 600,
     date: '11th January',
@@ -67,7 +67,7 @@ const workshopOptions = [
     coordinators: "Dr. Geetika Soni: 9822977950"
   },
   {
-    id: 'ws6',
+    id: 'ws5',
     name: '(H5) Hands-on: The FMR Blueprint: Articulation, Facebow & Temporization',
     price: 1800,
     date: '11th January',
@@ -77,7 +77,7 @@ const workshopOptions = [
     coordinators: "Dr. Ganesh Bajaj: 9823786663"
   },
   {
-    id: 'ws7',
+    id: 'ws6',
     name: '(H6) Hands-on: From Planning to Placement: A Practical Guide to Invisalign',
     price: 800,
     date: '11th January',
