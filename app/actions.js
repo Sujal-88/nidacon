@@ -530,7 +530,7 @@ export async function saveSubmission(submissionData) {
     await prisma.paperPoster.create({
       data: {
         userId: user.id,
-        type: 'paper-poster',
+        type: submissionData.type,
         category: submissionData.paperCategory || submissionData.posterCategory,
         enrollName: submissionData.name,
         mobile: submissionData.mobile,
