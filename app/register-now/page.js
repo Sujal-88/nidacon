@@ -38,20 +38,20 @@ const registrationOptions = [
     href: '/register-now/details?type=workshop',
     id: 'workshop' // Added id
   },
-  {
-    icon: <FileText className="w-10 h-10 text-teal-600" />,
-    title: 'Paper/Poster Presenter',
-    price: '',
-    description: 'For students and faculty who wish to present their research at the conference.',
-    features: [
-      'Dedicated presentation slot',
-      'Entry into "Best Paper" awards',
-      'Delegate registration required',
-    ],
-    buttonText: 'Paper/Poster Submission',
-    href: '/register-now/details?type=paper-poster',
-    id: 'paper-poster' // Added id
-  },
+  // {
+  //   icon: <FileText className="w-10 h-10 text-teal-600" />,
+  //   title: 'Paper/Poster Presenter',
+  //   price: '',
+  //   description: 'For students and faculty who wish to present their research at the conference.',
+  //   features: [
+  //     'Dedicated presentation slot',
+  //     'Entry into "Best Paper" awards',
+  //     'Delegate registration required',
+  //   ],
+  //   buttonText: 'Paper/Poster Submission',
+  //   href: '/register-now/details?type=paper-poster',
+  //   id: 'paper-poster' // Added id
+  // },
 ];
 
 export default function RegisterPage() {
