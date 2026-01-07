@@ -101,17 +101,17 @@ const presentationCategories = [
 ];
 
 const NON_MEMBER_OPTIONS = [
-  { id: 'nm_nidacon_only', label: 'Registration for NIDACON Only', price: 3500, breakdown: '₹3500' },
-  { id: 'nm_new_membership', label: 'Registration + New Membership', price: 4250, breakdown: '₹2500 + ₹1750' },
-  { id: 'nm_student_membership', label: 'Registration + Student Membership', price: 2500, breakdown: '₹2500', note: '(Valid for UG students only. Not for PG students)' },
+  { id: 'nm_nidacon_only', label: 'Registration for NIDACON Only', price: 4000, breakdown: '₹4000' },
+  { id: 'nm_new_membership', label: 'Registration + New Membership', price: 4750, breakdown: '₹3000 + ₹1750' },
+  { id: 'nm_student_membership', label: 'Registration + Student Membership', price: 3000, breakdown: '₹3000', note: '(Valid for UG students only. Not for PG students)' },
 ];
 
 const MEMBER_OPTIONS = [
-  { id: 'm_new_membership', label: 'Registration + New Membership', price: 4250, breakdown: '₹2500 + ₹1750' },
-  { id: 'm_renewal', label: 'Registration + Renewal of Membership', price: 3950, breakdown: '₹2500 + ₹1450' },
-  { id: 'm_student', label: 'Registration + Student Membership', price: 2850, breakdown: '₹2500 + ₹350', note: '(Valid for UG students only. Not for PG students)' },
-  { id: 'm_life', label: 'Registration for Life Member', price: 2500, breakdown: '₹2500' },
-  { id: 'm_outside', label: 'Registration for Member Outside Nagpur', price: 2500, breakdown: '₹2500' },
+  { id: 'm_new_membership', label: 'Registration + New Membership', price: 4750, breakdown: '₹3000 + ₹1750' },
+  { id: 'm_renewal', label: 'Registration + Renewal of Membership', price: 4450, breakdown: '₹3000 + ₹1450' },
+  { id: 'm_student', label: 'Registration + Student Membership', price: 3350, breakdown: '₹3000 + ₹350', note: '(Valid for UG students only. Not for PG students)' },
+  { id: 'm_life', label: 'Registration for Life Member', price: 3000, breakdown: '₹3000' },
+  { id: 'm_outside', label: 'Registration for Member Outside Nagpur', price: 3000, breakdown: '₹3000' },
 ];
 
 const SPECIAL_QR_OPTION = { 
