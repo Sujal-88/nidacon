@@ -207,7 +207,7 @@ export default function RegisterPage() {
 // }
 
   return (
-        <main className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 mt-6 pt-4">
+        <main className="h-[105vh] bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 mt-6 pt-4">
 
             {/* --- Main Message Section --- */}
             <div className="max-w-2xl w-full text-center space-y-8 animate-fade-in-up">
