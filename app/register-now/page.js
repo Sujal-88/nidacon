@@ -207,7 +207,7 @@ export default function RegisterPage() {
 // }
 
   return (
-        <main className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+        <main className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 mt-6 pt-4">
 
             {/* --- Main Message Section --- */}
             <div className="max-w-2xl w-full text-center space-y-8 animate-fade-in-up">
@@ -231,7 +231,7 @@ export default function RegisterPage() {
                         For Spot Registrations Contact
                     </h2>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                        <span className="text-2xl font-bold text-gray-800">Mitul Mishra</span>
+                        <span className="text-2xl font-bold text-gray-800">Dr Mitul Mishra</span>
                         <span className="hidden sm:block text-gray-300">|</span>
                         <a
                             href="tel:8087074183"
